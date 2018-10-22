@@ -2,9 +2,9 @@
 
 # What is [vxr](https://github.com/avilapa/vxr)?
 
-vxr is a project that emerged from the desire to build a general purpose rendering tool that I could use to implement anything I was curious about or wanted to learn about.
+__vxr__ is a project that emerged from the desire to build a __general purpose rendering tool__ that I could use to implement anything I was curious about or wanted to learn about.
 
-As it stands now, it is a multithreaded 3D game development engine written in C++ and oriented to support different rendering backends. The engine has two different APIs for development:
+As it stands now, it is a __multithreaded 3D game development engine written in C++__ and oriented to support different rendering backends. The engine has two different APIs for development:
 
   - A __lower level API__ based on render display list commands that can be used to build __small but efficient__ applications.
   - A __higher level API__ built on top of the lower level one, which abstracts it to provide a __rendering agnostic and component oriented__ API.
@@ -183,7 +183,8 @@ namespace vxr
 
   void Main::update()
   {
-    mesh_->transform()->set_local_rotation(mesh_->transform()->local_rotation() + vec3(0.21, 0.12, 0.5) * deltaTime());
+    mesh_->transform()->set_local_rotation(mesh_->transform()->local_rotation() 
+					   + vec3(0.21, 0.12, 0.5) * deltaTime());
     Application::update();
   }
 
