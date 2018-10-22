@@ -10,6 +10,8 @@ As it stands now, it is a __multithreaded 3D game development engine written in 
 
   - A __lower level API__ based on render display list commands that can be used to build __small but efficient__ applications.
   - A __higher level API__ built on top of the lower level one, which abstracts it to provide a __rendering agnostic and component oriented__ API.
+  
+Project webpage: https://avilapa.github.io/vxr-engine/
 
 ![06-PlanetEditor](/assets/textures/readme/06-PlanetEditor.png)
 
@@ -243,9 +245,14 @@ The project includes some 3rd party dependencies, but not all of them are necess
 - [glfw](https://github.com/glfw/glfw) - _If you are building with OpenGL (--gl)_
 - [minitrace](https://github.com/hrydgard/minitrace) - _If you are building with debug tracing (--debug-tracing)_
 
+# Contributing
+
+This is the first project I have made open source, therefore I am wide open to feedback from the community and contributions :^)
+
 # Thanks
 
 Special thanks to my previous tutor [PpluX](https://github.com/pplux), top coder who lately wrote [px_render.h](https://github.com/pplux/px/blob/master/px_render.h), from which I learned a lot and incorporated part of it into my OpenGL backend.
 
 # [MIT License](/LICENSE)
 
+# Contact
