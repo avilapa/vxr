@@ -1,5 +1,7 @@
 [![vxr engine logo](/assets/textures/readme/logo.png)](https://avilapa.github.io)
 
+_version 0.1.0_
+
 # What is [vxr](https://github.com/avilapa/vxr)?
 
 __vxr__ is a project that emerged from the desire to build a __general purpose rendering tool__ that I could use to implement anything I was curious about or wanted to learn about.
@@ -43,6 +45,7 @@ A list of examples are provided within the solution to showcase the engine's cap
 # Features
 
 - Multithreaded agnostical graphics API
+- Command Based Rendering, allowing to build the render commands in advance to be run in a separate thread
 - _GameObjects_ with the following components currently implemented:
   - Transform
   - Mesh Filter
