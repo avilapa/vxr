@@ -21,6 +21,8 @@ This project uses [GENie.lua](https://github.com/bkaradzic/GENie) to create the 
 
 	cd project
 	../tools/genie.exe [parameters] <vs2017|vs2015>
+	
+The solution will be located in _project/vs/VXR-Engine.sln_.
   
 ### Parameters
 
@@ -256,3 +258,7 @@ Special thanks to my previous tutor [PpluX](https://github.com/pplux), top coder
 # [MIT License](/LICENSE)
 
 # Contact
+
+Mail: victorap97@gmail.com
+Twitter: https://twitter.com/97torvic
+Web/Blog/Portfolio: https://avilapa.github.io/
