@@ -32,6 +32,18 @@ namespace vxr
   Gradient::Gradient()
   {
     set_name("Gradient");
+    addKey({ 0.0f, Color::White });
+    addKey({ 1.0f, Color::Black });
+  }
+
+  Gradient::Gradient(const Gradient &o)
+  {
+    set_name("Gradient");
+    for (uint32 i = 0; i < o.keys_.size(); ++i)
+    {
+      Key k = o.keys_[i];
+      keys_.push_back(k);
+    }
   }
 
   Gradient::~Gradient()
@@ -41,12 +53,32 @@ namespace vxr
 
   void Gradient::onGUI()
   {
-    ImGui::Text("Gradient Settings:");
-    for (uint32 i = 0; i < keys_.size(); ++i)
+    ImGui::Spacing();
+    if (ImGui::TreeNode(uiText(name()).c_str()))
     {
-      ImGui::Value("", i);
+      ImGuiColorEditFlags color_flags = ImGuiColorEditFlags_NoInputs;
+
+      ImGui::Spacing();
+      for (uint32 i = 0; i < keys_.size(); ++i)
+      {
+        ImGui::ColorEdit3(uiText(("##GradientColor" + std::to_string(i))).c_str(), (float*)&keys_[i].color, color_flags);
+        ImGui::SameLine(0.0f, 20.0f);
+        ImGui::Value("Value", keys_[i].value, (const char*)0);
+        ImGui::SameLine(0.0f, 20.0f);
+        if (ImGui::SmallButton(uiText("X##" + std::to_string(i)).c_str()))
+        {
+          remKey(i);
+        }
+      }
+      static float input = 0.0f;
+      ImGui::InputFloat(uiText("##GradientInput").c_str(), &input);
       ImGui::SameLine();
-      ImGui::ColorEdit3(uiText(("##Gradient" + std::to_string(i))).c_str(), (float*)&keys_[i].color);
+      if (ImGui::SmallButton(uiText("+New").c_str()))
+      {
+        addKey({ input, Color::White });
+      }
+      ImGui::Spacing();
+      ImGui::TreePop();
     }
   }
 
@@ -74,18 +106,12 @@ namespace vxr
     keys_.push_back(key);
   }
 
-  static vec4 vec4_lerp(vec4 a, vec4 b, float t) /// Move to utils
-  {
-    float ax = a[0],
-      ay = a[1],
-      az = a[2],
-      aw = a[3];
-    vec4 out;
-    out[0] = ax + t * (b[0] - ax);
-    out[1] = ay + t * (b[1] - ay);
-    out[2] = az + t * (b[2] - az);
-    out[3] = aw + t * (b[3] - aw);
-    return out;
+  void Gradient::remKey(unsigned int index)
+  {     
+    if (index >= 0 && index < (keys_.size() + 1))
+    {
+      keys_.erase(keys_.begin() + index);
+    }
   }
 
   Color Gradient::evaluate(float value)
@@ -116,10 +142,10 @@ namespace vxr
     }
 
     float frac = (value - keys_[next_index - 1].value) / (keys_[next_index].value - keys_[next_index - 1].value);
-    return Color({ vec4_lerp(keys_[next_index - 1].color.rgba(), keys_[next_index].color.rgba(), frac) });
+    return Color({ Math::lerp(keys_[next_index - 1].color.rgba(), keys_[next_index].color.rgba(), frac) });
   }
 
-  unsigned char* Gradient::textureData(const int texture_1d_resolution, TexelsFormat::Enum format)/// add formats
+  unsigned char* Gradient::textureData(const int texture_1d_resolution, TexelsFormat::Enum format) /// TODO: Add formats
   {
     unsigned char* data = (unsigned char*)malloc(3 * texture_1d_resolution * sizeof(unsigned char));
     for (int i = 0; i < texture_1d_resolution; i++)

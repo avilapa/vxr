@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="examples">
+      <UniqueIdentifier>{84D830B1-70A5-8BBC-99BE-796485EAC04A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\06-PlanetEditor">
+      <UniqueIdentifier>{DE3039F8-CA55-8878-F3A0-6D08DF248796}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\06-PlanetEditor\noisefilters">
+      <UniqueIdentifier>{B11F0076-1DE4-FE65-E649-2F3052CD9A9B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\06-PlanetEditor\planet">
+      <UniqueIdentifier>{7ECF224E-EAB2-318E-F3B5-5FCA5F18F8DE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\06-PlanetEditor\planet\material">
+      <UniqueIdentifier>{29C57A92-1542-6ED5-3EBF-6EE92A9B0A69}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\examples\06-PlanetEditor\imgui.ini">
+      <Filter>examples\06-PlanetEditor</Filter>
+    </None>
+    <None Include="..\..\examples\06-PlanetEditor\planet\material\planet.frag">
+      <Filter>examples\06-PlanetEditor\planet\material</Filter>
+    </None>
+    <None Include="..\..\examples\06-PlanetEditor\planet\material\planet.vert">
+      <Filter>examples\06-PlanetEditor\planet\material</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\examples\06-PlanetEditor\planet_editor.h">
+      <Filter>examples\06-PlanetEditor</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-PlanetEditor\noisefilters\noise_filter.h">
+      <Filter>examples\06-PlanetEditor\noisefilters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-PlanetEditor\noisefilters\ridgid.h">
+      <Filter>examples\06-PlanetEditor\noisefilters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-PlanetEditor\noisefilters\simple.h">
+      <Filter>examples\06-PlanetEditor\noisefilters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-PlanetEditor\planet\color_settings.h">
+      <Filter>examples\06-PlanetEditor\planet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-PlanetEditor\planet\planet.h">
+      <Filter>examples\06-PlanetEditor\planet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-PlanetEditor\planet\shape_settings.h">
+      <Filter>examples\06-PlanetEditor\planet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-PlanetEditor\planet\terrain_face.h">
+      <Filter>examples\06-PlanetEditor\planet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-PlanetEditor\planet\material\material.h">
+      <Filter>examples\06-PlanetEditor\planet\material</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\examples\06-PlanetEditor\planet_editor.cpp">
+      <Filter>examples\06-PlanetEditor</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-PlanetEditor\noisefilters\noise_filter.cpp">
+      <Filter>examples\06-PlanetEditor\noisefilters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-PlanetEditor\noisefilters\ridgid.cpp">
+      <Filter>examples\06-PlanetEditor\noisefilters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-PlanetEditor\noisefilters\simple.cpp">
+      <Filter>examples\06-PlanetEditor\noisefilters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-PlanetEditor\planet\color_settings.cpp">
+      <Filter>examples\06-PlanetEditor\planet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-PlanetEditor\planet\planet.cpp">
+      <Filter>examples\06-PlanetEditor\planet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-PlanetEditor\planet\shape_settings.cpp">
+      <Filter>examples\06-PlanetEditor\planet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-PlanetEditor\planet\terrain_face.cpp">
+      <Filter>examples\06-PlanetEditor\planet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-PlanetEditor\planet\material\material.cpp">
+      <Filter>examples\06-PlanetEditor\planet\material</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

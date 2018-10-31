@@ -69,9 +69,9 @@ solution "VXR-Engine"
 		defines 		{ "VXR_DEBUG" }
 		flags 			{ "Symbols", "ExtraWarnings" }
 
-	configuration "Release"
-		defines 		{ "VXR_RELEASE" }
-		flags 			{ "Optimize" }
+	---configuration "Release"
+		--defines 		{ "VXR_RELEASE" }
+		--flags 			{ "Optimize" }
 
 	configuration 		{ "vs*" }
 		buildoptions{

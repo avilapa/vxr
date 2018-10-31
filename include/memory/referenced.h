@@ -42,7 +42,7 @@ namespace vxr
   }
 
   inline void Referenced::unref() {
-    assert(ref_counter_ > 0);///
+    assert(ref_counter_ > 0);
     --ref_counter_;
     if (ref_counter_ == 0) {
       delete this;

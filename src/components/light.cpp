@@ -78,18 +78,18 @@ namespace vxr
       return;
     }
 
-    for (auto &c : components_)
+    /*for (auto &c : components_)
     {
       if (scene_->id() != c->gameObject()->scene_id())
       {
         continue;
       }
-      /*if (c->hasChanged())
+      if (c->hasChanged())
       {
         c->computeTransformations();
       }
-      ///c->gameObject()->set_active(false);*/
-    }
+      ///c->gameObject()->set_active(false);
+    }*/
   }
 
   void System::Light::renderPostUpdate()
@@ -100,10 +100,10 @@ namespace vxr
       return;
     }
 
-    for (auto &c : components_)
+    /*for (auto &c : components_)
     {
       //c->dirty_ = false;
-    }
+    }*/
   }
 
   ref_ptr<System::Light> System::Getter<Light>::get()

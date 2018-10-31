@@ -170,4 +170,8 @@ namespace vxr
     return content;
   }
 
+  Unlit::Unlit()
+  {
+    set_shaders("../../assets/shaders/glsl/unlit.vert", "../../assets/shaders/glsl/unlit.frag");
+  }
 }

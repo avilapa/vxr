@@ -102,11 +102,6 @@ namespace vxr
 
   ref_ptr<Camera> System::Camera::main()
   {
-    if (!main_)
-    {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not find any camera. Returning NULL.\n");
-      return nullptr;
-    }
     return main_;
   }
 
@@ -148,7 +143,6 @@ namespace vxr
     VXR_TRACE_SCOPE("VXR", "Camera Render Update");
     if (!main_ || !scene_)
     {
-      ///VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[WARNING]: Could not find any camera.\n"); /// This causes spam when using lower level API.
       return;
     }
     DisplayList frame;
@@ -167,7 +161,7 @@ namespace vxr
         .set_size(sizeof(common_uniforms_.data));
     }
 
-    frame.setupViewCommand() /// Should this go in Composer?
+    frame.setupViewCommand()
       .set_viewport({ 0,0, (uint16)(render_size_.x), (uint16)render_size_.y })
       .set_framebuffer(screen_)
       .set_resolution(render_size_);
@@ -185,7 +179,6 @@ namespace vxr
     VXR_TRACE_SCOPE("VXR", "Camera Render Post Update");
     if (!main_ || !scene_)
     {
-      ///VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[WARNING]: Could not find any camera.\n"); /// This causes spam when using lower level API.
       return;
     }
 

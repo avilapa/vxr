@@ -33,7 +33,6 @@ namespace vxr
 
   Main::Main()
   {
-    window_title_ = (char*)malloc(512 + strlen("VXR Instancing Test"));
     Params p;
     p.gpu = { 100, 100, 100, 100 };
     p.window = { { 1280, 720} };
@@ -43,6 +42,8 @@ namespace vxr
   void Main::init()
   {
     Application::init();
+
+    Engine::ref().camera()->set_render_size(uvec2(1000, 1000));
   }
 
   void Main::start()
@@ -52,10 +53,10 @@ namespace vxr
     Engine::ref().loadScene(scene_);
 
     cam_.alloc();
-    cam_->addComponent<Camera>()->set_background_color(Color::Pink);
+    cam_->addComponent<Camera>()->set_background_color(Color::Black);
     scene_->addObject(cam_);
 
-    cam_->transform()->set_local_position(vec3(0.0f, 0.0f, -1.8f));
+    cam_->transform()->set_local_position(vec3(0.0f, 0.0f, 1.8f));
 
     ref_ptr<GameObject> obj;
     ref_ptr<EngineMesh::Cube> cube;
@@ -75,29 +76,18 @@ namespace vxr
   {
     Application::update();
     
+    
   }
 
   void Main::renderUpdate()
   {
-    updateWindowTitle();
-
-    Engine::ref().submitUIFunction([this]() { ui::Editor(); });
+    //Engine::ref().submitUIFunction([this]() { ui::Editor(); });
     Application::renderUpdate();
   }
 
   void Main::stop()
   {
     Application::stop();
-  }
-
-  void Main::updateWindowTitle()
-  {
-    sprintf(window_title_,
-      "%s: %d FPS @ 1280 x 720",
-      "VXR dev",
-      fps());
-
-    Engine::ref().window()->set_title(window_title_);
   }
 
 } /* end of vxr namespace */

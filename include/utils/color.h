@@ -52,15 +52,18 @@ namespace vxr
 
     static const Color Random();
 
+    // Basic
+    static const Color Transparent;
 		static const Color Black;
 		static const Color White;
-		static const Color Transparent;
+    static const Color Red;
 		static const Color Green;
 		static const Color Blue;
+    static const Color Yellow;
+    static const Color Magenta;
 		static const Color LightBlue;
 
 		// Red
-		static const Color Red;
 		static const Color DarkRed;
 		static const Color Salmon;
 		static const Color LightSalmon;
@@ -82,7 +85,7 @@ namespace vxr
 		static const Color Coral;
 
 		// Yellow
-		static const Color Yellow;
+
 		static const Color Gold;
 		static const Color LightYellow;
 		static const Color Peach;
@@ -92,7 +95,6 @@ namespace vxr
 		static const Color Lavender;
 		static const Color Violet;
 		static const Color DarkViolet;
-		static const Color Magenta;
 		static const Color DarkMagenta;
 		static const Color Purple;
 		static const Color Indigo;
@@ -100,7 +102,57 @@ namespace vxr
 		static const Color DarkSlateBlue;
 		static const Color MediumSlateBlue;
 
-		// Color codes source: http://htmlcolorcodes.com/color-names/
+    // Green
+    static const Color GreenYellow;
+    static const Color Chartreuse;
+    static const Color LimeGreen;
+    static const Color PaleGreen;
+    static const Color MediumSpringGreen;
+    static const Color SpringGreen;
+    static const Color SeaGreen;
+    static const Color ForestGreen;
+    static const Color DarkGreen;
+    static const Color YellowGreen;
+    static const Color OliveDrab;
+    static const Color Olive;
+    static const Color MediumAquamarine;
+    static const Color LightSeaGreen;
+    static const Color DarkCyan;
+    static const Color Teal;
+
+    // Blue
+    static const Color LightCyan;
+    static const Color Aquamarine;
+    static const Color Turquoise;
+    static const Color CadetBlue;
+    static const Color SteelBlue;
+    static const Color LightSteelBlue;
+    static const Color ClearWater;
+    static const Color SkyBlue;
+    static const Color LightSkyBlue;
+    static const Color DeepSkyBlue;
+    static const Color DodgerBlue;
+    static const Color RoyalBlue;
+    static const Color MediumBlue;
+    static const Color DarkBlue;
+    static const Color Navy;
+    static const Color MidnightBlue;
+    static const Color PhyreBlue;
+
+    // Brown
+    static const Color CornSilk;
+    static const Color Bisque;
+    static const Color Wheat;
+    static const Color BurlyWood;
+    static const Color Tan;
+    static const Color RosyBrown;
+    static const Color SandyBrown;
+    static const Color GoldenRod;
+    static const Color Peru;
+    static const Color SaddleBrown;
+    static const Color Sienna;
+    static const Color Brown;
+    static const Color Maroon;
 
 		static Color lerp(Color a, Color b, float alpha);
 

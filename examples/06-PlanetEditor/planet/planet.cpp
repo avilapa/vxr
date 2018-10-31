@@ -43,7 +43,8 @@ namespace vxr
     for (uint32 i = 0; i < 6; i++)
     {
       ref_ptr<GameObject> meshObj;
-      meshObj.alloc()->transform()->set_parent(transform());
+      meshObj.alloc()->set_name("Terrain Face");
+      meshObj->transform()->set_parent(transform());
 
       ref_ptr<Mesh> mesh;
       mesh.alloc();
@@ -74,7 +75,14 @@ namespace vxr
       wireframe = uiSettings.wireframe;
       for (uint32 i = 0; i < terrainFaces.size(); ++i)
       {
-        transform()->child(i)->getComponent<Renderer>()->material = (uiSettings.wireframe) ? colorGenerator->wireframe_mat.get() : colorGenerator->mat.get();
+        if (uiSettings.wireframe)
+        {
+          transform()->child(i)->getComponent<Renderer>()->material = colorGenerator->wireframe_mat.get();
+        }
+        else
+        {
+          transform()->child(i)->getComponent<Renderer>()->material = colorGenerator->mat.get();
+        }
       }
       generateColors();
     }
@@ -105,46 +113,42 @@ namespace vxr
   void Planet::generateColors()
   {
     colorGenerator->updateColors();
+    for (uint32 i = 0; i < terrainFaces.size(); ++i)
+    {
+      if (transform()->child(i)->gameObject()->active())
+      {
+        terrainFaces[i]->updateUVs(colorGenerator);
+      }
+    }
   }
 
   void Planet::onGUI()
   {
-#ifndef VXR_UI_EDITOR
-    ///ImGui::Begin("Planet editor!");
-#endif
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::Text("Wireframe settings");
-    ImGui::Spacing();
-    ImGui::Checkbox("Enabled", &uiSettings.wireframe);
-    ImGui::ColorEdit3("Color", (float*)&colorGenerator->uiSettings->wireframe_color);
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::Text("Render Settings");
-    ImGui::Spacing();
-    ImGui::SliderInt("Resolution", &uiSettings.resolution, 2, 200);
-    ImGui::Combo("Render Face Mask", (int*)&uiSettings.faceRenderMask, "All\0Top\0Bottom\0Left\0Right\0Front\0Back");
-    if (ImGui::Button("Zoom to Top layer"))
-    {
-      zoom = !zoom;
-    }
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::Spacing();
-    colorGenerator->onGUI();
-    ImGui::Spacing();
-    ImGui::Text("Shape Generator");
-    shapeGenerator->onGUI();
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::Spacing();
-    ImGui::Spacing();
+    ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow
+      | ImGuiTreeNodeFlags_Selected
+      | ImGuiTreeNodeFlags_OpenOnDoubleClick
+      | ImGuiTreeNodeFlags_DefaultOpen;
 
-#ifndef VXR_UI_EDITOR
-    ///ImGui::End();
-#endif
+    ImGui::Spacing();
+    if (ImGui::TreeNodeEx(uiText("General Settings").c_str(), node_flags))
+    {
+      ImGui::Spacing();
+      ImGui::Checkbox("Enabled", &uiSettings.wireframe);
+      ImGui::Spacing();
+      ImGui::ColorEdit3("Color", (float*)&colorGenerator->uiSettings->wireframe_color);
+      ImGui::Spacing();
+      ImGui::SliderInt("Resolution", &uiSettings.resolution, 2, 200);
+      ImGui::Spacing();
+      ImGui::Combo("Render Face Mask", (int*)&uiSettings.faceRenderMask, "All\0Top\0Bottom\0Left\0Right\0Front\0Back");
+      ImGui::Spacing();
+      if (ImGui::Button("Zoom to Top layer"))
+      {
+        zoom = !zoom;
+      }
+      ImGui::TreePop();
+    }
+    colorGenerator->onGUI();
+    shapeGenerator->onGUI();
   }
 
 } /* end of vxr namespace */

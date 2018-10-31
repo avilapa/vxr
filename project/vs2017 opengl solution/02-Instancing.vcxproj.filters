@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="examples">
+      <UniqueIdentifier>{84D830B1-70A5-8BBC-99BE-796485EAC04A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\02-Instancing">
+      <UniqueIdentifier>{7D230FCA-691D-381C-528A-CE2C3E239E88}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\examples\02-Instancing\imgui.ini">
+      <Filter>examples\02-Instancing</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\examples\02-Instancing\instancing.h">
+      <Filter>examples\02-Instancing</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\examples\02-Instancing\instancing.cpp">
+      <Filter>examples\02-Instancing</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

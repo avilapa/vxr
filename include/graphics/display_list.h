@@ -45,6 +45,7 @@ namespace vxr
 
     VXR_OBJECT(DisplayList, Object)
 
+    friend class GPU;
   public:
     DisplayList();
     ~DisplayList();
@@ -154,7 +155,7 @@ namespace vxr
 
 // ----------------------------------------------------------------------------------------
 
-  ///private:
+  private:
     std::vector<scoped_ptr<Command>> commands_;
 
   };

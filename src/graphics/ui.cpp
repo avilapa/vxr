@@ -136,9 +136,6 @@ namespace vxr
 
   void ui::Editor()
   {
-#ifndef VXR_UI_EDITOR
-#define VXR_UI_EDITOR
-#endif
     ImGuiIO& io = ImGui::GetIO();
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(io.DisplaySize);

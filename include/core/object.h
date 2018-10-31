@@ -27,6 +27,7 @@
 #include "../memory/referenced.h"
 #include "../engine/types.h"
 #include "../utils/color.h"
+#include "../utils/math.h"
 
 /**
 * \file object.h

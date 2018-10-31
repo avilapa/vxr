@@ -27,6 +27,7 @@
 #include "../../include/graphics/ui.h"
 #include "../../include/core/assets.h"
 
+// 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
 namespace vxr
@@ -34,66 +35,45 @@ namespace vxr
 
   Main::Main()
   {
-    window_title_ = (char*)malloc(512 + strlen("VXR Instancing Test"));
+    // 1. Initialize GPU and Window parameters.
     Params p;
     p.gpu = { 100, 100, 100, 100 };
     p.window = { { 1920, 1080} };
     Engine::ref().set_preinit_params(p);
   }
 
-  void Main::init()
-  {
-    Application::init();
-  }
-
   void Main::start()
   {
-    ref_ptr<Scene> scene_;
-    scene_.alloc();
-    Engine::ref().loadScene(scene_);
-
+    // 2. Create a camera.
     cam_.alloc()->set_name("Camera");
-    cam_->addComponent<Camera>()->set_background_color(Color(0.0f, 0.125f, 0.3f, 1.0f));
-    cam_->transform()->set_local_position(vec3(0,0,4));
-    scene_->addObject(cam_);
+    cam_->addComponent<Camera>()->transform()->set_local_position(vec3(0,0,4));
 
+    // 3. Load the Teapot mesh and set an initial rotation.
     mesh_ = Asset::loadModelOBJ("../../assets/meshes/obj/teapot_mesh.obj");
     mesh_->set_name("Teapot");
-    mesh_->transform()->set_local_rotation(vec3(glm::radians(90.0f), 0, 0));
+    mesh_->transform()->set_local_rotation(vec3(glm::radians(90.0f), 0.0f, 0.0f));
+
+    // 4. Create a Scene, parent the objects and load.
+    ref_ptr<Scene> scene_;
+    scene_.alloc();
+
+    scene_->addObject(cam_);
     scene_->addObject(mesh_);
+
+    Engine::ref().loadScene(scene_);
+
+    // 5. Submit the UI function.
+    Engine::ref().submitUIFunction([this]() { ui::Editor(); });
 
     Application::start();
   }
 
   void Main::update()
   {
+    // 6. Rotate the mesh in update() instead of renderUpdate() to make the rotation framerate independent by multiplying it by deltaTime(). The update() method may be executed several times in a frame to catch up with the render thread.
     mesh_->transform()->set_local_rotation(mesh_->transform()->local_rotation() + vec3(0.21, 0.12, 0.5) * deltaTime());
 
     Application::update();
-  }
-
-  void Main::renderUpdate()
-  {
-    updateWindowTitle();
-
-    Engine::ref().submitUIFunction([this]() { ui::Editor(); });
-
-    Application::renderUpdate();
-  }
-
-  void Main::stop()
-  {
-    Application::stop();
-  }
-
-  void Main::updateWindowTitle()
-  {
-    sprintf(window_title_,
-      "%s: %d FPS @ 1920 x 1080",
-      "VXR Mesh Example",
-      fps());
-
-    Engine::ref().window()->set_title(window_title_);
   }
 
 } /* end of vxr namespace */

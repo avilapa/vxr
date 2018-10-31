@@ -47,8 +47,6 @@ namespace vxr
     virtual void renderUpdate() override;
 
   private:
-    char* window_title_;
-
     gpu::Buffer vertex_buffer_;
     gpu::Buffer index_buffer_;
     gpu::Material material_;

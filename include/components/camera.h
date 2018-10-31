@@ -65,7 +65,7 @@ namespace vxr
     PROPERTY(float, near_plane_, near_plane, 0.1f);
     PROPERTY(float, far_plane_, far_plane, 900.0f);
 
-    PROPERTY(Color, background_color_, background_color, Color::Black);///
+    PROPERTY(Color, background_color_, background_color, Color::PhyreBlue);
 
     mat4 projection();
     mat4 view();

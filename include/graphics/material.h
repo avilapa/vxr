@@ -87,4 +87,11 @@ namespace vxr
     void setupTextures();
   };
 
+  class Unlit : public Material 
+  {
+    VXR_OBJECT(Unlit, Material);
+  public:
+    Unlit();
+  };
+
 } /* end of vxr namespace */

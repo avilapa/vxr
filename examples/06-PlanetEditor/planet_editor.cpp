@@ -25,8 +25,8 @@
 #include "planet_editor.h"
 
 #include "../../include/graphics/ui.h"
-#include "../../include/core/assets.h"
 
+// 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
 namespace vxr
@@ -34,79 +34,48 @@ namespace vxr
 
   Main::Main()
   {
-    window_title_ = (char*)malloc(512 + strlen("VXR Instancing Test"));
+    // 1. Initialize GPU and Window parameters.
     Params p;
     p.gpu = { 100, 100, 100, 100 };
     p.window = { { 1920, 1080} };
     Engine::ref().set_preinit_params(p);
   }
 
-  void Main::init()
-  {
-    Application::init();
-  }
-
   void Main::start()
   {
+    // 2. Create a camera.
+    cam_.alloc()->set_name("Camera");
+    cam_->addComponent<Camera>()->set_background_color(Color(0.03f, 0.03f, 0.05f, 1.0f));
+    
+    // 3. Create a Planet
+    planet_.alloc()->set_name("Planet");
+    planet_->addComponent<Planet, Custom>();
+
+    // 4. Create a Scene, parent the objects and load.
     ref_ptr<Scene> scene_;
-    scene_.alloc();
-    Engine::ref().loadScene(scene_);
-    cam_.alloc();
-    cam_->addComponent<Camera>();
-    cam_->transform()->set_local_position(zoom_off);
+    scene_.alloc()->set_name("Planet Editor Scene");
+
     scene_->addObject(cam_);
-    planet_.alloc()->addComponent<Planet, Custom>();
     scene_->addObject(planet_);
+
+    Engine::ref().loadScene(scene_);
+
+    // 5. Set UI function
+    Engine::ref().submitUIFunction([this]() { ui::Editor(); });
 
     Application::start();
   }
 
   void Main::update()
   {
-    Application::update();
-  }
-
-
-  static vec3 vec3_lerp(vec3 a, vec3 b, float t) {
-    float ax = a[0],
-      ay = a[1],
-      az = a[2];
-    vec4 out;
-    out[0] = ax + t * (b[0] - ax);
-    out[1] = ay + t * (b[1] - ay);
-    out[2] = az + t * (b[2] - az);
-    return out;
-  }
-
-  void Main::renderUpdate()
-  {
-    updateWindowTitle();
-
-    float speed = 0.1f;
+    // 6. Interpolate camera position
+    float speed = 5.0f;
     if (cam_->transform()->local_position() != (planet_->getComponent<Planet>()->zoom ? zoom_on : zoom_off))
     {
-      cam_->transform()->set_local_position(vec3_lerp(cam_->transform()->local_position(), (planet_->getComponent<Planet>()->zoom ? zoom_on : zoom_off), speed));
+      cam_->transform()->set_local_position(Math::lerp(cam_->transform()->local_position(), (planet_->getComponent<Planet>()->zoom ? zoom_on : zoom_off), speed * deltaTime()));
     }
 
-    Engine::ref().submitUIFunction([this]() { ui::Editor(); });
-    //Engine::ref().submitUIFunction([this]() { planet_->onGUI(); });
-
-    Application::renderUpdate();
-  }
-
-  void Main::stop()
-  {
-    Application::stop();
-  }
-
-  void Main::updateWindowTitle()
-  {
-    sprintf(window_title_,
-      "%s: %d FPS @ 1920 x 1080",
-      "VXR dev",
-      fps());
-
-    Engine::ref().window()->set_title(window_title_);
+    Application::update();
   }
 
 } /* end of vxr namespace */

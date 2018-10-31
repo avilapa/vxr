@@ -51,8 +51,6 @@ namespace vxr
     static const uint32 kNUM_CUBES_ROW = 5;
 
   private:
-    char* window_title_;
-
     // - Framebuffer data
     gpu::Framebuffer framebuffer_;
 

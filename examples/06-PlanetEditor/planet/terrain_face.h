@@ -27,6 +27,7 @@
 #include "../../../include/core/gameobject.h"
 #include "../../../include/components/mesh_filter.h"
 #include "shape_settings.h"
+#include "color_settings.h"
 
 namespace vxr {
 
@@ -36,6 +37,7 @@ namespace vxr {
   public:
     void init(ref_ptr<ShapeGenerator> shapeGenerator, ref_ptr<Mesh> mesh, vec3 localUp);
     void constructMesh(int resolution);
+    void updateUVs(ref_ptr<ColorGenerator> color_generator);
 
     ref_ptr<ShapeGenerator> shapeGenerator;
 

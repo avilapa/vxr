@@ -49,8 +49,6 @@ namespace vxr
     virtual void stop() override;
 
   private:
-    char* window_title_;
-
     gpu::Buffer vertex_buffer_;
     gpu::Buffer index_buffer_;
     gpu::Buffer instance_positions_buffer_;

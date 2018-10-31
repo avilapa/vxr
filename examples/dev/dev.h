@@ -69,16 +69,10 @@ namespace vxr
     virtual void renderUpdate() override;
     virtual void stop() override;
 
-    void updateWindowTitle();
-
     static const uint32 kNUM_CUBES_ROW = 7;
 
   private:
-    char* window_title_;
-    
     ref_ptr<GameObject> cam_;
-
-    
   };
 
 } /* end of vxr namespace */

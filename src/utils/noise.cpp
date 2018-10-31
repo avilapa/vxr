@@ -33,19 +33,9 @@ namespace vxr
     
   }
 
-  static double Dot(ivec3 g, double x, double y, double z, double t)
-  {
-    return g[0] * x + g[1] * y + g[2] * z + g[3] * t;
-  }
-
   static double Dot(ivec3 g, double x, double y, double z)
   {
     return g[0] * x + g[1] * y + g[2] * z;
-  }
-
-  static double Dot(ivec3 g, double x, double y)
-  {
-    return g[0] * x + g[1] * y;
   }
 
   static int FastFloor(double x)

@@ -78,7 +78,7 @@ namespace vxr
   private:
     bool dirty_ = true;
 
-    Usage::Enum usage_ = Usage::Static; /// Maybe default shouldn't be static?
+    Usage::Enum usage_ = Usage::Static;
 
     struct GPU
     {

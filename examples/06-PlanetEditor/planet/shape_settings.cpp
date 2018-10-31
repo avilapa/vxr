@@ -84,29 +84,41 @@ namespace vxr
 
   void ShapeGenerator::onGUI()
   {
-    ImGui::SliderFloat("Radius", &uiSettings->radius, 0.1f, 3.0f);
+    ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow
+      | ImGuiTreeNodeFlags_Selected
+      | ImGuiTreeNodeFlags_OpenOnDoubleClick
+      | ImGuiTreeNodeFlags_DefaultOpen;
 
     ImGui::Spacing();
-    ImGui::Text("Noise Layers");
-    ImGui::SameLine();
-    if (ImGui::SmallButton("+Simple"))
+    if (ImGui::TreeNodeEx(uiText("Shape Settings").c_str(), node_flags))
     {
-      ref_ptr<ShapeSettings::NoiseLayer> nl;
-      nl.alloc()->init(FilterType::Simple);
-      settings->noiseLayers.push_back(nl);
-      noiseFilters.push_back(NoiseFilter::CreateNoiseFilter(nl->noiseSettings, noiseFilters.size()));
-    }
-    ImGui::SameLine();
-    if (ImGui::SmallButton("+Ridgid"))
-    {
-      ref_ptr<ShapeSettings::NoiseLayer> nl;
-      nl.alloc()->init(FilterType::Ridgid);
-      settings->noiseLayers.push_back(nl);
-      noiseFilters.push_back(NoiseFilter::CreateNoiseFilter(nl->noiseSettings, noiseFilters.size()));
-    }
-    for (uint32 i = 0; i < noiseFilters.size(); ++i)
-    {
-      noiseFilters[i]->onGUI();
+      ImGui::Spacing();
+      ImGui::SliderFloat("Radius", &uiSettings->radius, 0.1f, 3.0f);
+
+      ImGui::Spacing();
+      ImGui::Text("Noise Layers");
+      ImGui::SameLine();
+      if (ImGui::SmallButton(uiText("+ Simple Layer").c_str()))
+      {
+        ref_ptr<ShapeSettings::NoiseLayer> nl;
+        nl.alloc()->init(FilterType::Simple);
+        settings->noiseLayers.push_back(nl);
+        noiseFilters.push_back(NoiseFilter::CreateNoiseFilter(nl->noiseSettings, noiseFilters.size()));
+      }
+      ImGui::SameLine();
+      if (ImGui::SmallButton(uiText("+ Ridgid Layer").c_str()))
+      {
+        ref_ptr<ShapeSettings::NoiseLayer> nl;
+        nl.alloc()->init(FilterType::Ridgid);
+        settings->noiseLayers.push_back(nl);
+        noiseFilters.push_back(NoiseFilter::CreateNoiseFilter(nl->noiseSettings, noiseFilters.size()));
+      }
+      ImGui::Spacing();
+      for (uint32 i = 0; i < noiseFilters.size(); ++i)
+      {
+        noiseFilters[i]->onGUI();
+      }
+      ImGui::TreePop();
     }
   }
 

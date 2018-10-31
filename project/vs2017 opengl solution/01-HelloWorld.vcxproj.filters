@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="examples">
+      <UniqueIdentifier>{84D830B1-70A5-8BBC-99BE-796485EAC04A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\01-HelloWorld">
+      <UniqueIdentifier>{8A4321BE-763D-4A10-5FAA-E0204B43B07C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\examples\01-HelloWorld\imgui.ini">
+      <Filter>examples\01-HelloWorld</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\examples\01-HelloWorld\hello_world.h">
+      <Filter>examples\01-HelloWorld</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\examples\01-HelloWorld\hello_world.cpp">
+      <Filter>examples\01-HelloWorld</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

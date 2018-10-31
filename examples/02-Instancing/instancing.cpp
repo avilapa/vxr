@@ -25,6 +25,7 @@
 #include "instancing.h"
 #include "../../include/graphics/display_list.h"
 
+// 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
 #define GLSL(...) "#version 330\n" #__VA_ARGS__
@@ -80,14 +81,16 @@ namespace vxr
 
   void Main::start()
   {
-    window_title_ = (char*)malloc(512 + strlen("VXR Instancing Test"));
-
+    // 1. Create vertex and index buffer to render a cube.
     vertex_buffer_             = Engine::ref().gpu()->createBuffer({ BufferType::Vertex,  sizeof(vertex_data), Usage::Static });
-    index_buffer_              = Engine::ref().gpu()->createBuffer({ BufferType::Index,   sizeof(index_data), Usage::Static });
-    instance_positions_buffer_ = Engine::ref().gpu()->createBuffer({ BufferType::Vertex,  sizeof(instance_positions_), Usage::Stream });
-    instance_colors_buffer_    = Engine::ref().gpu()->createBuffer({ BufferType::Vertex,  sizeof(instance_colors_), Usage::Static });
+    index_buffer_              = Engine::ref().gpu()->createBuffer({ BufferType::Index,   sizeof(index_data),  Usage::Static });
+    // 2. Create instance data for positions and colors of each cube.
+    instance_positions_buffer_ = Engine::ref().gpu()->createBuffer({ BufferType::Vertex,  sizeof(instance_positions_), Usage::Dynamic });
+    instance_colors_buffer_    = Engine::ref().gpu()->createBuffer({ BufferType::Vertex,  sizeof(instance_colors_),    Usage::Static });
+    // 3. Create uniform buffer to store the static data of a cube.
     uniform_buffer_            = Engine::ref().gpu()->createBuffer({ BufferType::Uniform, sizeof(UniformState_Static), Usage::Static, "UniformState_Static" });
 
+    // 4. Initialize shader data. The engine uses UBO for the objects, so the correct syntax to use custom uniforms can be found below. 
     gpu::Material::Info mat_info;
     mat_info.shader.vert = GLSL(
       in vec3 a_position;
@@ -121,27 +124,33 @@ namespace vxr
       }
     );
 
+    // 5. Initialize vertex attributes. This time, we'll pass three different buffers. One with positions normals and uvs data, another with the instance positions and a last one with instance colors.
     mat_info.attribs[0] = { "a_position",          VertexFormat::Float3 };
     mat_info.attribs[1] = { "a_normal",            VertexFormat::Float3 };
     mat_info.attribs[2] = { "a_uv",                VertexFormat::Float2 };
     mat_info.attribs[3] = { "a_instance_position", VertexFormat::Float3, 1, VertexStep::PerInstance };
     mat_info.attribs[4] = { "a_instance_color",    VertexFormat::Float3, 2, VertexStep::PerInstance };
 
+    // 6. Add a texture to the material.
     mat_info.textures[0] = TextureType::T2D;
 
+    // 7. Load the texture and create the asset.
     gpu::Texture::Info tex_info;
     tex_data_ = gpu::Texture::loadFromFile("../../assets/textures/image.tga", tex_info);
     tex_info.magnification_filter = SamplerFiltering::Nearest;
     tex_info.minification_filter = SamplerFiltering::Nearest;
     texture_ = Engine::ref().gpu()->createTexture(tex_info);
 
+    // 8. Initialize instance data.
     for (int i = 0; i < kNUM_INSTANCES; ++i)
     {
       instance_colors_[i] = vec3(rand() % 255 / 255.0f, rand() % 255 / 255.0f, rand() % 255 / 255.0f);
     }
 
+    // 9. And finally create the material for rendering the cubes with the information.
     material_ = Engine::ref().gpu()->createMaterial(mat_info);
 
+    // 10. Set camera view and perspective matrices of the uniform buffer.
     vec3 position = vec3(57.5f, 15.0f, -5.0f), forward = vec3(0.0f, -0.5f, 1.0f), up = vec3(0.0f, 1.0f, 1.0f);
     float fov = 70.0f;
 
@@ -149,6 +158,7 @@ namespace vxr
     u_state_static_.view = glm::lookAt(position, position + forward, up);
     u_state_static_.proj = glm::perspective(glm::radians(fov), 1280.0f / 720.0f, 0.5f, 900.0f);
 
+    // 11. Create a render command display list to fill the index and vertex buffers with the appropriate data once.
     DisplayList frame;
     frame.fillBufferCommand()
       .set_buffer(vertex_buffer_)
@@ -158,14 +168,17 @@ namespace vxr
       .set_buffer(index_buffer_)
       .set_data(index_data)
       .set_size(sizeof(index_data));
+    // 12. Fill the instance colors buffer (we will be filling the positions in the update, as the buffer requires a dynamic update).
     frame.fillBufferCommand()
       .set_buffer(instance_colors_buffer_)
       .set_data(instance_colors_)
       .set_size(sizeof(instance_colors_));
+    // 13. Fill the uniform data once.
     frame.fillBufferCommand()
       .set_buffer(uniform_buffer_)
       .set_data(&u_state_static_)
       .set_size(sizeof(UniformState_Static));
+    // 14. Upload texture data to the GPU.
     frame.fillTextureCommand()
       .set_texture(texture_)
       .set_data(tex_data_);
@@ -174,6 +187,7 @@ namespace vxr
 
   void Main::update()
   {
+    // 15. Update instances position. This operations are performed in the update() instead of the renderUpdate() for them to take into account deltaTime() and be framerate independent.
     static float v = 0;
     for (int i = 0; i < kNUM_INSTANCES; ++i)
     {
@@ -191,20 +205,15 @@ namespace vxr
 
   void Main::renderUpdate()
   {
-    sprintf(window_title_,
-      "%s: %d FPS @ 1280 x 720, Number of instances: %d",
-      "VXR Instancing Test",
-      fps(), kNUM_INSTANCES);
-
-    Engine::ref().window()->set_title(window_title_);
-
     DisplayList frame;
     frame.clearCommand()
       .set_color({ 0.1f, 0.1f, 0.1f, 1.0f });
+    // 16. Re-upload instance position data to the GPU once each frame.
     frame.fillBufferCommand()
       .set_buffer(instance_positions_buffer_)
       .set_data(instance_positions_)
       .set_size(sizeof(instance_positions_));
+    // 17. Setup material for rendering. This time, all the buffers and textures need to be set as parameters.
     frame.setupMaterialCommand()
       .set_material(material_)
       .set_buffer(0, vertex_buffer_)
@@ -212,6 +221,7 @@ namespace vxr
       .set_buffer(2, instance_colors_buffer_)
       .set_uniform_buffer(0, uniform_buffer_)
       .set_texture(0, texture_);
+    // 18. Add render command with the number of instances to be rendered.
     frame.renderCommand()
       .set_index_buffer(index_buffer_)
       .set_count(sizeof(index_data) / sizeof(uint16))
@@ -224,6 +234,7 @@ namespace vxr
 
   void Main::stop() 
   {
+    // 19. Free the texture data at the end of the application.
     if (tex_data_)
     {
       free(tex_data_);

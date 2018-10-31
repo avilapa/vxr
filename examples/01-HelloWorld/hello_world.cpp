@@ -25,6 +25,7 @@
 #include "hello_world.h"
 #include "../../include/graphics/display_list.h"
 
+// 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
 #define GLSL(...) "#version 330\n" #__VA_ARGS__
@@ -43,11 +44,11 @@ namespace vxr
 
   void Main::start()
   {
-    window_title_ = (char*)malloc(512 + strlen("VXR Hello World Test"));
-
+    // 1. Create vertex and index buffer for the triangle.
     vertex_buffer_ = Engine::ref().gpu()->createBuffer({ BufferType::Vertex, sizeof(vertex_data), Usage::Static });
     index_buffer_  = Engine::ref().gpu()->createBuffer({ BufferType::Index,  sizeof(index_data),  Usage::Static });
 
+    // 2. Initialize shader data and vertex attributes data and create material for the triangle.
     gpu::Material::Info mat_info;
     mat_info.shader.vert = GLSL(
       in vec3 a_position;
@@ -66,6 +67,7 @@ namespace vxr
 
     material_ = Engine::ref().gpu()->createMaterial(mat_info);
 
+    // 3. Create a render command display list to fill the index and vertex buffers with the appropriate data once.
     DisplayList frame;
     frame.fillBufferCommand()
       .set_buffer(vertex_buffer_)
@@ -75,24 +77,22 @@ namespace vxr
       .set_buffer(index_buffer_)
       .set_data(index_data)
       .set_size(sizeof(index_data));
+
+    // 4. Submit display list to be rendered on the GPU.
     Engine::ref().submitDisplayList(std::move(frame));
   }
 
   void Main::renderUpdate()
   {
-    sprintf(window_title_,
-      "%s: %d FPS @ 1280 x 720, Rendering time: %f ms",
-      "VXR Hello World Test",
-      fps(), 1.0 / (double)fps());
-
-    Engine::ref().window()->set_title(window_title_);
-    
     DisplayList frame;
+    // 5. Clear the screen.
     frame.clearCommand()
       .set_color(Color::Black);
+    // 6. Setup the material for rendering with the vertex buffer attached.
     frame.setupMaterialCommand()
       .set_material(material_)
       .set_buffer(0, vertex_buffer_);
+    // 7. Create render command and submit display list to accummulate with previous commands.
     frame.renderCommand()
       .set_index_buffer(index_buffer_)
       .set_count(sizeof(index_data) / sizeof(uint16))

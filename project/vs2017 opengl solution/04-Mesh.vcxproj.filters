@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="examples">
+      <UniqueIdentifier>{84D830B1-70A5-8BBC-99BE-796485EAC04A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\04-Mesh">
+      <UniqueIdentifier>{FE86EDC3-EA7F-0C16-13B2-F19AFF09EC21}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\examples\04-Mesh\imgui.ini">
+      <Filter>examples\04-Mesh</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\examples\04-Mesh\mesh.h">
+      <Filter>examples\04-Mesh</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\examples\04-Mesh\mesh.cpp">
+      <Filter>examples\04-Mesh</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

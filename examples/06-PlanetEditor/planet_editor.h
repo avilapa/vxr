@@ -52,19 +52,11 @@ namespace vxr
   public:
     Main();
 
-    virtual void init() override;
     virtual void start() override;
     virtual void update() override;
-    virtual void renderUpdate() override;
-    virtual void stop() override;
-
-    void updateWindowTitle();
 
   private:
-    char* window_title_;
-    
     ref_ptr<GameObject> cam_;
-
     ref_ptr<GameObject> planet_;
 
     vec3 zoom_on = vec3(0.0f, 1.0f, 1.0f);

@@ -25,7 +25,6 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../core/object.h"
-#include "../utils/color.h"
 
 /**
 * \file gradient.h
@@ -44,6 +43,7 @@ namespace vxr
 
   public:
     Gradient();
+    Gradient(const Gradient &o);
     ~Gradient();
 
     virtual void onGUI() override;
@@ -57,9 +57,40 @@ namespace vxr
     bool blend = true;
 
     void addKey(Gradient::Key key);
+    void remKey(unsigned int index);
     Color evaluate(float value_between_zero_and_one);
 
     unsigned char* textureData(const int texture_1d_resolution = 255, TexelsFormat::Enum format = TexelsFormat::RGB_U8);
+
+    inline Gradient& operator=(const Gradient& o)
+    {
+      if (this != &o) 
+      {
+        this->keys_.clear();
+        for (uint32 i = 0; i < o.keys_.size(); ++i)
+        {
+          Key k = o.keys_[i];
+          this->keys_.push_back(k);
+        }
+      }
+      return *this;
+    }
+
+    inline bool operator==(const Gradient& o) const 
+    { 
+      if (this->keys_.size() != o.keys_.size())
+      {
+        return false;
+      }
+      for (uint32 i = 0; i < o.keys_.size(); ++i)
+      {
+        if (this->keys_[i].color != o.keys_[i].color || this->keys_[i].value != o.keys_[i].value)
+        {
+          return false;
+        }
+      }
+      return true;
+    }
 
   private:
     std::vector<Gradient::Key> keys_;

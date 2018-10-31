@@ -158,7 +158,7 @@ namespace vxr
       if (target > TextureType::T2D) GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_R, Translate(info.wrapping[2])));
     }
 
-    static void InitTexture(std::pair<TextureInstance*, BackEnd::Texture*> t)
+    static void InitTexture(std::pair<TextureInstance*, BackEnd::Texture*> t, bool force_update = false)
     {
       GLuint id = t.second->texture;
       auto& back_end = t.second;
@@ -167,6 +167,10 @@ namespace vxr
         GLCHECK(glGenTextures(1, &id));
         back_end->texture = id;
         t.first->id = id;
+        force_update = true;
+      }
+      if (force_update)
+      {
         switch (t.first->info.format) {
         case TexelsFormat::R_U8:
           back_end->format = GL_RED;
@@ -209,6 +213,7 @@ namespace vxr
           back_end->type = GL_UNSIGNED_INT;
           break;
         }
+
         switch (t.first->info.type)
         {
         case TextureType::T1D:
@@ -239,12 +244,22 @@ namespace vxr
     void FillTexture(DisplayList::FillTextureData& d)
     {
       auto t = RenderContext::GetResource(d.texture.id, &d.texture.ctx->textures_, &d.texture.ctx->back_end_->textures);
-      InitTexture(t);
-      auto& back_end = *t.second;
+
+      bool size_changed = false;
 
       d.width = d.width ? d.width : t.first->info.width;
       d.height = d.height ? d.height : t.first->info.height;
       d.depth = d.depth ? d.depth : t.first->info.depth;
+      if (d.width != t.first->info.width || d.height != t.first->info.height || d.depth != t.first->info.depth)
+      {
+        t.first->info.width = d.width;
+        t.first->info.height = d.height;
+        t.first->info.depth = d.depth;
+        size_changed = true;
+      }
+
+      InitTexture(t, size_changed);
+      auto& back_end = *t.second;
 
       GLCHECK(glBindTexture(back_end.target, back_end.texture));
       GLCHECK(glPixelStorei(GL_UNPACK_ALIGNMENT, 1));

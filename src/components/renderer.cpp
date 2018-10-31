@@ -94,7 +94,7 @@ namespace vxr
       VXR_TRACE_BEGIN("VXR", "Component Update");
       if (!c->gameObject()->active())
       {
-        continue; /// Check in transform system?
+        continue; /// Check in transform system? Create screenData vector?
       }
 
       ref_ptr<vxr::MeshFilter> mf = c->getComponent<vxr::MeshFilter>();
@@ -134,7 +134,7 @@ namespace vxr
       VXR_TRACE_BEGIN("VXR", "Setup Material");
       frame.setupMaterialCommand()
         .set_material(c->material->gpu_.mat)
-        .set_buffer(0, mf->mesh->gpu_.vertex.buffer)/// v (Memory and speed wise I could split into three buffers and not need to rebuild it) ?
+        .set_buffer(0, mf->mesh->gpu_.vertex.buffer)
         .set_v_texture(c->material->gpu_.tex)
         .set_uniform_buffer(0, c->material->gpu_.uniform_buffer)
         .set_uniform_buffer(1, common_uniforms_buffer)

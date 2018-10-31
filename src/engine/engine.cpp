@@ -98,7 +98,7 @@ namespace vxr
   void Engine::renderUpdate()
   {
 #ifdef VXR_THREADING
-    gpu_->prepareRender(); /// Should this go in update? Not really, because Update is executed multiple times...
+    gpu_->prepareRender();
 #endif
     VXR_TRACE_BEGIN("VXR", "Systems Render Update");
     VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Render Update.\n");

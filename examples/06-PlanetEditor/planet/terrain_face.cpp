@@ -48,8 +48,20 @@ namespace vxr
     for (uint32 i = 0; i < resolution * resolution; ++i) 
     {
       vertices.push_back(vec3());
-      uv.push_back(vec2());
     }
+
+    if (mesh->uv().size() != resolution * resolution)
+    {
+      for (uint32 i = 0; i < resolution * resolution; ++i)
+      {
+        uv.push_back(vec2());
+      }
+    }
+    else
+    {
+      uv = mesh->uv();
+    }
+
     for (uint32 i = 0; i < (resolution - 1) * (resolution - 1) * 6; ++i)
     {
       triangles.push_back(0);
@@ -83,6 +95,26 @@ namespace vxr
     mesh->recomputeNormals();
     mesh->set_uv(uv);
     mesh->set_usage(Usage::Dynamic);
+  }
+
+  void TerrainFace::updateUVs(ref_ptr<ColorGenerator> color_generator)
+  {
+    std::vector<vec2> uv;
+
+    for (int y = 0; y < resolution; y++)
+    {
+      for (int x = 0; x < resolution; x++)
+      {
+        vec2 percent = vec2(x / (float)(resolution - 1), y / (float)(resolution - 1));
+        vec3 pointOnUnitCube = localUp + (percent.x - .5f) * 2 * axisA + (percent.y - .5f) * 2 * axisB;
+        vec3 pointOnUnitSphere = glm::normalize(pointOnUnitCube);
+
+        float biome_uv = color_generator->percentFromPoint(pointOnUnitSphere);
+        uv.push_back({ biome_uv, 0.0f });
+      }
+    }
+
+    mesh->set_uv(uv);
   }
 
 } /* end of vxr namespace */

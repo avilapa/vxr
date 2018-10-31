@@ -33,7 +33,7 @@
 *
 * \brief This example showcases how to load and render a mesh using the higher level API.
 *
-* This example takes on creating a scene, adding a camera and throwing in a rotating gameobject
+* This example takes on creating a scene, adding a camera and throwing in a rotating game object
 * loaded from a mesh. Also, it showcases the engine WIP editor.
 *
 */
@@ -48,17 +48,10 @@ namespace vxr
   public:
     Main();
 
-    virtual void init() override;
     virtual void start() override;
     virtual void update() override;
-    virtual void renderUpdate() override;
-    virtual void stop() override;
-
-    void updateWindowTitle();
 
   private:
-    char* window_title_;
-    
     ref_ptr<GameObject> cam_;
     ref_ptr<GameObject> mesh_;
   };

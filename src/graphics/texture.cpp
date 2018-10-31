@@ -76,7 +76,10 @@ namespace vxr
       .set_offset_x(gpu_.offset[0])
       .set_offset_y(gpu_.offset[1])
       .set_offset_z(gpu_.offset[2])
-      .set_build_mipmap(gpu_.build_mipmap);
+      .set_build_mipmap(gpu_.build_mipmap)
+      .set_width(gpu_.info.width)
+      .set_height(gpu_.info.height)
+      .set_depth(gpu_.info.depth);
     Engine::ref().submitDisplayList(std::move(add_to_frame));
     dirty_ = false;
   }
@@ -146,7 +149,7 @@ namespace vxr
   {
     if (data_ != nullptr)
     {
-      free(data_); /// Is this now.
+      free(data_);
       data_ = nullptr;
     }
     data_ = data;

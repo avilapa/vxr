@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="examples">
+      <UniqueIdentifier>{84D830B1-70A5-8BBC-99BE-796485EAC04A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\03-Framebuffers">
+      <UniqueIdentifier>{C851280F-B476-778F-DDC1-5C1FC94576AD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\examples\03-Framebuffers\imgui.ini">
+      <Filter>examples\03-Framebuffers</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\examples\03-Framebuffers\framebuffers.h">
+      <Filter>examples\03-Framebuffers</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\examples\03-Framebuffers\framebuffers.cpp">
+      <Filter>examples\03-Framebuffers</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

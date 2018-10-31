@@ -50,10 +50,6 @@ float inverseLerp(float a, float b, float value)
 
 void main()
 {
-  //fragColor = vec4((n * 0.5 + 0.5) * texture(u_tex0, uv).rgb, 1.0);
-
-  float alpha = inverseLerp(elevationMinMax.x, elevationMinMax.y, length(world_position));
-
   // ambient
   float ambientStrength = 0.4;
   vec3 ambient = ambientStrength * lightColor;
@@ -71,6 +67,8 @@ void main()
   float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
   vec3 specular = specularStrength * spec * lightColor;  
       
-  vec3 result = (ambient + diffuse + specular) * texture(u_tex0, vec2(clamp(alpha, 0, 1))).rgb;
+  float alpha = inverseLerp(elevationMinMax.x, elevationMinMax.y, length(world_position));
+  vec2 biome_uv = vec2(clamp(alpha, 0, 1), clamp(uv.x, 0.001, 0.999));
+  vec3 result = (ambient + diffuse + specular) * texture(u_tex0, biome_uv).rgb;
   fragColor = vec4(result, 1.0);
 }

@@ -125,7 +125,7 @@ namespace vxr
     right_ = glm::normalize(glm::cross(forward_, vec3(0.0f, 1.0f, 0.0f)));
     up_ = glm::normalize(glm::cross(right_, forward_));
 
-    ///TODO: update world position
+    ///TODO: Update world position
 
     // World vector updated: need to update model.
 

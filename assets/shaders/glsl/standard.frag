@@ -43,8 +43,6 @@ vec3 lightColor = vec3(1,1,1);
 
 void main()
 {
-  //fragColor = vec4((n * 0.5 + 0.5) * texture(u_tex0, uv).rgb, 1.0);
-
   // ambient
   float ambientStrength = 0.1;
   vec3 ambient = ambientStrength * lightColor;

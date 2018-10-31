@@ -27,6 +27,7 @@
 
 #include "../../include/graphics/ui.h"
 
+// 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
 #define GLSL(...) "#version 330\n" #__VA_ARGS__
@@ -94,8 +95,6 @@ namespace vxr
 
   void Main::start()
   {
-    window_title_ = (char*)malloc(512 + strlen("VXR Instancing Test"));
-
     DisplayList frame;
     {
       vec3 position = vec3(0.0f, 0.0f, -8.0f), forward = vec3(0.0f, 0.0f, 1.0f), up = vec3(0.0f, 1.0f, 0.0f);
@@ -176,8 +175,10 @@ namespace vxr
       vertex_buffer_fb_ = Engine::ref().gpu()->createBuffer({ BufferType::Vertex, sizeof(vertex_data_fb), Usage::Static });
       index_buffer_fb_ =  Engine::ref().gpu()->createBuffer({ BufferType::Index, sizeof(index_data_fb),   Usage::Static });
 
-      contrast_uniform_buffer_ = Engine::ref().gpu()->createBuffer({ BufferType::Uniform, sizeof(UniformState_Contrast), Usage::Static, "UniformState_Contrast" });
+      // 1. Create a custom uniform buffer to be assigned to the quad for changing the contrast of the scene as a post processing effect.
+      contrast_uniform_buffer_ = Engine::ref().gpu()->createBuffer({ BufferType::Uniform, sizeof(UniformState_Contrast), Usage::Dynamic, "UniformState_Contrast" });
 
+      // 2. Create the material to actually change the contrast.
       gpu::Material::Info mat_info;
       mat_info.shader.vert = GLSL(
         in vec3 a_position;
@@ -225,7 +226,7 @@ namespace vxr
     }
     Engine::ref().submitDisplayList(std::move(frame));
 
-    // Create Framebuffer (offscreen rendering)
+    // 3. Create a framebuffer for off-screen rendering
     gpu::Texture::Info fb_tex_color; fb_tex_color.width = 1280, fb_tex_color.height = 720;
     gpu::Texture::Info fb_tex_depth; fb_tex_depth.width = 1280, fb_tex_depth.height = 720;
     fb_tex_color.format = TexelsFormat::RGBA_U8;
@@ -233,6 +234,7 @@ namespace vxr
 
     framebuffer_ = Engine::ref().gpu()->createFramebuffer({ fb_tex_color, fb_tex_depth, 1 });
 
+    // 4. Create a model matrix for each of the translated rotating cubes.
     for (uint32 x = 0; x < kNUM_CUBES_ROW; ++x)
     {
       for (uint32 y = 0; y < kNUM_CUBES_ROW; ++y)
@@ -242,15 +244,22 @@ namespace vxr
         u_state_stream_[i].model = model;
       }
     }
+
+    // 5. Add some basic UI to the screen.
+    Engine::ref().submitUIFunction([this]() { ui::Test(); });
+
+    Application::start();
   }
 
   void Main::update()
   {
+    // 6. Update the contrast settings with the deltaTime().
 	  static double v = 0.0;
 	  v += 0.003;
     u_state_contrast_.brightness = sin(u_state_contrast_.brightness * 50.0f * deltaTime() + v) + 2.0f * 0.2f;
     u_state_contrast_.contrast = sin(u_state_contrast_.contrast * 21.0f * deltaTime() + v) + 1.5f;
-	
+	  
+    // 7. Update the cubes model matrix by applying rotation.
     for (uint32 x = 0; x < kNUM_CUBES_ROW; ++x)
     {
       for (uint32 y = 0; y < kNUM_CUBES_ROW; ++y)
@@ -270,14 +279,8 @@ namespace vxr
 
   void Main::renderUpdate()
   {
-    sprintf(window_title_,
-      "%s: %d FPS @ 1280 x 720",
-      "VXR Instancing Test",
-      fps());
-
-    Engine::ref().window()->set_title(window_title_);
-
     DisplayList frame;
+    // 8. Set the framebuffer to do the first render pass and the viewport.
     frame.setupViewCommand()
       .set_viewport({ 0,0,1280,720 })
       .set_framebuffer(framebuffer_);
@@ -290,10 +293,11 @@ namespace vxr
       {
         uint32 i = x * kNUM_CUBES_ROW + y;
 
-		frame.fillBufferCommand()
-			.set_buffer(stream_uniform_buffer_)
-			.set_data(&u_state_stream_[i])
-			.set_size(sizeof(UniformState_Stream));
+        // 9. Update and render each of the cubes.
+		    frame.fillBufferCommand()
+			    .set_buffer(stream_uniform_buffer_)
+			    .set_data(&u_state_stream_[i])
+			    .set_size(sizeof(UniformState_Stream));
         frame.setupMaterialCommand()
           .set_material(material_)
           .set_buffer(0, vertex_buffer_)
@@ -307,12 +311,14 @@ namespace vxr
       }
     }
 
+    // 10. Set the new viewport, this time with no framebuffer.
     frame.setupViewCommand()
       .set_viewport({ 0,0,1280,720 });
     frame.clearCommand()
       .set_color({ 0.5f, 0.7f, 0.8f, 1.0f })
       .set_clear_color(true)
       .set_clear_depth(true);
+    // 11. Update the contrast uniform buffer and draw the quad object with the post-processing material.
     frame.fillBufferCommand()
       .set_buffer(contrast_uniform_buffer_)
       .set_data(&u_state_contrast_)
@@ -328,7 +334,6 @@ namespace vxr
       .set_type(IndexFormat::UInt16);
 
     Engine::ref().submitDisplayList(std::move(frame));
-    Engine::ref().submitUIFunction([this]() { ui::Test(); });
     Application::renderUpdate();
   }
 

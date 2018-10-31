@@ -29,6 +29,8 @@
 #include "../../../include/utils/minmax.h"
 #include "../../../include/utils/gradient.h"
 #include "material/material.h"
+#include "noise_filter.h"
+#include "simple.h"
 
 namespace vxr 
 {
@@ -37,7 +39,40 @@ namespace vxr
   {
     VXR_OBJECT(ColorSettings, Object);
 
+    ColorSettings();
+
+    struct BiomeColorSettings : public Object 
+    {
+      VXR_OBJECT(BiomeColorSettings, Object);
+
+      float noise_offset;
+      float noise_strength;
+      float blend_amount;
+      ref_ptr<NoiseSettings> noise;
+
+      struct Biome : public Object
+      {
+        VXR_OBJECT(Biome, Object);
+
+        Gradient gradient;
+        float start_height;
+
+        Color tint;
+        float tint_percent;
+
+        virtual void onGUI();
+
+        uint32 biome_id = 0;
+
+        virtual bool equals(ref_ptr<Biome> o);
+        virtual void assign(ref_ptr<Biome> o);
+      };
+
+      std::vector<ref_ptr<Biome>> biomes;
+    };
+
     Color wireframe_color = { 1,1,1,1 };
+    ref_ptr<BiomeColorSettings> biome_color_settings;
 
     virtual bool equals(ref_ptr<ColorSettings> o);
     virtual void assign(ref_ptr<ColorSettings> o);
@@ -45,11 +80,15 @@ namespace vxr
 
   class ColorGenerator : public Object
   {
+
     VXR_OBJECT(ColorGenerator, Object);
+
   public:
     void init(ref_ptr<ColorSettings> shapeSettings);
     void updateColors();
     void updateElevation(vec2 elevationMinMax);
+
+    float percentFromPoint(vec3 point);
 
     bool hasChanged();
 
@@ -58,16 +97,14 @@ namespace vxr
     ref_ptr<ColorSettings> settings;
     ref_ptr<ColorSettings> uiSettings;
 
+    ref_ptr<NoiseFilter> biome_noise_filter;
+
     Shader::Data data;
-    Gradient gradient;
-    ref_ptr<Texture> gradientTexture;
+    ref_ptr<Texture> gradient_texture;
     ref_ptr<PlanetMaterial> mat;
 
     Shader::Data wireframe_data;
-    ref_ptr<Material> wireframe_mat;
-
-  private:
-    bool dirty_ = false;
+    ref_ptr<Unlit> wireframe_mat;
   };
 
 } /* end of vxr namespace */
