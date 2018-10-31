@@ -13,7 +13,7 @@ As it stands now, it is a __multithreaded 3D game development engine written in 
   
 Project webpage: https://avilapa.github.io/vxr-engine/
 
-![06-PlanetEditor](/assets/textures/readme/06-PlanetEditor.png)
+![Planets](/assets/textures/readme/planets.png)
 
 # Building
 
