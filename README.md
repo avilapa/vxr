@@ -1,6 +1,6 @@
 [![vxr engine logo](/assets/textures/readme/logo.png)](https://avilapa.github.io)
 
-_version 0.1.0_
+_version 0.1.1_
 
 # What is [vxr](https://github.com/avilapa/vxr)?
 
@@ -16,6 +16,8 @@ Project webpage: https://avilapa.github.io/vxr-engine/
 ![06-PlanetEditor](/assets/textures/readme/06-PlanetEditor.png)
 
 # Building
+
+_[A vs2017 + opengl Solution is provided by default]_
 
 This project uses [GENie.lua](https://github.com/bkaradzic/GENie) to create the project solution. From for example [babun](http://babun.github.io/) you will have to execute the following commands:
 
@@ -60,9 +62,69 @@ A list of examples are provided within the solution to showcase the engine's cap
 
 # API Reference
 
+
+### Higher Level API
+
+```c++
+// 0. Define the entry point.
+VXR_DEFINE_APP_MAIN(vxr::Main)
+
+namespace vxr
+{
+
+  Main::Main()
+  {
+    // 1. Initialize GPU and Window parameters.
+    Params p;
+    p.gpu = { 100, 100, 100, 100 };
+    p.window = { { 1920, 1080} };
+    Engine::ref().set_preinit_params(p);
+  }
+
+  void Main::start()
+  {
+    // 2. Create a camera.
+    cam_.alloc()->set_name("Camera");
+    cam_->addComponent<Camera>()->transform()->set_local_position(vec3(0,0,4));
+
+    // 3. Load the Teapot mesh and set an initial rotation.
+    mesh_ = Asset::loadModelOBJ("../../assets/meshes/obj/teapot_mesh.obj");
+    mesh_->set_name("Teapot");
+    mesh_->transform()->set_local_rotation(vec3(glm::radians(90.0f), 0.0f, 0.0f));
+
+    // 4. Create a Scene, parent the objects and load.
+    ref_ptr<Scene> scene_;
+    scene_.alloc();
+
+    scene_->addObject(cam_);
+    scene_->addObject(mesh_);
+
+    Engine::ref().loadScene(scene_);
+
+    // 5. Submit the UI function.
+    Engine::ref().submitUIFunction([this]() { ui::Editor(); });
+
+    Application::start();
+  }
+
+  void Main::update()
+  {
+    // 6. Rotate the mesh in update() instead of renderUpdate() to make the rotation framerate independent 
+    // by multiplying it by deltaTime(). The update() method may be executed several times in a frame to 
+    // catch up with the render thread.
+    mesh_->transform()->set_local_rotation(mesh_->transform()->local_rotation() 
+					   + vec3(0.21, 0.12, 0.5) * deltaTime());
+
+    Application::update();
+  }
+
+} /* end of vxr namespace */
+```
+
 ### Lower Level API
 
 ```c++
+// 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
 #define GLSL(...) "#version 330\n" #__VA_ARGS__
@@ -81,15 +143,15 @@ namespace vxr
 
   void Main::start()
   {
-    window_title_ = (char*)malloc(512 + strlen("VXR Hello World Test"));
-
+    // 1. Create vertex and index buffer for the triangle.
     vertex_buffer_ = Engine::ref().gpu()->createBuffer({ BufferType::Vertex, 
-                                                         sizeof(vertex_data), 
-                                                         Usage::Static });
+    							 sizeof(vertex_data), 
+							 Usage::Static });
     index_buffer_  = Engine::ref().gpu()->createBuffer({ BufferType::Index,  
-                                                         sizeof(index_data),  
-                                                         Usage::Static });
+							 sizeof(index_data), 
+							 Usage::Static });
 
+    // 2. Initialize shader data and vertex attributes data and create material for the triangle.
     gpu::Material::Info mat_info;
     mat_info.shader.vert = GLSL(
       in vec3 a_position;
@@ -108,6 +170,8 @@ namespace vxr
 
     material_ = Engine::ref().gpu()->createMaterial(mat_info);
 
+    // 3. Create a render command display list to fill the index and vertex buffers with the 
+    // appropriate data once.
     DisplayList frame;
     frame.fillBufferCommand()
       .set_buffer(vertex_buffer_)
@@ -117,24 +181,22 @@ namespace vxr
       .set_buffer(index_buffer_)
       .set_data(index_data)
       .set_size(sizeof(index_data));
+
+    // 4. Submit display list to be rendered on the GPU.
     Engine::ref().submitDisplayList(std::move(frame));
   }
 
   void Main::renderUpdate()
   {
-    sprintf(window_title_,
-      "%s: %d FPS @ 1280 x 720, Rendering time: %f ms",
-      "VXR Hello World Test",
-      fps(), 1.0 / (double)fps());
-
-    Engine::ref().window()->set_title(window_title_);
-    
     DisplayList frame;
+    // 5. Clear the screen.
     frame.clearCommand()
       .set_color(Color::Black);
+    // 6. Setup the material for rendering with the vertex buffer attached.
     frame.setupMaterialCommand()
       .set_material(material_)
       .set_buffer(0, vertex_buffer_);
+    // 7. Create render command and submit display list to accummulate with previous commands.
     frame.renderCommand()
       .set_index_buffer(index_buffer_)
       .set_count(sizeof(index_data) / sizeof(uint16))
@@ -142,81 +204,6 @@ namespace vxr
     Engine::ref().submitDisplayList(std::move(frame));
 
     Application::renderUpdate();
-  }
-
-} /* end of vxr namespace */
-```
-
-### Higher Level API
-
-```c++
-VXR_DEFINE_APP_MAIN(vxr::Main)
-
-namespace vxr
-{
-
-  Main::Main()
-  {
-    window_title_ = (char*)malloc(512 + strlen("VXR Instancing Test"));
-    Params p;
-    p.gpu = { 100, 100, 100, 100 };
-    p.window = { { 1920, 1080} };
-    Engine::ref().set_preinit_params(p);
-  }
-
-  void Main::init()
-  {
-    Application::init();
-  }
-
-  void Main::start()
-  {
-    ref_ptr<Scene> scene_;
-    scene_.alloc();
-    Engine::ref().loadScene(scene_);
-
-    cam_.alloc()->set_name("Camera");
-    cam_->addComponent<Camera>()->set_background_color(Color(0.0f, 0.125f, 0.3f, 1.0f));
-    cam_->transform()->set_local_position(vec3(0,0,4));
-    scene_->addObject(cam_);
-
-    mesh_ = Asset::loadModelOBJ("../../assets/meshes/obj/teapot_mesh.obj");
-    mesh_->set_name("Teapot");
-    mesh_->transform()->set_local_rotation(vec3(glm::radians(90.0f), 0, 0));
-    scene_->addObject(mesh_);
-
-    Application::start();
-  }
-
-  void Main::update()
-  {
-    mesh_->transform()->set_local_rotation(mesh_->transform()->local_rotation() 
-					   + vec3(0.21, 0.12, 0.5) * deltaTime());
-    Application::update();
-  }
-
-  void Main::renderUpdate()
-  {
-    updateWindowTitle();
-
-    Engine::ref().submitUIFunction([this]() { ui::Editor(); });
-
-    Application::renderUpdate();
-  }
-
-  void Main::stop()
-  {
-    Application::stop();
-  }
-
-  void Main::updateWindowTitle()
-  {
-    sprintf(window_title_,
-      "%s: %d FPS @ 1920 x 1080",
-      "VXR Mesh Example",
-      fps());
-
-    Engine::ref().window()->set_title(window_title_);
   }
 
 } /* end of vxr namespace */
@@ -260,5 +247,7 @@ Special thanks to my previous tutor [PpluX](https://github.com/pplux), top coder
 # Contact
 
 Mail: victorap97@gmail.com
+
 Twitter: https://twitter.com/97torvic
+
 Web/Blog/Portfolio: https://avilapa.github.io/
