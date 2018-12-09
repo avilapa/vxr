@@ -30,8 +30,6 @@
 // 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
-#define GLSL(...) "#version 330\n" #__VA_ARGS__
-
 namespace vxr 
 {
   static float vertex_data[] = {
@@ -102,42 +100,33 @@ namespace vxr
       u_state_static_.proj = glm::perspective(glm::radians(70.0f), 1280.0f / 720.0f, 0.5f, 900.0f);
 
       gpu::Material::Info mat_info;
-      mat_info.shader.vert = GLSL(
-        in vec3 a_position;
-      in vec3 a_normal;
-      in vec2 a_uv;
-      layout(std140) uniform UniformState_Static
-      {
-        mat4 view;
-        mat4 proj;
-      };
-      layout(std140) uniform UniformState_Stream
-      {
-        mat4 model;
-      };
-      out vec3 c;
-      out vec2 uv;
-      void main()
-      {
-        gl_Position = proj * view * model * vec4(a_position, 1.0);
-        c = (a_position + 1) * 0.5;
-        uv = a_uv;
-      }
-      );
-      mat_info.shader.frag = GLSL(
-        in vec3 c;
-      in vec2 uv;
-      uniform sampler2D u_tex0;
-      out vec4 fragColor;
-      void main()
-      {
-        fragColor = vec4(c * texture(u_tex0, uv).rgb, 1.0);
-      }
-      );
+      mat_info.shader.vert =
+        "layout(std140) uniform UniformState_Static                         \n"
+        "{                                                                  \n"
+        "  mat4 view;                                                       \n"
+        "  mat4 proj;                                                       \n"
+        "};                                                                 \n"
+        "layout(std140) uniform UniformState_Stream                         \n"
+        "{                                                                  \n"
+        "  mat4 model;                                                      \n"
+        "};                                                                 \n"
+        "out vec3 c;                                                        \n"
+        "void main()                                                        \n"
+        "{                                                                  \n"
+        "  gl_Position = proj * view * model * vec4(getPosition(), 1.0);    \n"
+        "  c = (getPosition() + 1) * 0.5;                                   \n"
+        "  setupUVOutput();                                                 \n"
+        "}                                                                  \n";
+      mat_info.shader.frag =
+        "in vec3 c;                                                         \n"
+        "void main()                                                        \n"
+        "{                                                                  \n"
+        "  setFragmentColor(c * texture(u_tex0, getUV()).rgb);              \n"
+        "}                                                                  \n";
 
-      mat_info.attribs[0] = { "a_position", VertexFormat::Float3 };
-      mat_info.attribs[1] = { "a_normal",   VertexFormat::Float3 };
-      mat_info.attribs[2] = { "a_uv",       VertexFormat::Float2 };
+      mat_info.attribs[0] = { "attr_position", VertexFormat::Float3 };
+      mat_info.attribs[1] = { "attr_normal",   VertexFormat::Float3 };
+      mat_info.attribs[2] = { "attr_uv",       VertexFormat::Float2 };
 
       mat_info.textures[0] = TextureType::T2D;
 
@@ -180,37 +169,30 @@ namespace vxr
 
       // 2. Create the material to actually change the contrast.
       gpu::Material::Info mat_info;
-      mat_info.shader.vert = GLSL(
-        in vec3 a_position;
-        in vec2 a_uv;
-        out vec2 uv;
-        void main() 
-        {
-          gl_Position = vec4(a_position, 1.0);
-          uv = a_uv;
-        }
-      );
-      mat_info.shader.frag = GLSL(
-        in vec2 uv;
-        uniform sampler2D u_tex0;
-        layout(std140) uniform UniformState_Contrast
-        {
-          float contrast;
-          float brightness;
-        };
-        out vec4 fragColor;
-        void main() 
-        {
-          vec4 color = texture(u_tex0, uv);
-          color.xyz /= color.w;
-          color.xyz = (color.xyz - 0.5f) * contrast + 0.5f;
-          color.xyz += brightness;
-          color.xyz *= color.w;
-          fragColor = vec4(color.xyz, 1.0);
-        }
-      );
-      mat_info.attribs[0] = { "a_position", VertexFormat::Float3 };
-      mat_info.attribs[1] = { "a_uv", VertexFormat::Float2 };
+      mat_info.shader.vert =
+        "void main()                                              \n"
+        "{                                                        \n"
+        "  gl_Position = vec4(getPosition(), 1.0);                \n"
+        "  setupUVOutput();                                       \n"
+        "}                                                        \n";
+      mat_info.shader.frag =
+        "layout(std140) uniform UniformState_Contrast             \n"
+        "{                                                        \n"
+        "  float contrast;                                        \n"
+        "  float brightness;                                      \n"
+        "};                                                       \n"
+        "void main()                                              \n"
+        "{                                                        \n"
+        "  vec4 color = texture(u_tex0, getUV());                 \n"
+        "  color.xyz /= color.w;                                  \n"
+        "  color.xyz = (color.xyz - 0.5f) * contrast + 0.5f;      \n"
+        "  color.xyz += brightness;                               \n"
+        "  color.xyz *= color.w;                                  \n"
+        "  setFragmentColor(color.xyz);                           \n"
+        "}                                                        \n";
+
+      mat_info.attribs[0] = { "attr_position", VertexFormat::Float3 };
+      mat_info.attribs[1] = { "attr_uv", VertexFormat::Float2 };
       mat_info.textures[0] = TextureType::T2D;
       mat_info.cull = Cull::Disabled;
       material_fb_ = Engine::ref().gpu()->createMaterial(mat_info);

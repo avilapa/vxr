@@ -22,39 +22,8 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#version 330
-
-in vec3 a_position;
-in vec3 a_normal;
-in vec2 a_uv;
-
-uniform mat4 u_model;
-layout(std140) uniform Common
-{
-  mat4 u_proj;
-  mat4 u_view;
-
-  vec2 resolution;
-  vec2 xy;
-
-  vec4 u_clear_color;
-};
-
-layout(std140) uniform Uniforms
-{
-  vec2 elevationMinMax;
-};
-
-out vec3 world_position;
-out vec3 position;
-out vec3 normal;
-out vec2 uv;
-
 void main()
 {
-  gl_Position = u_proj * u_view * u_model * vec4(a_position, 1.0);
-  world_position = vec3(u_model * vec4(a_position, 1.0));
-  position = a_position;
-  normal = a_normal;
-  uv = a_uv;
+  gl_Position = getClipPosition();
+  setupWorldSpaceOutput();
 }

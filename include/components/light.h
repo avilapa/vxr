@@ -25,8 +25,8 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../core/component.h"
-
-/// WIP: This class is empty!
+#include "../graphics/shader.h"
+#include "../graphics/gpu_resources.h"
 
 /**
 * \file light.h
@@ -52,7 +52,16 @@ namespace vxr
 
     virtual void onGUI() override;
 
+    void set_color(Color color);
+    void set_intensity(float intensity);
+    void set_ambient(float ambient);
+
 	private:
+    bool contributes_;
+
+    Color color_;
+    float intensity_;
+    float ambient_;
 	};
 
   class Scene;
@@ -64,6 +73,7 @@ namespace vxr
 
       VXR_OBJECT(System::Light, ComponentSystem);
 
+      friend class Renderer;
     public:
       Light();
       virtual ~Light();
@@ -73,9 +83,18 @@ namespace vxr
       virtual void renderUpdate() override;
       virtual void renderPostUpdate() override;
 
+      uint32 num_lights() const;
+
     private:
       std::vector<ref_ptr<vxr::Light>> components_;
       ref_ptr<Scene> scene_;
+      uint32 num_lights_;
+
+      struct LightUniforms
+      {
+        gpu::Buffer buffer;
+        Shader::LightData data;
+      } light_uniforms_;
 
     public:
       template<typename T> ref_ptr<T> createInstance()

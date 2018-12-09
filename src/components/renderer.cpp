@@ -83,6 +83,7 @@ namespace vxr
     }
 
     gpu::Buffer common_uniforms_buffer = Engine::ref().camera()->common_uniforms_.buffer;
+    gpu::Buffer lights_uniforms_buffer = Engine::ref().light()->light_uniforms_.buffer;
 
     DisplayList frame;
     for (auto &c : components_)
@@ -138,6 +139,7 @@ namespace vxr
         .set_v_texture(c->material->gpu_.tex)
         .set_uniform_buffer(0, c->material->gpu_.uniform_buffer)
         .set_uniform_buffer(1, common_uniforms_buffer)
+        .set_uniform_buffer(2, lights_uniforms_buffer)
         .set_model_matrix(c->transform()->worldMatrix());
       VXR_TRACE_END("VXR", "Setup Material");
       VXR_TRACE_BEGIN("VXR", "Render");

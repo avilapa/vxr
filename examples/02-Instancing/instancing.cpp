@@ -28,8 +28,6 @@
 // 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
-#define GLSL(...) "#version 330\n" #__VA_ARGS__
-
 namespace vxr 
 {
   static float vertex_data[] = {
@@ -90,44 +88,41 @@ namespace vxr
     // 3. Create uniform buffer to store the static data of a cube.
     uniform_buffer_            = Engine::ref().gpu()->createBuffer({ BufferType::Uniform, sizeof(UniformState_Static), Usage::Static, "UniformState_Static" });
 
-    // 4. Initialize shader data. The engine uses UBO for the objects, so the correct syntax to use custom uniforms can be found below. 
+    // 4. Initialize shader data. The engine uses UBO for the objects, so the correct syntax to use 
+    // custom uniforms can be found below. Shader version 330, a set of helper functions and texture
+    // uniform names are provided by default (u_tex0, u_tex1, etc.). You can also use the function 
+    // 'Shader::Load(std::string file)' to load the shader from a file.
     gpu::Material::Info mat_info;
-    mat_info.shader.vert = GLSL(
-      in vec3 a_position;
-      in vec3 a_normal;
-      in vec2 a_uv;
-      in vec3 a_instance_position;
-      in vec3 a_instance_color;
-      layout(std140) uniform UniformState_Static
-      {
-        mat4 model;
-        mat4 view;
-        mat4 proj;
-      };
-      out vec3 c;
-      out vec2 uv;
-      void main()
-      {
-        gl_Position = proj * view * model * vec4(a_position + a_instance_position, 1.0);
-        c = a_instance_color;
-        uv = a_uv;
-      }
-    );
-    mat_info.shader.frag = GLSL(
-      in vec3 c;
-      in vec2 uv;
-      uniform sampler2D u_tex0;
-      out vec4 fragColor;
-      void main()
-      {
-        fragColor = vec4(c * texture(u_tex0, uv).rgb, 1.0);
-      }
-    );
+    mat_info.shader.vert =
+      "in vec3 a_instance_position;                                                           \n"
+      "in vec3 a_instance_color;                                                              \n"
+      "layout(std140) uniform UniformState_Static                                             \n"
+      "{                                                                                      \n"
+      "  mat4 model;                                                                          \n"
+      "  mat4 view;                                                                           \n"
+      "  mat4 proj;                                                                           \n"
+      "};                                                                                     \n"
+      "out vec3 c;                                                                            \n"
+      "void main()                                                                            \n"
+      "{                                                                                      \n"
+      "  gl_Position = proj * view * model * vec4(getPosition() + a_instance_position, 1.0);  \n"
+      "  c = a_instance_color;                                                                \n"
+      "  setupUVOutput();                                                                     \n"
+      "}                                                                                      \n";
+    mat_info.shader.frag =
+      "in vec3 c;                                                                             \n"
+      "void main()                                                                            \n"
+      "{                                                                                      \n"
+      "  setFragmentColor(c * texture(u_tex0, getUV()).rgb);                                  \n"
+      "}                                                                                      \n";
 
-    // 5. Initialize vertex attributes. This time, we'll pass three different buffers. One with positions normals and uvs data, another with the instance positions and a last one with instance colors.
-    mat_info.attribs[0] = { "a_position",          VertexFormat::Float3 };
-    mat_info.attribs[1] = { "a_normal",            VertexFormat::Float3 };
-    mat_info.attribs[2] = { "a_uv",                VertexFormat::Float2 };
+    // 5. Initialize vertex attributes. This time, we'll pass three different buffers. One with positions 
+    // normals and uv data, another with the instance positions and a last one with instance colors.
+    // Using the keyword attr_ for position, normal and uv, loads them automatically in the shader and
+    // allows you to use all the helper functions.
+    mat_info.attribs[0] = { "attr_position",       VertexFormat::Float3 };
+    mat_info.attribs[1] = { "attr_normal",         VertexFormat::Float3 };
+    mat_info.attribs[2] = { "attr_uv",             VertexFormat::Float2 };
     mat_info.attribs[3] = { "a_instance_position", VertexFormat::Float3, 1, VertexStep::PerInstance };
     mat_info.attribs[4] = { "a_instance_color",    VertexFormat::Float3, 2, VertexStep::PerInstance };
 

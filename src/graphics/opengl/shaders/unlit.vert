@@ -22,44 +22,8 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#version 330
-
-in vec3 position;
-in vec3 normal;
-in vec2 uv;
-
-layout(std140) uniform Uniforms
-{
-  vec4 color;
-};
-
-uniform sampler2D u_tex0;
-
-out vec4 fragColor;
-
-vec3 lightPos = vec3(0.5,0.3,-1.8); 
-vec3 viewPos = vec3(0,0,-1.8); 
-vec3 lightColor = vec3(1,1,1);
-
 void main()
 {
-  // ambient
-  float ambientStrength = 0.1;
-  vec3 ambient = ambientStrength * lightColor;
-  
-  // diffuse 
-  vec3 norm = normalize(normal);
-  vec3 lightDir = normalize(lightPos - position);
-  float diff = max(dot(norm, lightDir), 0.0);
-  vec3 diffuse = diff * lightColor;
-  
-  // specular
-  float specularStrength = 0.5;
-  vec3 viewDir = normalize(viewPos - position);
-  vec3 reflectDir = reflect(-lightDir, norm);  
-  float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
-  vec3 specular = specularStrength * spec * lightColor;  
-      
-  vec3 result = (ambient + diffuse + specular) * color.xyz;
-  fragColor = vec4(result, 1.0);
+  gl_Position = getClipPosition();
+  setupWorldSpaceOutput();
 }

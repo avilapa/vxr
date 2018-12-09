@@ -68,6 +68,7 @@ namespace vxr
     transform_.alloc();
     mesh_filter_.alloc();
 
+    light_->init();
     camera_->init();
 
     return true;
@@ -84,8 +85,8 @@ namespace vxr
     VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Update.\n");
     custom_->update();
     transform_->update();
-    camera_->update();
     light_->update();
+    camera_->update();
     renderer_->update();
   }
 
@@ -104,8 +105,8 @@ namespace vxr
     VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Render Update.\n");
     custom_->renderUpdate();
     transform_->renderUpdate();
-    camera_->renderUpdate();
     light_->renderUpdate();
+    camera_->renderUpdate();
     renderer_->renderUpdate();
     VXR_TRACE_END("VXR", "Systems Render Update");
   }

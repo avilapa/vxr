@@ -25,7 +25,7 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../core/component.h"
-#include "../graphics/material.h"
+#include "../graphics/default_materials.h"
 #include "../graphics/mesh.h"
 
 /**
@@ -125,7 +125,7 @@ namespace vxr
       gpu::Framebuffer screen_;
       ref_ptr<Texture> screen_texture_;
 
-      ref_ptr<Material> screen_material_;
+      ref_ptr<Screen> screen_material_;
       ref_ptr<EngineMesh::Quad> screen_quad_;
 
       struct CommonUniforms

@@ -509,6 +509,9 @@
     <ClInclude Include="..\..\include\engine\types.h">
       <Filter>include\engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\graphics\default_materials.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\graphics\display_list.h">
       <Filter>include\graphics</Filter>
     </ClInclude>
@@ -1134,6 +1137,9 @@
     </ClCompile>
     <ClCompile Include="..\..\src\engine\gpu.cpp">
       <Filter>src\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\default_materials.cpp">
+      <Filter>src\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\display_list.cpp">
       <Filter>src\graphics</Filter>

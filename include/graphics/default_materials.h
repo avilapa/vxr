@@ -24,69 +24,49 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../graphics/render_context.h"
-#include "../graphics/texture.h"
-#include "../graphics/shader.h"
+#include "../graphics/material.h"
 
 /**
 * \file material.h
 *
 * \author Victor Avila (avilapa.github.io)
 *
-* \brief Material class containing all parameters and options.
+* \brief Engine default material definitions.
 *
 */
 namespace vxr
 {
-  namespace System { class Camera; class Renderer; }
-
-  class Material : public Object
+  class Screen : public Material
   {
-
-    VXR_OBJECT(Material, Object);
-
-    friend class System::Camera;
-    friend class System::Renderer;
+    VXR_OBJECT(Screen, Material);
   public:
-    ~Material();
+    Screen();
+
+    virtual void onGUI() override;
+  };
+
+  class Unlit : public Material
+  {
+    VXR_OBJECT(Unlit, Material);
+  public:
+    Unlit();
 
     virtual void onGUI() override;
 
-    void set_uniforms_name(const char* name);
-    void set_uniforms_usage(Usage::Enum usage);
+    void set_color(Color color);
+    Color color() const;
+  };
 
-    void set_shaders(const char* vert, const char* frag);
-    void set_cull(Cull::Enum cull);
-    void set_render_mode(RenderMode::Enum render_mode);
-    void set_blend_params(bool enabled, vec4 color, BlendFactor::Enum src_rgb, BlendFactor::Enum dst_rgb, BlendOp::Enum op_rgb, BlendFactor::Enum src_alpha, BlendFactor::Enum dst_alpha, BlendOp::Enum op_alpha);
-    void set_depth_func(CompareFunc::Enum depth_func);
-    void set_rgba_write(bool enabled);
-    void set_depth_write(bool enabled);
+  class Standard : public Material
+  {
+    VXR_OBJECT(Standard, Material);
+  public:
+    Standard();
 
-    virtual void addTexture(ref_ptr<Texture> texture);
-    virtual ref_ptr<Texture> texture(uint32 index = 0);
+    virtual void onGUI() override;
 
-    bool initialized();
-
-  protected:
-    Material();
-
-    std::vector<ref_ptr<Texture>> textures_;
-    Shader::Data uniforms_;
-
-  private:
-    bool initialized_ = false;
-
-    struct GPU
-    {
-      gpu::Material mat;
-      gpu::Material::Info info;
-      gpu::Buffer uniform_buffer;
-      std::vector<gpu::Texture> tex;
-    } gpu_;
-
-    void setup();
-    void setupTextures();
+    void set_color(Color color);
+    Color color() const;
   };
 
 } /* end of vxr namespace */

@@ -24,7 +24,7 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../graphics/render_context.h"
+#include "../../include/engine/types.h"
 
 /**
 * \file shader.h
@@ -40,47 +40,54 @@ namespace vxr
   namespace Shader
   {
 
+    string Load(const char* file);
+
     static const char* u_model = "u_model";
 
     struct CommonData
     {
       mat4 u_proj;
       mat4 u_view;
-
-      vec2 resolution;
-      vec2 xy;
-
+      vec2 u_resolution;
+      vec2 u_xy;
       vec4 u_clear_color;
+      vec4 u_view_pos_num_lights;
     };
 
     struct LightData
     {
-
+      vec4 pos[kMaxLightSources];
+      vec4 dir_intensity[kMaxLightSources];
+      vec4 col_ambient[kMaxLightSources];
     };
 
     struct Data
     {
       const char* name = "Uniforms";
-      Usage::Enum usage = Usage::Stream;
+      Usage::Enum usage = Usage::Dynamic;
       struct Uniforms
       {
         union Specific 
         {
-          // Add here specific uniform structures for any new shaders.
+          // Add here specific uniform structures for any new shaders (only float x2/vec2/vec4).
+          struct Unlit
+          {
+            vec4 color;
+          } unlit;
           struct Standard
           {
             vec4 color;
-          } std;
+          } standard;
           struct Planet
           {
             vec2 elevationMinMax;
           } planet;
+
         } specific;
       } u;
     };
-
-    string load(const char* file);
-
   }
+
+#define UNIFORM_DATA Shader::Data::Uniforms::Specific
 
 } /* end of vxr namespace */

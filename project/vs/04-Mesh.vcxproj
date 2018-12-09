@@ -9,18 +9,10 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{C469880B-3073-887C-B9EE-9E7C25F7937C}</ProjectGuid>
-    <RootNamespace>dev</RootNamespace>
+    <ProjectGuid>{038751EF-6F66-D08A-787E-5B61E4DC36EC}</ProjectGuid>
+    <RootNamespace>04-Mesh</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.10240.0</WindowsTargetPlatformMinVersion>
     <Keyword>Win32Proj</Keyword>
@@ -36,16 +28,6 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -55,38 +37,18 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Debug\dev\</IntDir>
-    <TargetName>dev</TargetName>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Debug\04-Mesh\</IntDir>
+    <TargetName>04-Mesh</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Debug\dev\</IntDir>
-    <TargetName>dev</TargetName>
-    <TargetExt>.exe</TargetExt>
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Release\dev\</IntDir>
-    <TargetName>dev</TargetName>
-    <TargetExt>.exe</TargetExt>
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Release\dev\</IntDir>
-    <TargetName>dev</TargetName>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Debug\04-Mesh\</IntDir>
+    <TargetName>04-Mesh</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
@@ -110,9 +72,9 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDataBaseFileName>$(OutDir)dev.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)04-Mesh.pdb</ProgramDataBaseFileName>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)dev.exe</OutputFile>
+      <OutputFile>$(OutDir)04-Mesh.exe</OutputFile>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
@@ -137,75 +99,23 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDataBaseFileName>$(OutDir)dev.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)04-Mesh.pdb</ProgramDataBaseFileName>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)dev.exe</OutputFile>
-      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <AdditionalOptions>/wd4100 /wd4127 /wd4244  %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PrecompiledHeader></PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat></DebugInformationFormat>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
-    </ResourceCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)dev.exe</OutputFile>
-      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <AdditionalOptions>/wd4100 /wd4127 /wd4244  %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PrecompiledHeader></PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat></DebugInformationFormat>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
-    </ResourceCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)dev.exe</OutputFile>
+      <OutputFile>$(OutDir)04-Mesh.exe</OutputFile>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\examples\dev\dev.h" />
+    <ClInclude Include="..\..\examples\04-Mesh\mesh.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\dev\dev.cpp">
-      <ObjectFileName>$(IntDir)examples\dev\</ObjectFileName>
+    <ClCompile Include="..\..\examples\04-Mesh\mesh.cpp">
+      <ObjectFileName>$(IntDir)examples\04-Mesh\</ObjectFileName>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\dev\imgui.ini" />
+    <None Include="..\..\examples\04-Mesh\imgui.ini" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="VXR.vcxproj">

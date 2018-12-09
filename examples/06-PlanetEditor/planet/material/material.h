@@ -35,6 +35,9 @@ namespace vxr
     VXR_OBJECT(PlanetMaterial, Material);
   public:
     PlanetMaterial();
+
+    void set_elevation_min_max(vec2 elevation_min_max);
+    vec2 elevation_min_max() const;
   };
 
 } /* end of vxr namespace */

@@ -9,11 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\02-Instancing\imgui.ini">
-      <Filter>examples\02-Instancing</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\examples\02-Instancing\instancing.h">
       <Filter>examples\02-Instancing</Filter>
     </ClInclude>

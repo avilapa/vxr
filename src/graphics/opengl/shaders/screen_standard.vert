@@ -22,15 +22,8 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#version 330
-
-in vec2 uv;
-
-uniform sampler2D u_tex0;
-
-out vec4 fragColor;
-
 void main()
 {
-  fragColor = vec4(texture(u_tex0, uv).rgb, 1.0);
+  gl_Position = vec4(getPosition(), 1.0);
+  setupScreenSpaceOutput();
 }

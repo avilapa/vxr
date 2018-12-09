@@ -62,6 +62,10 @@ namespace vxr
 
   namespace gpu
   {
+    const int COMMON_VERT_COUNT = 1;
+    const int COMMON_FRAG_COUNT = 2;
+    string common_vert[COMMON_VERT_COUNT];
+    string common_frag[COMMON_FRAG_COUNT];
 
     void InitBackEnd(BackEnd** b, const Params::GPU &params)
     {
@@ -71,6 +75,10 @@ namespace vxr
       (*b)->textures.alloc(params.max_textures);
       (*b)->materials.alloc(params.max_materials);
       (*b)->framebuffers.alloc(params.max_framebuffers);
+
+      common_vert[0] = Shader::Load("common.vert");
+      common_frag[0] = Shader::Load("common.frag");
+      common_frag[1] = Shader::Load("common_lighting.frag");
     }
 
     void DestroyBackEnd(BackEnd** b)
@@ -281,7 +289,7 @@ namespace vxr
       if (d.build_mipmap) GLCHECK(glGenerateMipmap(back_end.target));
     }
 
-    static uint32 CompileShader(GLenum type, const char *src)
+    static uint32 CompileShader(GLenum type, const char *src[], uint32 count)
     {
       uint32 shader = glCreateShader(type);
       if (!shader)
@@ -292,7 +300,7 @@ namespace vxr
       if (shader)
       {
         int32 compiled = 0;
-        GLCHECK(glShaderSource(shader, 1, &src, NULL));
+        GLCHECK(glShaderSource(shader, count + 1, &*src, NULL));
         GLCHECK(glCompileShader(shader));
         GLCHECK(glGetShaderiv(shader, GL_COMPILE_STATUS, &compiled));
 
@@ -301,7 +309,7 @@ namespace vxr
           static const size_t max_length = 2048;
           char buffer[max_length];
           GLCHECK(glGetShaderInfoLog(shader, max_length, NULL, buffer));
-          OnError("Error Compiling Shader(%d):%s\nCODE:\n%.256s\n", type, buffer, src);
+          OnError("Error Compiling Shader(%d):%s\nCODE:\n%.256s\n", type, buffer, src[count]);
           GLCHECK(glDeleteShader(shader));
           return 0;
         }
@@ -320,8 +328,19 @@ namespace vxr
         {
           for (auto &i : mat.second->texture_uniforms_location) { i = -1; }
 
-          uint32 shader_v = CompileShader(GL_VERTEX_SHADER, mat.first->vert_shader.c_str());
-          uint32 shader_f = CompileShader(GL_FRAGMENT_SHADER, mat.first->frag_shader.c_str());
+          const char* vert[] = 
+          { 
+            common_vert[0].c_str(), 
+            mat.first->vert_shader.c_str() 
+          };
+          const char* frag[] = 
+          { 
+            common_frag[0].c_str(),
+            common_frag[1].c_str(), 
+            mat.first->frag_shader.c_str() 
+          };
+          uint32 shader_v = CompileShader(GL_VERTEX_SHADER, vert, COMMON_VERT_COUNT);
+          uint32 shader_f = CompileShader(GL_FRAGMENT_SHADER, frag, COMMON_FRAG_COUNT);
           if (!shader_v || !shader_f)
           {
             return;

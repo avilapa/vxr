@@ -23,6 +23,7 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../../include/graphics/ui.h"
+#include "../../include/engine/engine.h"
 
 #if defined (VXR_OPENGL)
 #  include "../graphics/opengl/gl_imgui.h"
@@ -136,7 +137,10 @@ namespace vxr
 
   void ui::Editor()
   {
+    static bool editor_hidden = false;
+
     ImGuiIO& io = ImGui::GetIO();
+
     ImGui::SetNextWindowPos(ImVec2(0, 0));
     ImGui::SetNextWindowSize(io.DisplaySize);
     ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
@@ -158,13 +162,46 @@ namespace vxr
     {
       if (ImGui::BeginMenu("File"))
       {
-        if (ImGui::MenuItem("Close")) {};
+        ImGui::EndMenu();
+      }
+      if (ImGui::BeginMenu("Window"))
+      {
+        if (!editor_hidden)
+        {
+          if (ImGui::MenuItem("Hide Editor"))
+          {
+            editor_hidden = true;
+          }
+        }
+        else
+        {
+          if (ImGui::MenuItem("Show Editor"))
+          {
+            editor_hidden = false;
+          }
+        }
+        if (ImGui::MenuItem("Exit")) 
+        {
+          Engine::ref().window()->forceExit();
+        }
         ImGui::EndMenu();
       }
       ImGui::SameLine(ImGui::GetWindowContentRegionMax().x - 330);
       ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / io.Framerate, io.Framerate);
 
       ImGui::EndMenuBar();
+    }
+
+    if (editor_hidden)
+    {
+      ImGui::Image((void*)(intptr_t)Engine::ref().camera()->screen_id(), { io.DisplaySize.x, io.DisplaySize.y }, ImVec2(0, 1), ImVec2(1, 0));
+      Engine::ref().camera()->set_render_size({ io.DisplaySize.x, io.DisplaySize.y });
+      Engine::ref().camera()->main()->set_aspect(io.DisplaySize.x / io.DisplaySize.y);
+      Engine::ref().camera()->set_render_to_screen(false);
+
+      ImGui::End();
+      ImGui::PopStyleVar();
+      return;
     }
 
     ImGui::Spacing();

@@ -34,7 +34,7 @@ namespace vxr
   Main::Main()
   {
     Params p;
-    p.gpu = { 100, 100, 100, 100 };
+    p.gpu = { 1000, 1000, 1000, 1000 };
     p.window = { { 1280, 720} };
     Engine::ref().set_preinit_params(p);
   }
@@ -42,46 +42,65 @@ namespace vxr
   void Main::init()
   {
     Application::init();
-
-    Engine::ref().camera()->set_render_size(uvec2(1000, 1000));
   }
 
   void Main::start()
   {
     ref_ptr<Scene> scene_;
-    scene_.alloc();
+    scene_.alloc()->set_name("Test Scene");
     Engine::ref().loadScene(scene_);
 
-    cam_.alloc();
+    cam_.alloc()->set_name("Camera");
     cam_->addComponent<Camera>()->set_background_color(Color::Black);
+    cam_->transform()->set_local_position(vec3(0.0f, 0.0f, 1.8f));
     scene_->addObject(cam_);
 
-    cam_->transform()->set_local_position(vec3(0.0f, 0.0f, 1.8f));
-
-    ref_ptr<GameObject> obj;
     ref_ptr<EngineMesh::Cube> cube;
-    ref_ptr<Material> mat;
+    ref_ptr<Standard> mat;
 
-    obj.alloc();
+    obj_.alloc();
     cube.alloc();
     mat.alloc();
 
-    obj->addComponent<Renderer>()->material = mat;
-    obj->addComponent<MeshFilter>()->mesh = cube.get();
+    obj_->addComponent<Renderer>()->material = mat.get();
+    obj_->addComponent<MeshFilter>()->mesh = cube.get();
 
-    scene_->addObject(obj);
+    scene_->addObject(obj_);
+
+    light_node_.alloc()->set_name("Light Node");
+    scene_->addObject(light_node_);
+
+    for (uint32 i = 0; i < NUM_LIGHTS; ++i)
+    {
+      Color light_color = Color::Random().desaturate(-0.5);
+      ref_ptr<Unlit> light_mat;
+      light_mat.alloc()->set_color(light_color);
+      light_[i].alloc()->set_name("Light");
+      light_[i]->addComponent<Light>()->set_color(light_color);
+      light_[i]->getComponent<Light>()->set_intensity(0.1f);
+      light_[i]->transform()->set_parent(light_node_->transform());
+      light_[i]->addComponent<Renderer>()->material = light_mat.get();
+      light_[i]->addComponent<MeshFilter>()->mesh = cube.get();
+      light_[i]->transform()->set_local_scale(vec3(0.12f));
+      vec3 rand_pos = vec3(rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f) * 2.0f - 1.0f;
+      rand_pos = glm::normalize(rand_pos - light_node_->transform()->local_position());
+      light_[i]->transform()->set_local_position(rand_pos);
+    }
+
+    Engine::ref().submitUIFunction([]() { ui::Editor(); });
   }
 
   void Main::update()
   {
     Application::update();
     
-    
+    obj_->transform()->set_local_rotation(obj_->transform()->local_rotation() + vec3(0.21, 0.12, 0.5) * deltaTime());
+    light_node_->transform()->set_local_rotation(light_node_->transform()->local_rotation() + vec3(0.31, 1.06, 0.3) * deltaTime());
+    light_node_->transform()->set_local_scale(vec3(1 + sin(Engine::ref().window()->uptime() * 0.1f)));
   }
 
   void Main::renderUpdate()
   {
-    //Engine::ref().submitUIFunction([this]() { ui::Editor(); });
     Application::renderUpdate();
   }
 

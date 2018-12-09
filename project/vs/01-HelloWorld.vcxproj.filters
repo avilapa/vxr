@@ -9,11 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\01-HelloWorld\imgui.ini">
-      <Filter>examples\01-HelloWorld</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\..\examples\01-HelloWorld\hello_world.h">
       <Filter>examples\01-HelloWorld</Filter>
     </ClInclude>

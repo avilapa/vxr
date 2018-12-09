@@ -65,13 +65,13 @@ namespace vxr
       }
 
       ref_ptr<Mesh> mesh;
-      ref_ptr<Material> mat;
+      ref_ptr<Standard> mat; /// What kind of material should be allocated here?
 
       mesh.alloc();
       mat.alloc();
 
       child->addComponent<MeshFilter>()->mesh = mesh;
-      child->addComponent<Renderer>()->material = mat;
+      child->addComponent<Renderer>()->material = mat.get();
 
       std::vector<vec3> vertices;
       std::vector<vec3> normals;

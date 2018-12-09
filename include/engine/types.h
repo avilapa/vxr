@@ -64,25 +64,25 @@
 
 #ifdef _WIN32
 
-#include <windows.h>
+# include <windows.h>
 
-#define GLM_ENABLE_EXPERIMENTAL
-#include "../../deps/glm/glm.hpp"
-#include "../../deps/glm/gtc/matrix_transform.hpp"
-#include "../../deps/glm/gtx/transform.hpp"
-#include "../../deps/glm//gtc/quaternion.hpp"
-#include "../../deps/glm//gtx/matrix_decompose.hpp"
+# define GLM_ENABLE_EXPERIMENTAL
+# include "../../deps/glm/glm.hpp"
+# include "../../deps/glm/gtc/matrix_transform.hpp"
+# include "../../deps/glm/gtx/transform.hpp"
+# include "../../deps/glm//gtc/quaternion.hpp"
+# include "../../deps/glm//gtx/matrix_decompose.hpp"
 
-#include <conio.h>
-#include <stdint.h>
-#include <cstddef>
-#include <cstdarg>
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <vector>
-#include <atomic>
-#include <iterator>
+# include <conio.h>
+# include <stdint.h>
+# include <cstddef>
+# include <cstdarg>
+# include <string>
+# include <fstream>
+# include <sstream>
+# include <vector>
+# include <atomic>
+# include <iterator>
 
 namespace vxr {
 
@@ -126,7 +126,7 @@ namespace vxr {
   const size_t kMaxTextureUnits             = 16;
   const size_t kMaxUniformBuffers           = 15;
   const size_t kMaxFramebufferColorTextures = 16;
-
+  const size_t kMaxLightSources             = 30;
 
   // - Structures
 

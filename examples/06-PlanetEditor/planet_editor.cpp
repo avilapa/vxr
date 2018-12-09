@@ -51,16 +51,22 @@ namespace vxr
     planet_.alloc()->set_name("Planet");
     planet_->addComponent<Planet, Custom>();
 
-    // 4. Create a Scene, parent the objects and load.
+    // 4. Create a light
+    light_.alloc()->set_name("Sun");
+    light_->addComponent<Light>()->set_color(Color::CornSilk);
+    light_->transform()->set_local_position(vec3(0.8, 0.3, 2.0));
+
+    // 5. Create a Scene, parent the objects and load.
     ref_ptr<Scene> scene_;
     scene_.alloc()->set_name("Planet Editor Scene");
 
     scene_->addObject(cam_);
     scene_->addObject(planet_);
+    scene_->addObject(light_);
 
     Engine::ref().loadScene(scene_);
 
-    // 5. Set UI function
+    // 6. Set UI function
     Engine::ref().submitUIFunction([this]() { ui::Editor(); });
 
     Application::start();
@@ -68,7 +74,7 @@ namespace vxr
 
   void Main::update()
   {
-    // 6. Interpolate camera position
+    // 7. Interpolate camera position
     float speed = 5.0f;
     if (cam_->transform()->local_position() != (planet_->getComponent<Planet>()->zoom ? zoom_on : zoom_off))
     {

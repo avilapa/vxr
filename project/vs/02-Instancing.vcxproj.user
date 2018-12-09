@@ -10,14 +10,4 @@
     <LocalDebuggerWorkingDirectory>..\..\examples\02-Instancing</LocalDebuggerWorkingDirectory>
     <LocalDebuggerCommandArguments></LocalDebuggerCommandArguments>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>..\..\examples\02-Instancing</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerCommandArguments></LocalDebuggerCommandArguments>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>..\..\examples\02-Instancing</LocalDebuggerWorkingDirectory>
-    <LocalDebuggerCommandArguments></LocalDebuggerCommandArguments>
-  </PropertyGroup>
 </Project>

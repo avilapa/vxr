@@ -52,17 +52,23 @@ namespace vxr
     mesh_ = Asset::loadModelOBJ("../../assets/meshes/obj/teapot_mesh.obj");
     mesh_->set_name("Teapot");
     mesh_->transform()->set_local_rotation(vec3(glm::radians(90.0f), 0.0f, 0.0f));
+    
+    // 4. Create a light
+    light_.alloc()->set_name("Sun");
+    light_->addComponent<Light>()->set_color(Color::Random());
+    light_->transform()->set_local_position(vec3(0.8, 0.3, 2.0));
 
-    // 4. Create a Scene, parent the objects and load.
+    // 5. Create a Scene, parent the objects and load.
     ref_ptr<Scene> scene_;
     scene_.alloc();
 
     scene_->addObject(cam_);
     scene_->addObject(mesh_);
+    scene_->addObject(light_);
 
     Engine::ref().loadScene(scene_);
 
-    // 5. Submit the UI function.
+    // 6. Submit the UI function.
     Engine::ref().submitUIFunction([this]() { ui::Editor(); });
 
     Application::start();
@@ -70,7 +76,7 @@ namespace vxr
 
   void Main::update()
   {
-    // 6. Rotate the mesh in update() instead of renderUpdate() to make the rotation framerate independent by multiplying it by deltaTime(). The update() method may be executed several times in a frame to catch up with the render thread.
+    // 7. Rotate the mesh in update() instead of renderUpdate() to make the rotation framerate independent by multiplying it by deltaTime(). The update() method may be executed several times in a frame to catch up with the render thread.
     mesh_->transform()->set_local_rotation(mesh_->transform()->local_rotation() + vec3(0.21, 0.12, 0.5) * deltaTime());
 
     Application::update();

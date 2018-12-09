@@ -58,6 +58,7 @@ namespace vxr
   private:
     ref_ptr<GameObject> cam_;
     ref_ptr<GameObject> planet_;
+    ref_ptr<GameObject> light_;
 
     vec3 zoom_on = vec3(0.0f, 1.0f, 1.0f);
     vec3 zoom_off = vec3(0.0f, 0.0f, 2.0f);

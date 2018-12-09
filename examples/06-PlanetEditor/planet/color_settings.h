@@ -28,6 +28,7 @@
 #include "../../../include/components/renderer.h"
 #include "../../../include/utils/minmax.h"
 #include "../../../include/utils/gradient.h"
+#include "../../../include/graphics/default_materials.h"
 #include "material/material.h"
 #include "noise_filter.h"
 #include "simple.h"
@@ -99,11 +100,9 @@ namespace vxr
 
     ref_ptr<NoiseFilter> biome_noise_filter;
 
-    Shader::Data data;
     ref_ptr<Texture> gradient_texture;
     ref_ptr<PlanetMaterial> mat;
 
-    Shader::Data wireframe_data;
     ref_ptr<Unlit> wireframe_mat;
   };
 

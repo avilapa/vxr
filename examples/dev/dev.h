@@ -30,7 +30,7 @@
 #include "../../include/core/gameobject.h"
 
 /**
-* \file mesh.h
+* \file dev.h
 *
 * \author Victor Avila (avilapa.github.io)
 *
@@ -39,21 +39,6 @@
 */
 namespace vxr 
 {
-
-  class BehaviourSon : public Custom
-  {
-
-    VXR_OBJECT(BehaviourSon, Component);
-
-  public:
-    BehaviourSon() {};
-    virtual ~BehaviourSon() {};
-
-    virtual void start() { printf("aaa: %0.3f", aaa); };
-    virtual void update() { printf("bb: %0.3f", aaa); };
-
-    float aaa = 1.0f;
-  };
 
   class Main : public Application
   {
@@ -69,10 +54,12 @@ namespace vxr
     virtual void renderUpdate() override;
     virtual void stop() override;
 
-    static const uint32 kNUM_CUBES_ROW = 7;
-
   private:
+    static const uint32 NUM_LIGHTS = 30;
     ref_ptr<GameObject> cam_;
+    ref_ptr<GameObject> obj_;
+    ref_ptr<GameObject> light_node_;
+    ref_ptr<GameObject> light_[NUM_LIGHTS];
   };
 
 } /* end of vxr namespace */

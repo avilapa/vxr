@@ -35,29 +35,25 @@ namespace vxr
     set_name("Material");
     if (gpu_.info.shader.vert == "")
     {
-      gpu_.info.shader.vert = Shader::load("../../assets/shaders/glsl/standard.vert");
+      gpu_.info.shader.vert = Shader::Load("unlit.vert");
     }
     if (gpu_.info.shader.frag == "")
     {
-      gpu_.info.shader.frag = Shader::load("../../assets/shaders/glsl/standard.frag");
+      gpu_.info.shader.frag = Shader::Load("unlit.frag");
     }
-    gpu_.info.attribs[0] = { "a_position", VertexFormat::Float3 };
-    gpu_.info.attribs[1] = { "a_normal",   VertexFormat::Float3 };
-    gpu_.info.attribs[2] = { "a_uv",       VertexFormat::Float2 };
-
-    uniforms_.u.specific.std.color = { 1.0f, 1.0f, 1.0f, 1.0f };
+    gpu_.info.attribs[0] = { "attr_position", VertexFormat::Float3 };
+    gpu_.info.attribs[1] = { "attr_normal",   VertexFormat::Float3 };
+    gpu_.info.attribs[2] = { "attr_uv",       VertexFormat::Float2 };
   }
 
   Material::~Material()
   {
-    
   }
 
   void Material::onGUI()
   {
-    ImGui::Text("Shader: Standard");
+    ImGui::Text(("Shader: " + type()).c_str());
     ImGui::Spacing();
-    ImGui::ColorEdit4("Color", (float*)&uniforms_.u.specific.std.color);
   }
 
   void Material::setup()
@@ -96,15 +92,20 @@ namespace vxr
     return textures_[index];
   }
 
-  void Material::set_uniforms(Shader::Data uniforms)
+  void Material::set_uniforms_name(const char* name)
   {
-    uniforms_ = uniforms;
+    uniforms_.name = name;
+  }
+
+  void Material::set_uniforms_usage(Usage::Enum usage)
+  {
+    uniforms_.usage = usage;
   }
 
   void Material::set_shaders(const char* vert, const char* frag)
   {
-    gpu_.info.shader.vert = Shader::load(vert);
-    gpu_.info.shader.frag = Shader::load(frag);
+    gpu_.info.shader.vert = Shader::Load(vert);
+    gpu_.info.shader.frag = Shader::Load(frag);
   }
 
   void Material::set_cull(Cull::Enum cull)
@@ -149,15 +150,26 @@ namespace vxr
     return initialized_;
   }
 
-  string Shader::load(const char* file)
+  string Shader::Load(const char* file)
   {
+#if defined (VXR_OPENGL)
+    string path = "../../src/graphics/opengl/shaders/";
+#elif defined (VXR_DX11)
+    string path = ""; 
+#else
+#  error Backend must be defined on GENie.lua (e.g. --gl OR --dx11).
+#endif
     string content;
     std::ifstream file_stream(file, std::ios::in);
 
     if (!file_stream.is_open())
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not read file '%s', file does not exist.\n", file);
-      return "";
+      file_stream = std::ifstream(path + file, std::ios::in);
+      if (!file_stream.is_open())
+      {
+        VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not read file '%s', file does not exist.\n", file);
+        return "";
+      }
     }
 
     string line = "";
@@ -170,8 +182,4 @@ namespace vxr
     return content;
   }
 
-  Unlit::Unlit()
-  {
-    set_shaders("../../assets/shaders/glsl/unlit.vert", "../../assets/shaders/glsl/unlit.frag");
-  }
 }

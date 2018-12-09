@@ -25,7 +25,7 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../core/component.h"
-#include "../graphics/material.h"
+#include "../graphics/default_materials.h"
 #include "../graphics/shader.h"
 
 /**

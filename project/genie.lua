@@ -61,7 +61,7 @@ newoption {
 solution "VXR-Engine"
 
 	location "../project/vs/"
-	configurations 		{ "Debug", "Release" }
+	configurations 		{ "Debug", }--"Release" }
 	platforms 			{ "x32", "x64", "Native" }
 	flags 				{  }
 

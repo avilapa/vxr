@@ -28,8 +28,6 @@
 // 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
-#define GLSL(...) "#version 330\n" #__VA_ARGS__
-
 namespace vxr 
 {
   static float vertex_data[] = {
@@ -49,18 +47,24 @@ namespace vxr
     index_buffer_  = Engine::ref().gpu()->createBuffer({ BufferType::Index,  sizeof(index_data),  Usage::Static });
 
     // 2. Initialize shader data and vertex attributes data and create material for the triangle.
+    // Shader version 330 and a set of helper functions are provided by default. You can also use
+    // the function 'Shader::Load(std::string file)' to load the shader from a file.
     gpu::Material::Info mat_info;
-    mat_info.shader.vert = GLSL(
-      in vec3 a_position;
-      in vec3 a_color;
-      out vec3 color;
-      void main() { gl_Position = vec4(a_position, 1.0); color = a_color; }
-    );
-    mat_info.shader.frag = GLSL(
-      in vec3 color;
-      out vec4 fragColor;
-      void main() { fragColor = vec4(color, 1.0); }
-    );
+    mat_info.shader.vert =
+      "in vec3 a_position;                        \n"
+      "in vec3 a_color;                           \n"
+      "out vec3 color;                            \n"
+      "void main()                                \n"
+      "{                                          \n"
+      "  gl_Position = vec4(a_position, 1.0);     \n"
+      "  color = a_color;                         \n"
+      "}                                          \n";
+    mat_info.shader.frag =
+      "in vec3 color;                             \n"
+      "void main()                                \n" 
+      "{                                          \n"
+      "  setFragmentColor(color);                 \n"
+      "}                                          \n";
 
     mat_info.attribs[0] = { "a_position", VertexFormat::Float3 };
     mat_info.attribs[1] = { "a_color",    VertexFormat::Float3 };

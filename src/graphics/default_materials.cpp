@@ -1,5 +1,3 @@
-#pragma once
-
 // ----------------------------------------------------------------------------------------
 // MIT License
 // 
@@ -24,32 +22,77 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../../include/graphics/window.h"
-#include "../../deps/imgui/imgui.h"
-#include "../../deps/imgui/imgui_stl.h"
+#include "../../include/graphics/default_materials.h"
 
-/**
-* \file ui.h
-*
-* \author Victor Avila (avilapa.github.io)
-*
-* \brief Global functions for UI rendering.
-*
-*/
+#include "../../include/graphics/ui.h"
+
 namespace vxr
 {
-  struct Window::Data;
 
-  namespace ui 
+  Screen::Screen()
   {
-    void Test();
-    void Editor();
-    
-    bool Init(Window::Data* data);
-    void Update(Window::Data* data);
-    void Draw();
-    void Stop(Window::Data* data);
+    set_shaders("screen_standard.vert", "screen_standard.frag");
+    set_uniforms_name("Screen");
+  }
 
-  } /* end of ui namespace */
+  void Screen::onGUI()
+  {
+    Material::onGUI();
+  }
 
-} /* end of vxr namespace */
+#define UNIFORM_ACCESS uniforms_.u.specific.unlit
+
+  Unlit::Unlit()
+  {
+    set_shaders("unlit.vert", "unlit.frag");
+    set_uniforms_name("Unlit");
+
+    UNIFORM_ACCESS.color = vec4(1);
+  }
+
+  void Unlit::onGUI()
+  {
+    Material::onGUI();
+    ImGui::ColorEdit4("Color", (float*)&UNIFORM_ACCESS.color);
+  }
+
+  void Unlit::set_color(Color color)
+  {
+    UNIFORM_ACCESS.color = color.rgba();
+  }
+
+  Color Unlit::color() const
+  {
+    return Color(UNIFORM_ACCESS.color);
+  }
+
+#undef UNIFORM_ACCESS
+
+#define UNIFORM_ACCESS uniforms_.u.specific.standard
+
+  Standard::Standard()
+  {
+    set_shaders("standard.vert", "standard.frag");
+    set_uniforms_name("Standard");
+
+    UNIFORM_ACCESS.color = vec4(1);
+  }
+
+  void Standard::onGUI()
+  {
+    Material::onGUI();
+    ImGui::ColorEdit4("Color", (float*)&UNIFORM_ACCESS.color);
+  }
+
+  void Standard::set_color(Color color)
+  {
+    UNIFORM_ACCESS.color = color.rgba();
+  }
+
+  Color Standard::color() const
+  {
+    return Color(UNIFORM_ACCESS.color);
+  }
+
+#undef UNIFORM_ACCESS
+}

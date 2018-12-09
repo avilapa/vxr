@@ -23,6 +23,7 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../../include/graphics/render_context.h"
+#include "../../include/graphics/shader.h"
 
 #if defined (VXR_OPENGL)
 #  include "../graphics/opengl/gl_backend.h"

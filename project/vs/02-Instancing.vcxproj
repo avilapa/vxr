@@ -9,14 +9,6 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|Win32">
-      <Configuration>Release</Configuration>
-      <Platform>Win32</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|x64">
-      <Configuration>Release</Configuration>
-      <Platform>x64</Platform>
-    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{42535671-AE13-D2A7-774E-1B25E3CD1684}</ProjectGuid>
@@ -36,16 +28,6 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
-  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -55,37 +37,17 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Debug\02-Instancing\</IntDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Debug\02-Instancing\</IntDir>
     <TargetName>02-Instancing</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Debug\02-Instancing\</IntDir>
-    <TargetName>02-Instancing</TargetName>
-    <TargetExt>.exe</TargetExt>
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Release\02-Instancing\</IntDir>
-    <TargetName>02-Instancing</TargetName>
-    <TargetExt>.exe</TargetExt>
-    <LinkIncremental>true</LinkIncremental>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Release\02-Instancing\</IntDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Debug\02-Instancing\</IntDir>
     <TargetName>02-Instancing</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>true</LinkIncremental>
@@ -144,58 +106,6 @@
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <ClCompile>
-      <AdditionalOptions>/wd4100 /wd4127 /wd4244  %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PrecompiledHeader></PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat></DebugInformationFormat>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
-    </ResourceCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)02-Instancing.exe</OutputFile>
-      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <TargetMachine>MachineX86</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <ClCompile>
-      <AdditionalOptions>/wd4100 /wd4127 /wd4244  %(AdditionalOptions)</AdditionalOptions>
-      <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
-      <MinimalRebuild>false</MinimalRebuild>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <PrecompiledHeader></PrecompiledHeader>
-      <WarningLevel>Level3</WarningLevel>
-      <DebugInformationFormat></DebugInformationFormat>
-    </ClCompile>
-    <ResourceCompile>
-      <PreprocessorDefinitions></PreprocessorDefinitions>
-    </ResourceCompile>
-    <Link>
-      <SubSystem>Console</SubSystem>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
-      <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)02-Instancing.exe</OutputFile>
-      <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
-      <TargetMachine>MachineX64</TargetMachine>
-    </Link>
-  </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\examples\02-Instancing\instancing.h" />
   </ItemGroup>
@@ -203,9 +113,6 @@
     <ClCompile Include="..\..\examples\02-Instancing\instancing.cpp">
       <ObjectFileName>$(IntDir)examples\02-Instancing\</ObjectFileName>
     </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\examples\02-Instancing\imgui.ini" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="VXR.vcxproj">

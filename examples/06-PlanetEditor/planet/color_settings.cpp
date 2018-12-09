@@ -163,17 +163,13 @@ namespace vxr
     gradient_texture->set_texels_format(TexelsFormat::RGB_U8);
     gradient_texture->set_filtering(SamplerFiltering::Nearest, SamplerFiltering::Nearest);
     gradient_texture->set_usage(Usage::Dynamic);
- 
- 
-    mat->set_uniforms(data);
 
-    wireframe_data.u.specific.std.color = settings->wireframe_color.rgba();
-    wireframe_mat->set_uniforms(wireframe_data);
+    wireframe_mat->set_color(settings->wireframe_color.rgba());
   }
 
   void ColorGenerator::updateElevation(vec2 elevationMinMax)
   {
-    data.u.specific.planet.elevationMinMax = elevationMinMax;
+    mat->set_elevation_min_max(elevationMinMax);
   }
 
   float ColorGenerator::percentFromPoint(vec3 point)

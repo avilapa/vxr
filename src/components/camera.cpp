@@ -25,6 +25,7 @@
 #include "../../include/components/camera.h"
 
 #include "../../include/engine/engine.h"
+#include "../../include/graphics/texture.h"
 #include "../../include/graphics/ui.h"
 
 namespace vxr 
@@ -120,7 +121,6 @@ namespace vxr
     screen_texture_->init(screen_.color_texture());
 
     screen_material_->addTexture(screen_texture_);
-    screen_material_->set_shaders("../../assets/shaders/glsl/screen_standard.vert", "../../assets/shaders/glsl/screen_standard.frag");
 
     screen_material_->setupTextures();
     screen_material_->setup();
@@ -150,10 +150,12 @@ namespace vxr
     {
       main()->computeTransformations();
 
-      common_uniforms_.data.resolution = Engine::ref().window()->params().size;
-      common_uniforms_.data.u_clear_color = main()->background_color().rgba();
       common_uniforms_.data.u_proj = main()->projection();
       common_uniforms_.data.u_view = main()->view();
+      common_uniforms_.data.u_resolution = Engine::ref().window()->params().size;
+      ///xy
+      common_uniforms_.data.u_clear_color = main()->background_color().rgba();
+      common_uniforms_.data.u_view_pos_num_lights = vec4(main()->transform()->local_position(), (float)Engine::ref().light()->num_lights()); /// Worldpos
 
       frame.fillBufferCommand()
         .set_buffer(common_uniforms_.buffer)
@@ -188,7 +190,7 @@ namespace vxr
     }
     DisplayList frame;
     frame.setupViewCommand()
-      .set_viewport({ 0,0, (uint16)common_uniforms_.data.resolution.x, (uint16)common_uniforms_.data.resolution.y });
+      .set_viewport({ 0,0, (uint16)common_uniforms_.data.u_resolution.x, (uint16)common_uniforms_.data.u_resolution.y });
     
     if (render_to_screen_)
     {

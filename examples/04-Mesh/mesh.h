@@ -54,6 +54,7 @@ namespace vxr
   private:
     ref_ptr<GameObject> cam_;
     ref_ptr<GameObject> mesh_;
+    ref_ptr<GameObject> light_;
   };
 
 } /* end of vxr namespace */
