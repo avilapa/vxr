@@ -1,6 +1,6 @@
 [![vxr engine logo](/assets/textures/readme/logo.png)](https://avilapa.github.io)
 
-_version 0.1.1_
+_version 0.2.1_
 
 # What is [vxr](https://github.com/avilapa/vxr)?
 
@@ -56,6 +56,7 @@ A list of examples are provided within the solution to showcase the engine's cap
   - Transform
   - Mesh Filter
   - Renderer
+  - Light
   - Camera
   - Custom Component
 - Model loading (_.obj_)
@@ -91,17 +92,23 @@ namespace vxr
     mesh_ = Asset::loadModelOBJ("../../assets/meshes/obj/teapot_mesh.obj");
     mesh_->set_name("Teapot");
     mesh_->transform()->set_local_rotation(vec3(glm::radians(90.0f), 0.0f, 0.0f));
+    
+    // 4. Create a light
+    light_.alloc()->set_name("Sun");
+    light_->addComponent<Light>()->set_color(Color::Random());
+    light_->transform()->set_local_position(vec3(0.8, 0.3, 2.0));
 
-    // 4. Create a Scene, parent the objects and load.
+    // 5. Create a Scene, parent the objects and load.
     ref_ptr<Scene> scene_;
     scene_.alloc();
 
     scene_->addObject(cam_);
     scene_->addObject(mesh_);
+    scene_->addObject(light_);
 
     Engine::ref().loadScene(scene_);
 
-    // 5. Submit the UI function.
+    // 6. Submit the UI function.
     Engine::ref().submitUIFunction([this]() { ui::Editor(); });
 
     Application::start();
@@ -109,11 +116,10 @@ namespace vxr
 
   void Main::update()
   {
-    // 6. Rotate the mesh in update() instead of renderUpdate() to make the rotation framerate independent 
+    // 7. Rotate the mesh in update() instead of renderUpdate() to make the rotation framerate independent 
     // by multiplying it by deltaTime(). The update() method may be executed several times in a frame to 
     // catch up with the render thread.
-    mesh_->transform()->set_local_rotation(mesh_->transform()->local_rotation() 
-					   + vec3(0.21, 0.12, 0.5) * deltaTime());
+    mesh_->transform()->set_local_rotation(mesh_->transform()->local_rotation() + vec3(0.21, 0.12, 0.5) * deltaTime());
 
     Application::update();
   }
@@ -126,8 +132,6 @@ namespace vxr
 ```c++
 // 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
-
-#define GLSL(...) "#version 330\n" #__VA_ARGS__
 
 namespace vxr 
 {
@@ -145,25 +149,31 @@ namespace vxr
   {
     // 1. Create vertex and index buffer for the triangle.
     vertex_buffer_ = Engine::ref().gpu()->createBuffer({ BufferType::Vertex, 
-    							 sizeof(vertex_data), 
+							 sizeof(vertex_data), 
 							 Usage::Static });
     index_buffer_  = Engine::ref().gpu()->createBuffer({ BufferType::Index,  
-							 sizeof(index_data), 
+    							 sizeof(index_data),  
 							 Usage::Static });
 
     // 2. Initialize shader data and vertex attributes data and create material for the triangle.
+    // Shader version 330 and a set of helper functions are provided by default. You can also use
+    // the function 'Shader::Load(std::string file)' to load the shader from a file.
     gpu::Material::Info mat_info;
-    mat_info.shader.vert = GLSL(
-      in vec3 a_position;
-      in vec3 a_color;
-      out vec3 color;
-      void main() { gl_Position = vec4(a_position, 1.0); color = a_color; }
-    );
-    mat_info.shader.frag = GLSL(
-      in vec3 color;
-      out vec4 fragColor;
-      void main() { fragColor = vec4(color, 1.0); }
-    );
+    mat_info.shader.vert =
+      "in vec3 a_position;                        \n"
+      "in vec3 a_color;                           \n"
+      "out vec3 color;                            \n"
+      "void main()                                \n"
+      "{                                          \n"
+      "  gl_Position = vec4(a_position, 1.0);     \n"
+      "  color = a_color;                         \n"
+      "}                                          \n";
+    mat_info.shader.frag =
+      "in vec3 color;                             \n"
+      "void main()                                \n" 
+      "{                                          \n"
+      "  setFragmentColor(color);                 \n"
+      "}                                          \n";
 
     mat_info.attribs[0] = { "a_position", VertexFormat::Float3 };
     mat_info.attribs[1] = { "a_color",    VertexFormat::Float3 };
