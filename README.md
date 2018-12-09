@@ -13,16 +13,16 @@ As it stands now, it is a __multithreaded 3D game development engine written in 
   
 Project webpage: https://avilapa.github.io/vxr-engine/
 
-![06-PlanetEditor](/assets/textures/readme/06-PlanetEditor.png)
+![Planets](/assets/textures/readme/planets.png)
 
 # Building
 
 _[A vs2017 + opengl Solution is provided by default]_
 
-This project uses [GENie.lua](https://github.com/bkaradzic/GENie) to create the project solution. From for example [babun](http://babun.github.io/) you will have to execute the following commands:
+This project uses [GENie.lua](https://github.com/bkaradzic/GENie) to create the project solution. Open a CMD in the root directory and execute the following commands to re-create a solution:
 
 	cd project
-	../tools/genie.exe [parameters] <vs2017|vs2015>
+	..\tools\genie [parameters] <vs2017|vs2015>
 	
 The solution will be located in _project/vs/VXR-Engine.sln_.
   
