@@ -27,9 +27,9 @@
 #include "../../include/graphics/render_context.h"
 
 #if defined (VXR_OPENGL)
-#  include "../graphics/opengl/gl_backend.h"
+#  include "../graphics/backend/opengl/gl_backend.h"
 #elif defined (VXR_DX11)
-#  include "../graphics/dx11/dx11_backend.h"
+#  include "../graphics/backend/dx11/dx11_backend.h"
 #else
 #  error Backend must be defined on GENie.lua (e.g. try parameters --gl OR --dx11).
 #endif

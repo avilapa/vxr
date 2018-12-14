@@ -26,6 +26,7 @@
 
 #include "../engine/GPU.h"
 #include "../core/scene.h"
+#include "../core/assets.h"
 #include "../components/renderer.h"
 #include "../components/transform.h"
 #include "../components/mesh_filter.h"
@@ -66,6 +67,7 @@ namespace vxr
 
     ref_ptr<GPU> gpu();
     ref_ptr<Window> window();
+    ref_ptr<AssetManager> assetManager();
 
     ref_ptr<System::Light> light();
     ref_ptr<System::Custom> custom();
@@ -79,6 +81,7 @@ namespace vxr
 
     ref_ptr<GPU> gpu_;
     ref_ptr<Scene> scene_;
+    ref_ptr<AssetManager> asset_manager_;
 
     ref_ptr<System::Light> light_;
     ref_ptr<System::Custom> custom_;

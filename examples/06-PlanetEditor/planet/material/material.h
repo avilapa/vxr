@@ -25,7 +25,7 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../../../include/core/gameobject.h"
-#include "../../../include/components/renderer.h"
+#include "../../../include/graphics/materials/default_materials.h"
 
 namespace vxr 
 {
@@ -36,8 +36,22 @@ namespace vxr
   public:
     PlanetMaterial();
 
-    void set_elevation_min_max(vec2 elevation_min_max);
-    vec2 elevation_min_max() const;
+    class Instance : public MaterialInstance
+    {
+      VXR_OBJECT(Instance, MaterialInstance);
+    public:
+      Instance();
+
+      void set_elevation_min_max(vec2 elevation_min_max);
+      vec2 elevation_min_max() const;
+
+      void set_gradient_texture(ref_ptr<Texture> texture);
+      ref_ptr<Texture> gradient_texture() const;
+
+    protected:
+      ref_ptr<Texture> gradient_texture_;
+    };
+
   };
 
 } /* end of vxr namespace */

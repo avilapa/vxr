@@ -37,7 +37,7 @@ namespace vxr
     // 1. Initialize GPU and Window parameters.
     Params p;
     p.gpu = { 100, 100, 100, 100 };
-    p.window = { { 1920, 1080} };
+    p.window = { { 1280, 720} };
     Engine::ref().set_preinit_params(p);
   }
 
@@ -47,7 +47,8 @@ namespace vxr
     cam_.alloc()->set_name("Camera");
     cam_->addComponent<Camera>()->set_background_color(Color(0.03f, 0.03f, 0.05f, 1.0f));
     
-    // 3. Create a Planet
+    // 3. Create a Planet and add the custom material to the library.
+    Engine::ref().assetManager()->addMaterial<PlanetMaterial>();
     planet_.alloc()->set_name("Planet");
     planet_->addComponent<Planet, Custom>();
 

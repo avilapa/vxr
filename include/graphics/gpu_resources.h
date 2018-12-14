@@ -94,6 +94,7 @@ namespace vxr
       };
 
       static unsigned char* loadFromFile(const char* file, Texture::Info& tex);
+      static std::vector<unsigned char*> loadCubemapFromFile(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, Texture::Info& tex);
     };
 
     struct Material : public Resource

@@ -68,17 +68,17 @@ namespace vxr
     ImGui::ColorEdit3(uiText("##Color").c_str(), (float*)&color_);
   }
 
-  void Light::set_color(Color color)
+  void Light::set_color(const Color& color)
   {
     color_ = color;
   }
 
-  void Light::set_intensity(float intensity)
+  void Light::set_intensity(const float& intensity)
   {
     intensity_ = intensity;
   }
 
-  void Light::set_ambient(float ambient)
+  void Light::set_ambient(const float& ambient)
   {
     ambient_ = ambient;
   }
@@ -135,8 +135,8 @@ namespace vxr
           c->computeTransformations();
         }*/
 
-        light_uniforms_.data.pos[num_lights_] = vec4(c->transform()->local_position(), 0.0f); /// Worldpos
-        light_uniforms_.data.dir_intensity[num_lights_] = vec4(c->transform()->local_rotation(), c->intensity_); /// Worldrot
+        light_uniforms_.data.pos[num_lights_] = vec4(c->transform()->world_position(), 0.0f);
+        light_uniforms_.data.dir_intensity[num_lights_] = vec4(c->transform()->world_rotation(), c->intensity_);
         light_uniforms_.data.col_ambient[num_lights_] = vec4(c->color_.rgb(), c->ambient_);
 
         num_lights_++;

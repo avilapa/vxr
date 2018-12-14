@@ -60,9 +60,9 @@ namespace vxr
     virtual string base_type() const = 0;
 
     void set_name(string name);
-    string name();
+    string name() const;
 
-    uint32 id();
+    uint32 id() const;
 
   protected:
     string uiText(string label);

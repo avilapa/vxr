@@ -51,12 +51,12 @@ namespace vxr
     name_ = name;
   }
 
-  string Object::name()
+  string Object::name() const
   {
     return name_;
   }
 
-  uint32 Object::id()
+  uint32 Object::id() const
   {
     return id_;
   }

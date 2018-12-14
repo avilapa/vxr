@@ -34,9 +34,9 @@ namespace vxr
   Transform::Transform()
   {
     set_name("Transform");
-    position_ = { 0.0f, 0.0f, 0.0f };
-    rotation_ = { 0.0f, 0.0f, 0.0f };
-    scale_ = { 1.0f, 1.0f, 1.0f };
+    world_position_ = { 0.0f, 0.0f, 0.0f };
+    world_rotation_ = { 0.0f, 0.0f, 0.0f };
+    world_scale_ = { 1.0f, 1.0f, 1.0f };
 
     local_position_ = { 0.0f, 0.0f, 0.0f };
     local_rotation_ = { 0.0f, 0.0f, 0.0f };
@@ -62,14 +62,14 @@ namespace vxr
   {
     ImGui::Spacing();
     ImGui::Text("Position"); ImGui::SameLine();
-    if (ImGui::DragFloat3(uiText("##Position").c_str(), (float*)&local_position_, 0.01f, -FLT_MAX, FLT_MAX)) dirty_ = true;
+    if (ImGui::DragFloat3(uiText("##Position").c_str(), (float*)&local_position_, 0.01f, -FLT_MAX, FLT_MAX)) markForUpdate();
     ImGui::Text("Rotation"); ImGui::SameLine();
-    if (ImGui::DragFloat3(uiText("##Rotation").c_str(), (float*)&local_rotation_, 0.01f, -FLT_MAX, FLT_MAX)) dirty_ = true;
+    if (ImGui::DragFloat3(uiText("##Rotation").c_str(), (float*)&local_rotation_, 0.01f, -FLT_MAX, FLT_MAX)) markForUpdate();
     ImGui::Text("Scale   "); ImGui::SameLine();
-    if (ImGui::DragFloat3(uiText("##Scale").c_str(), (float*)&local_scale_, 0.01f, -FLT_MAX, FLT_MAX)) dirty_ = true;
+    if (ImGui::DragFloat3(uiText("##Scale").c_str(), (float*)&local_scale_, 0.01f, -FLT_MAX, FLT_MAX)) markForUpdate();
   }
 
-  mat4 Transform::worldMatrix()
+  mat4 Transform::worldMatrix() const
   {
     mat4 m = local_model_;
     if (parent_.get())
@@ -86,7 +86,7 @@ namespace vxr
       /// TODO: Reparenting
       parent_ = parent;
       parent_->children_.push_back(this);
-      dirty_ = true;
+      markForUpdate();
       gameObject()->scene_id_ = parent->gameObject()->scene_id_;
       for (auto &i : transform()->children_)
       {
@@ -95,12 +95,12 @@ namespace vxr
     }
   }
 
-  ref_ptr<Transform> Transform::parent() 
+  ref_ptr<Transform> Transform::parent() const
   {
     return parent_;
   }
 
-  ref_ptr<Transform> Transform::child(uint32 index /* = 0 */)
+  ref_ptr<Transform> Transform::child(uint32 index /* = 0 */) const
   {
     if (index > children_.size() - 1)
     {
@@ -110,7 +110,7 @@ namespace vxr
     return children_[index];
   }
 
-  uint32 Transform::num_children()
+  uint32 Transform::num_children() const
   {
     return children_.size();
   }
@@ -118,21 +118,43 @@ namespace vxr
   void Transform::computeTransformations()
   {
     VXR_TRACE_SCOPE("VXR", "Compute Transformations");
-    // Local vector updated: need to update world vectors and model.
+
+    computeLocal();
+    computeWorld();
+  }
+
+  void Transform::computeLocal()
+  {
     mat4 rot_matrix = glm::rotate(local_rotation_.x, vec3(1.0f, 0.0f, 0.0f)) * glm::rotate(local_rotation_.y, vec3(0.0f, 1.0f, 0.0f)) * glm::rotate(local_rotation_.z, vec3(0.0f, 0.0f, 1.0f));
     local_model_ = glm::translate(local_position_) * glm::scale(local_scale_) * rot_matrix;
     forward_ = glm::normalize(local_model_ * vec4(0.0f, 0.0f, -1.0f, 0.0f));
     right_ = glm::normalize(glm::cross(forward_, vec3(0.0f, 1.0f, 0.0f)));
     up_ = glm::normalize(glm::cross(right_, forward_));
-
-    ///TODO: Update world position
-
-    // World vector updated: need to update model.
-
-    // Forward/Right/Up vectors updated
   }
 
-  bool Transform::hasChanged()
+  void Transform::computeWorld()
+  {
+    vec3 skew; vec4 perspective; glm::quat rotation;
+    glm::decompose(worldMatrix(), world_scale_, rotation, world_position_, skew, perspective);
+    rotation = glm::conjugate(rotation);
+    world_rotation_ = glm::eulerAngles(rotation);
+  }
+
+  void Transform::markForUpdate()
+  {
+    if (dirty_)
+    {
+      return;
+    }
+
+    dirty_ = true;
+    for (uint32 i = 0; i < children_.size(); ++i)
+    {
+      children_[i]->markForUpdate();
+    }
+  }
+
+  bool Transform::hasChanged() const
   {
     return dirty_;
   }

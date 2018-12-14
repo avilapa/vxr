@@ -121,18 +121,19 @@
     <ClInclude Include="..\..\include\engine\gpu.h" />
     <ClInclude Include="..\..\include\engine\ignore_warnings.h" />
     <ClInclude Include="..\..\include\engine\types.h" />
-    <ClInclude Include="..\..\include\graphics\default_materials.h" />
     <ClInclude Include="..\..\include\graphics\display_list.h" />
     <ClInclude Include="..\..\include\graphics\dl_command.h" />
     <ClInclude Include="..\..\include\graphics\gpu_instances.h" />
     <ClInclude Include="..\..\include\graphics\gpu_resources.h" />
-    <ClInclude Include="..\..\include\graphics\material.h" />
     <ClInclude Include="..\..\include\graphics\mesh.h" />
     <ClInclude Include="..\..\include\graphics\render_context.h" />
-    <ClInclude Include="..\..\include\graphics\shader.h" />
     <ClInclude Include="..\..\include\graphics\texture.h" />
     <ClInclude Include="..\..\include\graphics\ui.h" />
     <ClInclude Include="..\..\include\graphics\window.h" />
+    <ClInclude Include="..\..\include\graphics\materials\default_materials.h" />
+    <ClInclude Include="..\..\include\graphics\materials\material.h" />
+    <ClInclude Include="..\..\include\graphics\materials\material_instance.h" />
+    <ClInclude Include="..\..\include\graphics\materials\shader.h" />
     <ClInclude Include="..\..\include\memory\referenced.h" />
     <ClInclude Include="..\..\include\memory\ref_ptr.h" />
     <ClInclude Include="..\..\include\memory\scoped_array.h" />
@@ -144,16 +145,16 @@
     <ClInclude Include="..\..\include\utils\noise.h" />
     <ClInclude Include="..\..\include\utils\timer.h" />
     <ClInclude Include="..\..\src\graphics\window_structure.h" />
-    <ClInclude Include="..\..\src\graphics\dx11\dx11.h" />
-    <ClInclude Include="..\..\src\graphics\dx11\dx11_backend.h" />
-    <ClInclude Include="..\..\src\graphics\dx11\dx11_imgui.h" />
-    <ClInclude Include="..\..\src\graphics\dx11\dx11_window.h" />
-    <ClInclude Include="..\..\src\graphics\dx11\dx11_window_struct.h" />
-    <ClInclude Include="..\..\src\graphics\opengl\gl.h" />
-    <ClInclude Include="..\..\src\graphics\opengl\gl_backend.h" />
-    <ClInclude Include="..\..\src\graphics\opengl\gl_imgui.h" />
-    <ClInclude Include="..\..\src\graphics\opengl\gl_window.h" />
-    <ClInclude Include="..\..\src\graphics\opengl\gl_window_struct.h" />
+    <ClInclude Include="..\..\src\graphics\backend\dx11\dx11.h" />
+    <ClInclude Include="..\..\src\graphics\backend\dx11\dx11_backend.h" />
+    <ClInclude Include="..\..\src\graphics\backend\dx11\dx11_imgui.h" />
+    <ClInclude Include="..\..\src\graphics\backend\dx11\dx11_window.h" />
+    <ClInclude Include="..\..\src\graphics\backend\dx11\dx11_window_struct.h" />
+    <ClInclude Include="..\..\src\graphics\backend\opengl\gl.h" />
+    <ClInclude Include="..\..\src\graphics\backend\opengl\gl_backend.h" />
+    <ClInclude Include="..\..\src\graphics\backend\opengl\gl_imgui.h" />
+    <ClInclude Include="..\..\src\graphics\backend\opengl\gl_window.h" />
+    <ClInclude Include="..\..\src\graphics\backend\opengl\gl_window_struct.h" />
     <ClInclude Include="..\..\deps\glm\common.hpp" />
     <ClInclude Include="..\..\deps\glm\exponential.hpp" />
     <ClInclude Include="..\..\deps\glm\ext.hpp" />
@@ -360,9 +361,6 @@
     <ClCompile Include="..\..\src\engine\gpu.cpp">
       <ObjectFileName>$(IntDir)src\engine\</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\default_materials.cpp">
-      <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
-    </ClCompile>
     <ClCompile Include="..\..\src\graphics\display_list.cpp">
       <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
     </ClCompile>
@@ -370,9 +368,6 @@
       <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\gpu_resources.cpp">
-      <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\src\graphics\material.cpp">
       <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\mesh.cpp">
@@ -390,23 +385,32 @@
     <ClCompile Include="..\..\src\graphics\window.cpp">
       <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\dx11\dx11_backend.cpp">
-      <ObjectFileName>$(IntDir)src\graphics\dx11\</ObjectFileName>
+    <ClCompile Include="..\..\src\graphics\backend\dx11\dx11_backend.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\backend\dx11\</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\dx11\dx11_imgui.cpp">
-      <ObjectFileName>$(IntDir)src\graphics\dx11\</ObjectFileName>
+    <ClCompile Include="..\..\src\graphics\backend\dx11\dx11_imgui.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\backend\dx11\</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\dx11\dx11_window.cpp">
-      <ObjectFileName>$(IntDir)src\graphics\dx11\</ObjectFileName>
+    <ClCompile Include="..\..\src\graphics\backend\dx11\dx11_window.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\backend\dx11\</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\opengl\gl_backend.cpp">
-      <ObjectFileName>$(IntDir)src\graphics\opengl\</ObjectFileName>
+    <ClCompile Include="..\..\src\graphics\backend\opengl\gl_backend.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\backend\opengl\</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\opengl\gl_imgui.cpp">
-      <ObjectFileName>$(IntDir)src\graphics\opengl\</ObjectFileName>
+    <ClCompile Include="..\..\src\graphics\backend\opengl\gl_imgui.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\backend\opengl\</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\opengl\gl_window.cpp">
-      <ObjectFileName>$(IntDir)src\graphics\opengl\</ObjectFileName>
+    <ClCompile Include="..\..\src\graphics\backend\opengl\gl_window.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\backend\opengl\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\default_materials.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\material.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\material_instance.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\utils\color.cpp">
       <ObjectFileName>$(IntDir)src\utils\</ObjectFileName>

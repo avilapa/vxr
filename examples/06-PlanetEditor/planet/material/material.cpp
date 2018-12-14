@@ -29,24 +29,40 @@
 namespace vxr
 {
 
-#define UNIFORM_ACCESS uniforms_.u.specific.planet
-
   PlanetMaterial::PlanetMaterial()
   {
+    set_name("PlanetMaterial");
     set_shaders("planet/material/planet.vert", "planet/material/planet.frag");
+
+    set_num_textures(1);
+    set_uniforms_enabled(true);
     set_uniforms_name("Planet");
   }
 
-  void PlanetMaterial::set_elevation_min_max(vec2 elevation_min_max)
+  PlanetMaterial::Instance::Instance()
   {
-    UNIFORM_ACCESS.elevationMinMax = elevation_min_max;
+    init("PlanetMaterial");
   }
 
-  vec2 PlanetMaterial::elevation_min_max() const
+  void PlanetMaterial::Instance::set_elevation_min_max(vec2 elevation_min_max)
   {
-    return UNIFORM_ACCESS.elevationMinMax;
+    uniforms_.planet.elevationMinMax = elevation_min_max;
   }
 
-#undef UNIFORM_ACCESS
+  vec2 PlanetMaterial::Instance::elevation_min_max() const
+  {
+    return uniforms_.planet.elevationMinMax;
+  }
+
+  void PlanetMaterial::Instance::set_gradient_texture(ref_ptr<Texture> texture)
+  {
+    gradient_texture_ = texture;
+    set_texture(0, gradient_texture_);
+  }
+
+  ref_ptr<Texture> PlanetMaterial::Instance::gradient_texture() const
+  {
+    return gradient_texture_;
+  }
 
 } /* end of vxr namespace */

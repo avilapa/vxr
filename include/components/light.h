@@ -25,7 +25,7 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../core/component.h"
-#include "../graphics/shader.h"
+#include "../graphics/materials/shader.h"
 #include "../graphics/gpu_resources.h"
 
 /**
@@ -42,19 +42,17 @@ namespace vxr
 
 	class Light : public Component
   {
-
     VXR_OBJECT(Light, Component);
-
     friend class System::Light;
 	public:
     Light();
-		virtual ~Light();
+		~Light();
 
     virtual void onGUI() override;
 
-    void set_color(Color color);
-    void set_intensity(float intensity);
-    void set_ambient(float ambient);
+    void set_color(const Color& color);
+    void set_intensity(const float& intensity);
+    void set_ambient(const float& ambient);
 
 	private:
     bool contributes_;
@@ -70,18 +68,16 @@ namespace vxr
   {
     class Light : public ComponentSystem
     {
-
       VXR_OBJECT(System::Light, ComponentSystem);
-
       friend class Renderer;
     public:
       Light();
       virtual ~Light();
 
-      virtual void init() override;
-      virtual void update() override;
-      virtual void renderUpdate() override;
-      virtual void renderPostUpdate() override;
+      void init() override;
+      void update() override;
+      void renderUpdate() override;
+      void renderPostUpdate() override;
 
       uint32 num_lights() const;
 

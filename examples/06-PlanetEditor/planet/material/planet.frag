@@ -36,5 +36,5 @@ void main()
 {     
   float alpha = inverseLerp(elevationMinMax.x, elevationMinMax.y, length(getPosition()));
   vec2 biome_uv = vec2(clamp(alpha, 0, 1), clamp(getUV().x, 0.001, 0.999));
-  setFragmentColor(computeLightContribution() * texture(u_tex0, biome_uv).rgb);
+  setFragmentColor(computeLightContribution() * texture(u_tex2d0, biome_uv).rgb);
 }

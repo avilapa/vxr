@@ -61,8 +61,8 @@ namespace vxr
     virtual void onEnable() {}
     virtual void onDisable() {}
 
-    void set_enabled(bool enabled) { enabled_ = enabled; }
-    bool enabled() { return enabled_; }
+    void set_enabled(const bool enabled) { enabled_ = enabled; }
+    bool enabled() const { return enabled_; }
 
   protected:
     bool enabled_ = true;
@@ -82,12 +82,12 @@ namespace vxr
       Custom();
       virtual ~Custom();
 
-      virtual void start() override;
-      virtual void update() override;
-      virtual void postUpdate() override;
-      virtual void renderUpdate() override;
-      virtual void renderPostUpdate() override;
-      virtual void stop() override;
+      void start() override;
+      void update() override;
+      void postUpdate() override;
+      void renderUpdate() override;
+      void renderPostUpdate() override;
+      void stop() override;
 
     private:
       std::vector<ref_ptr<vxr::Custom>> components_;

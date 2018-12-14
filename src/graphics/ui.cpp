@@ -26,9 +26,9 @@
 #include "../../include/engine/engine.h"
 
 #if defined (VXR_OPENGL)
-#  include "../graphics/opengl/gl_imgui.h"
+#  include "../graphics/backend/opengl/gl_imgui.h"
 #elif defined (VXR_DX11)
-#  include "../graphics/dx11/dx11_imgui.h"
+#  include "../graphics/backend/dx11/dx11_imgui.h"
 #else
 #  error Backend must be defined on GENie.lua (e.g. try parameters --gl OR --dx11).
 #endif
@@ -107,6 +107,7 @@ namespace vxr
     }
   }
 
+  static ImVec2 screen_pos = ImVec2(0, 0);
   static uint32 hierarchy_selected_node_ = 0;
   static ref_ptr<GameObject> hierarchy_selected_object_ = nullptr;
   static void RecursiveHierarchyTree(ref_ptr<GameObject> child, int *clicked_node) 
@@ -137,7 +138,8 @@ namespace vxr
 
   void ui::Editor()
   {
-    static bool editor_hidden = false;
+    static bool show_editor = true;
+    static bool show_statistics = false;
 
     ImGuiIO& io = ImGui::GetIO();
 
@@ -151,7 +153,8 @@ namespace vxr
                               | ImGuiWindowFlags_NoScrollbar 
                               | ImGuiWindowFlags_NoScrollWithMouse 
                               | ImGuiWindowFlags_NoCollapse 
-                              | ImGuiWindowFlags_AlwaysAutoResize))
+                              | ImGuiWindowFlags_AlwaysAutoResize
+                              | ImGuiWindowFlags_NoBringToFrontOnFocus))
     {
       ImGui::End();
       ImGui::PopStyleVar();
@@ -164,23 +167,12 @@ namespace vxr
       {
         ImGui::EndMenu();
       }
-      if (ImGui::BeginMenu("Window"))
+      if (ImGui::BeginMenu("View"))
       {
-        if (!editor_hidden)
-        {
-          if (ImGui::MenuItem("Hide Editor"))
-          {
-            editor_hidden = true;
-          }
-        }
-        else
-        {
-          if (ImGui::MenuItem("Show Editor"))
-          {
-            editor_hidden = false;
-          }
-        }
-        if (ImGui::MenuItem("Exit")) 
+        ImGui::MenuItem("Show Statistics", "", &show_statistics);
+        ImGui::MenuItem("Show Editor", "", &show_editor);
+
+        if (ImGui::MenuItem("Exit", "Alt+F4")) 
         {
           Engine::ref().window()->forceExit();
         }
@@ -192,15 +184,17 @@ namespace vxr
       ImGui::EndMenuBar();
     }
 
-    if (editor_hidden)
+    if (!show_editor)
     {
       ImGui::Image((void*)(intptr_t)Engine::ref().camera()->screen_id(), { io.DisplaySize.x, io.DisplaySize.y }, ImVec2(0, 1), ImVec2(1, 0));
       Engine::ref().camera()->set_render_size({ io.DisplaySize.x, io.DisplaySize.y });
       Engine::ref().camera()->main()->set_aspect(io.DisplaySize.x / io.DisplaySize.y);
-      Engine::ref().camera()->set_render_to_screen(false);
+      Engine::ref().camera()->set_render_to_screen(true);
 
       ImGui::End();
       ImGui::PopStyleVar();
+
+      if (show_statistics) Statistics(&show_statistics, !show_editor);
       return;
     }
 
@@ -266,6 +260,32 @@ namespace vxr
 
     ImGui::EndChild();
     ImGui::PopStyleVar();
+    ImGui::End();
+
+    if (show_statistics) Statistics(&show_statistics, !show_editor);
+  }
+
+  void ui::Statistics(bool *open, bool fullscreen)
+  { 
+    if (fullscreen)
+    {
+      ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.008f, ImGui::GetIO().DisplaySize.y * 0.035f), ImGuiCond_Always);
+    }
+    else
+    {
+      ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.172f, ImGui::GetIO().DisplaySize.y * 0.095f), ImGuiCond_Always);
+    }
+
+    ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
+    if (ImGui::Begin("Example: Simple Overlay",  open, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
+    {
+      ImGui::Text("GPU data:");
+      ref_ptr<GPU> gpu = Engine::ref().gpu();
+      ImGui::Text("Buffers:         %d / %d", gpu->num_used_buffers(), gpu->num_buffers());
+      ImGui::Text("Textures:        %d / %d", gpu->num_used_textures(), gpu->num_textures());
+      ImGui::Text("Materials:       %d / %d", gpu->num_used_materials(), gpu->num_materials());
+      ImGui::Text("Framebuffers:    %d / %d", gpu->num_used_framebuffers(), gpu->num_framebuffers());
+    }
     ImGui::End();
   }
 

@@ -119,6 +119,11 @@ namespace vxr
       PROPERTY(uint16, depth, 0);
       PROPERTY(bool, build_mipmap, false);
       PROPERTY_PTR(void, data);
+      PROPERTY_PTR(void, data_1);
+      PROPERTY_PTR(void, data_2);
+      PROPERTY_PTR(void, data_3);
+      PROPERTY_PTR(void, data_4);
+      PROPERTY_PTR(void, data_5);
     };
 
     struct SetupMaterialData 

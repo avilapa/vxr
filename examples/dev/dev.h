@@ -26,7 +26,7 @@
 
 #include "../../include/engine/application.h"
 #include "../../include/graphics/mesh.h"
-#include "../../include/graphics/material.h"
+#include "../../include/graphics/materials/default_materials.h"
 #include "../../include/core/gameobject.h"
 
 /**
@@ -55,11 +55,12 @@ namespace vxr
     virtual void stop() override;
 
   private:
-    static const uint32 NUM_LIGHTS = 30;
+    static const uint32 NUM_LIGHTS = 10;
     ref_ptr<GameObject> cam_;
     ref_ptr<GameObject> obj_;
     ref_ptr<GameObject> light_node_;
     ref_ptr<GameObject> light_[NUM_LIGHTS];
+    ref_ptr<GameObject> skybox_;
   };
 
 } /* end of vxr namespace */

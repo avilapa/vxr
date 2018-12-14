@@ -25,7 +25,8 @@
 #include "../../include/components/camera.h"
 
 #include "../../include/engine/engine.h"
-#include "../../include/graphics/texture.h"
+#include "../../include/graphics/materials/material_instance.h"
+#include "../../include/graphics/materials/material.h"
 #include "../../include/graphics/ui.h"
 
 namespace vxr 
@@ -39,7 +40,6 @@ namespace vxr
 
   Camera::~Camera()
   {
-
   }
 
   void Camera::onGUI()
@@ -61,29 +61,36 @@ namespace vxr
   {
     VXR_TRACE_SCOPE("VXR", "Compute Transformations");
     projection_ = glm::perspective(glm::radians(fov_), aspect_, near_plane_, far_plane_);
-    view_ = glm::lookAt(transform()->local_position(), transform()->local_position() + transform()->forward(), transform()->up()); /// Will I need world position?
+    view_ = glm::lookAt(transform()->world_position(), transform()->world_position() + transform()->forward(), transform()->up());
     dirty_ = false;
   }
 
-  bool Camera::hasChanged()
+  bool Camera::hasChanged() const
   {
     return dirty_;
   }
 
-  mat4 Camera::projection()
+  mat4 Camera::projection() const
   {
     return projection_;
   }
 
-  mat4 Camera::view()
+  mat4 Camera::view() const
   {
     return view_;
   }
 
-  System::Camera::Camera()
+  System::Camera::Camera() :
+    scene_(nullptr),
+    main_(nullptr),
+    render_to_screen_(true),
+    render_size_(uvec2(0)),
+    screen_(nullptr),
+    screen_texture_(nullptr),
+    screen_material_(nullptr),
+    screen_quad_(nullptr)
   {
     screen_texture_.alloc();
-    screen_material_.alloc();
     screen_quad_.alloc();
   }
 
@@ -101,7 +108,7 @@ namespace vxr
     }
   }
 
-  ref_ptr<Camera> System::Camera::main()
+  ref_ptr<Camera> System::Camera::main() const
   {
     return main_;
   }
@@ -120,10 +127,16 @@ namespace vxr
     screen_ = Engine::ref().gpu()->createFramebuffer({ fb_tex_color, fb_tex_depth, 1 });
     screen_texture_->init(screen_.color_texture());
 
-    screen_material_->addTexture(screen_texture_);
+    screen_material_.alloc()->init("Screen");
 
-    screen_material_->setupTextures();
-    screen_material_->setup();
+    screen_material_->set_texture(0, screen_texture_);
+
+    ref_ptr<Material> shared_material = screen_material_->sharedMaterial();
+    shared_material->setupTextureTypes(screen_material_->textures_[screen_material_->active_material_]);
+    if (!shared_material->initialized_)
+    {
+      shared_material->setup();
+    }
 
     screen_quad_->setup();
   }
@@ -155,7 +168,7 @@ namespace vxr
       common_uniforms_.data.u_resolution = Engine::ref().window()->params().size;
       ///xy
       common_uniforms_.data.u_clear_color = main()->background_color().rgba();
-      common_uniforms_.data.u_view_pos_num_lights = vec4(main()->transform()->local_position(), (float)Engine::ref().light()->num_lights()); /// Worldpos
+      common_uniforms_.data.u_view_pos_num_lights = vec4(main()->transform()->world_position(), (float)Engine::ref().light()->num_lights()); /// Worldpos
 
       frame.fillBufferCommand()
         .set_buffer(common_uniforms_.buffer)
@@ -199,9 +212,9 @@ namespace vxr
         .set_clear_color(true)
         .set_clear_depth(true);
       frame.setupMaterialCommand()
-        .set_material(screen_material_->gpu_.mat)
+        .set_material(screen_material_->sharedMaterial()->gpu_.mat)
         .set_buffer(0, screen_quad_->gpu_.vertex.buffer)
-        .set_v_texture(screen_material_->gpu_.tex);
+        .set_v_texture(screen_material_->sharedMaterial()->gpu_.tex);
       frame.renderCommand()
         .set_index_buffer(screen_quad_->gpu_.index.buffer)
         .set_count(screen_quad_->indexCount())
@@ -226,7 +239,7 @@ namespace vxr
     render_size_ = render_size;
   }
 
-  bool System::Camera::render_to_screen()
+  bool System::Camera::render_to_screen() const
   {
     return render_to_screen_;
   }

@@ -121,7 +121,7 @@ namespace vxr
         "in vec3 c;                                                         \n"
         "void main()                                                        \n"
         "{                                                                  \n"
-        "  setFragmentColor(c * texture(u_tex0, getUV()).rgb);              \n"
+        "  setFragmentColor(c * texture(u_tex2d0, getUV()).rgb);              \n"
         "}                                                                  \n";
 
       mat_info.attribs[0] = { "attr_position", VertexFormat::Float3 };
@@ -183,7 +183,7 @@ namespace vxr
         "};                                                       \n"
         "void main()                                              \n"
         "{                                                        \n"
-        "  vec4 color = texture(u_tex0, getUV());                 \n"
+        "  vec4 color = texture(u_tex2d0, getUV());                 \n"
         "  color.xyz /= color.w;                                  \n"
         "  color.xyz = (color.xyz - 0.5f) * contrast + 0.5f;      \n"
         "  color.xyz += brightness;                               \n"

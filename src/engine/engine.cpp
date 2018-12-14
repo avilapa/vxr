@@ -29,22 +29,23 @@
 namespace vxr 
 {
 
-  Engine::Engine()
+  Engine& Engine::ref()
+  {
+    static Engine *inst = new Engine();
+    return *inst;
+  }
+
+  Engine::Engine() /// variables
   {
     set_name("Engine");
     srand(time(NULL));
 
     gpu_.alloc();
+    asset_manager_.alloc();
   }
 
   Engine::~Engine()
   {
-  }
-
-  Engine& Engine::ref()
-  {
-    static Engine *inst = new Engine();
-    return *inst;
   }
 
   void Engine::set_preinit_params(const Params& params)
@@ -60,6 +61,7 @@ namespace vxr
     VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Init.\n");
     // Initialize systems
     gpu_->init();
+    asset_manager_->init();
 
     light_.alloc();
     custom_.alloc();
@@ -168,6 +170,11 @@ namespace vxr
   ref_ptr<Scene> Engine::scene()
   {
     return scene_;
+  }
+
+  ref_ptr<AssetManager> Engine::assetManager()
+  {
+    return asset_manager_;
   }
 
   ref_ptr<System::Light> Engine::light()

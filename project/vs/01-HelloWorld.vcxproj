@@ -115,6 +115,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\examples\01-HelloWorld\imgui.ini" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="VXR.vcxproj">
       <Project>{652C880B-D135-887C-5AB1-9E7CC6B9937C}</Project>
     </ProjectReference>

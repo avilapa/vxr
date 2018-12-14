@@ -27,9 +27,9 @@
 #include "../../include/engine/engine.h"
 
 #if defined (VXR_OPENGL)
-#  include "../graphics/opengl/gl_backend.h"
+#  include "../graphics/backend/opengl/gl_backend.h"
 #elif defined (VXR_DX11)
-#  include "../graphics/dx11/dx11_backend.h"
+#  include "../graphics/backend/dx11/dx11_backend.h"
 #else
 #  error Backend must be defined on GENie.lua (e.g. try parameters --gl OR --dx11).
 #endif
@@ -40,14 +40,21 @@ namespace vxr
   Texture::Texture()
   {
     set_name("Texture");
+    for (uint32 i = 0; i < 6; ++i)
+    {
+      data_[i] = nullptr;
+    }
   }
 
   Texture::~Texture()
   {
-    if (data_)
+    for (uint32 i = 0; i < 6; ++i)
     {
-      free(data_);
-      data_ = nullptr;
+      if (data_[i])
+      {
+        free(data_[i]);
+        data_[i] = nullptr;
+      }
     }
   }
 
@@ -58,8 +65,31 @@ namespace vxr
 
   void Texture::load(const char* file)
   {
-    data_ = gpu::Texture::loadFromFile(file, gpu_.info);
+    set_data(gpu::Texture::loadFromFile(file, gpu_.info));
     dirty_ = true;
+  }
+
+  void Texture::load(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft)
+  {
+    std::vector<unsigned char*> data = gpu::Texture::loadCubemapFromFile(rt, lf, up, dn, bk, ft, gpu_.info);
+
+    for (uint32 i = 0; i < 6; ++i)
+    {
+      set_data(data[i], i);
+    }
+
+    dirty_ = true;
+  }
+
+  void Texture::load(const char* cubemap_folder_path, const char* extension)
+  {
+    std::string folder = cubemap_folder_path;
+    load((folder + "/rt." + extension).c_str(),
+         (folder + "/lf." + extension).c_str(),
+         (folder + "/up." + extension).c_str(),
+         (folder + "/dn." + extension).c_str(), 
+         (folder + "/bk." + extension).c_str(), 
+         (folder + "/ft." + extension).c_str());
   }
 
   void Texture::setup()
@@ -72,7 +102,12 @@ namespace vxr
     }
     add_to_frame.fillTextureCommand()
       .set_texture(gpu_.tex)
-      .set_data(data_)
+      .set_data(data_[0])
+      .set_data_1(data_[1])
+      .set_data_2(data_[2])
+      .set_data_3(data_[3])
+      .set_data_4(data_[4])
+      .set_data_5(data_[5])
       .set_offset_x(gpu_.offset[0])
       .set_offset_y(gpu_.offset[1])
       .set_offset_z(gpu_.offset[2])
@@ -145,14 +180,14 @@ namespace vxr
     dirty_ = true;
   }
 
-  void Texture::set_data(unsigned char* data)
+  void Texture::set_data(unsigned char* data, uint32 index)
   {
-    if (data_ != nullptr)
+    if (data_[index] != nullptr)
     {
-      free(data_);
-      data_ = nullptr;
+      free(data_[index]);
+      data_[index] = nullptr;
     }
-    data_ = data;
+    data_[index] = data;
   }
 
   bool Texture::hasChanged()
@@ -162,7 +197,7 @@ namespace vxr
 
   unsigned char* Texture::data() const
   {
-    return data_;
+    return data_[0];
   }
 
   uint32 Texture::id()

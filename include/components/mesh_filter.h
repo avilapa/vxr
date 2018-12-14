@@ -40,12 +40,10 @@ namespace vxr
 
 	class MeshFilter : public Component
   {
-
     VXR_OBJECT(MeshFilter, Component);
-
 	public:
     MeshFilter();
-		virtual ~MeshFilter();
+		~MeshFilter();
 
     virtual void onGUI() override;
 
@@ -56,14 +54,12 @@ namespace vxr
   {
     class MeshFilter : public ComponentSystem
     {
-
       VXR_OBJECT(System::MeshFilter, ComponentSystem);
-
     public:
       MeshFilter();
-      virtual ~MeshFilter();
+      ~MeshFilter();
 
-      virtual void init() override;
+      void init() override;
 
     private:
       std::vector<ref_ptr<vxr::MeshFilter>> components_;

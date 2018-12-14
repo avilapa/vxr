@@ -65,6 +65,55 @@ namespace vxr
       return data;
     }
 
+    std::vector<unsigned char*> Texture::loadCubemapFromFile(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, Texture::Info& tex)
+    {
+      int w, h, comp;
+      std::vector<unsigned char*> data;
+      data.push_back(stbi_load(rt, &w, &h, &comp, 0));
+      data.push_back(stbi_load(lf, &w, &h, &comp, 0));
+      data.push_back(stbi_load(up, &w, &h, &comp, 0));
+      data.push_back(stbi_load(dn, &w, &h, &comp, 0));
+      data.push_back(stbi_load(bk, &w, &h, &comp, 0));
+      data.push_back(stbi_load(ft, &w, &h, &comp, 0));
+      
+      bool error = false;
+      for (uint32 i = 0; i < 6; ++i)
+      {
+        if (!data[i])
+        {
+          VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Unknown texture format.\n");
+          error = true;
+        }
+      }
+
+      if (error)
+      {
+        return data;
+      }
+
+      if (w < 1 || h < 1)
+      {
+        for (uint32 i = 0; i < 6; ++i)
+        {
+          free(data[0]);
+        }
+        VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Invalid texture data.\n");
+        return data;
+      }
+
+      tex.width = w;
+      tex.height = h;
+      switch (comp)
+      {
+      case 1: tex.format = TexelsFormat::R_U8; break;
+      case 2: tex.format = TexelsFormat::RG_U8; break;
+      case 3: tex.format = TexelsFormat::RGB_U8; break;
+      case 4: tex.format = TexelsFormat::RGBA_U8; break;
+      }
+
+      return data;
+    }
+
     Texture Framebuffer::color_texture(uint16 p) const 
     {
       if (!ctx) 

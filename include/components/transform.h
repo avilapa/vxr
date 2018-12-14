@@ -26,7 +26,7 @@
 
 #include "../core/component.h"
 
-/// WIP: World positon/rotation/scale is not usable yet.
+/// WIP: World position/rotation/scale & forward/right/up are not settable yet.
 
 /**
 * \file transform.h
@@ -42,13 +42,11 @@ namespace vxr
 
 	class Transform : public Component
   {
-
     VXR_OBJECT(Transform, Component);
-
     friend class System::Transform;
 	public:
     Transform();
-		virtual ~Transform();
+		~Transform();
 
     virtual void onGUI() override;
 
@@ -56,17 +54,16 @@ namespace vxr
      private:\
       type name = __VA_ARGS__;\
      public:\
-      void set_##fname(const type &value) { name = value; dirty_ = true; }\
+      void set_##fname(const type &value) { name = value; markForUpdate(); }\
       type fname() const { return name; }
-
 
     PROPERTY(vec3, local_position_, local_position, vec3());
     PROPERTY(vec3, local_rotation_, local_rotation, vec3());
-    PROPERTY(vec3, local_scale_, local_scale, vec3());
+    PROPERTY(vec3, local_scale_,    local_scale, vec3());
 
-    PROPERTY(vec3, position_, position, vec3());
-    PROPERTY(vec3, rotation_, rotation, vec3());
-    PROPERTY(vec3, scale_,    scale,    vec3());
+    PROPERTY(vec3, world_position_, world_position, vec3());
+    PROPERTY(vec3, world_rotation_, world_rotation, vec3());
+    PROPERTY(vec3, world_scale_,    world_scale,    vec3());
 
     PROPERTY(vec3, forward_, forward, vec3());
     PROPERTY(vec3, right_,   right,   vec3());
@@ -74,16 +71,20 @@ namespace vxr
 
 #undef PROPERTY
 
-    mat4 worldMatrix();
+    mat4 worldMatrix() const;
 
     void set_parent(ref_ptr<Transform> parent);
-    ref_ptr<Transform> parent();
-    ref_ptr<Transform> child(uint32 index = 0);
-    uint32 num_children();
+    ref_ptr<Transform> parent() const;
+    ref_ptr<Transform> child(uint32 index = 0) const;
+    uint32 num_children() const;
 
   public:
     void computeTransformations();
-    bool hasChanged();
+    void computeLocal();
+    void computeWorld();
+
+    void markForUpdate();
+    bool hasChanged() const;
 
 	private:
     bool dirty_ = true; 
@@ -101,17 +102,15 @@ namespace vxr
   {
     class Transform : public ComponentSystem
     {
-
       VXR_OBJECT(System::Transform, ComponentSystem);
-
     public:
       Transform();
-      virtual ~Transform();
+      ~Transform();
 
-      virtual void init() override;
-      virtual void update() override;
-      virtual void renderUpdate() override;
-      virtual void renderPostUpdate() override;
+      void init() override;
+      void update() override;
+      void renderUpdate() override;
+      void renderPostUpdate() override;
 
     private:
       std::vector<ref_ptr<vxr::Transform>> components_;

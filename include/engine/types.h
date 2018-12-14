@@ -24,9 +24,17 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
+// ----------------------------------------------------------------------------------------
+// Engine Includes
+// ----------------------------------------------------------------------------------------
+
 #include "../memory/ref_ptr.h"
 #include "../memory/scoped_ptr.h"
 #include "../memory/scoped_array.h"
+
+// ----------------------------------------------------------------------------------------
+// Debug
+// ----------------------------------------------------------------------------------------
 
 #ifndef VXR_DEBUG_LEVEL
 #  define VXR_DEBUG_LEVEL_ERROR   100
@@ -62,16 +70,13 @@
 #  endif
 #endif
 
+// ----------------------------------------------------------------------------------------
+// Platform
+// ----------------------------------------------------------------------------------------
+
 #ifdef _WIN32
 
 # include <windows.h>
-
-# define GLM_ENABLE_EXPERIMENTAL
-# include "../../deps/glm/glm.hpp"
-# include "../../deps/glm/gtc/matrix_transform.hpp"
-# include "../../deps/glm/gtx/transform.hpp"
-# include "../../deps/glm//gtc/quaternion.hpp"
-# include "../../deps/glm//gtx/matrix_decompose.hpp"
 
 # include <conio.h>
 # include <stdint.h>
@@ -84,8 +89,20 @@
 # include <atomic>
 # include <iterator>
 
-namespace vxr {
+# define GLM_ENABLE_EXPERIMENTAL
+# include "../../deps/glm/glm.hpp"
+# include "../../deps/glm/gtc/matrix_transform.hpp"
+# include "../../deps/glm/gtx/transform.hpp"
+# include "../../deps/glm//gtc/quaternion.hpp"
+# include "../../deps/glm//gtx/matrix_decompose.hpp"
 
+// ----------------------------------------------------------------------------------------
+// Engine Types
+// ----------------------------------------------------------------------------------------
+
+
+namespace vxr
+{
   typedef ::int8_t			int8;
   typedef ::int16_t			int16;
   typedef ::int32_t			int32;
@@ -114,21 +131,33 @@ namespace vxr {
   typedef glm::mat4			mat4;
 
   typedef std::string   string;
-
+}
 
 #else
 #error Missing Platform
 #endif
 
-  // - Constants
+namespace vxr
+{
+  // ----------------------------------------------------------------------------------------
+  // Engine Constants
+  // ----------------------------------------------------------------------------------------
 
   const size_t kMaxVertexAttribs            = 16;
   const size_t kMaxTextureUnits             = 16;
-  const size_t kMaxUniformBuffers           = 15;
   const size_t kMaxFramebufferColorTextures = 16;
+
+  const size_t kMaxUniformBuffers           = 15;
+
   const size_t kMaxLightSources             = 30;
 
-  // - Structures
+#ifdef VXR_OPENGL
+  const size_t kGLShaderVersion             = 330;
+#endif
+
+  // ----------------------------------------------------------------------------------------
+  // Engine Structures
+  // ----------------------------------------------------------------------------------------
 
   struct Params
   {

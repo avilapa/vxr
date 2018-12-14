@@ -24,6 +24,6 @@
 
 void main()
 {
-  gl_Position = getClipPosition();
-  setupWorldSpaceOutput();
+	setupOutput();
+  	gl_Position = getClipPosition();
 }

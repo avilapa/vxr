@@ -127,10 +127,9 @@ namespace vxr
     this->settings = settings;
     uiSettings.alloc();
 
-    wireframe_mat.alloc()->set_render_mode(RenderMode::Wireframe);
-
     gradient_texture.alloc();
-    mat.alloc()->addTexture(gradient_texture);
+    mat.alloc()->set_gradient_texture(gradient_texture);
+    wireframe_mat.alloc();
 
     biome_noise_filter = NoiseFilter::CreateNoiseFilter(settings->biome_color_settings->noise.get(), 0);
 
@@ -170,6 +169,7 @@ namespace vxr
   void ColorGenerator::updateElevation(vec2 elevationMinMax)
   {
     mat->set_elevation_min_max(elevationMinMax);
+    printf("\nE: %0.3f, %0.3f", elevationMinMax.x, elevationMinMax.y);
   }
 
   float ColorGenerator::percentFromPoint(vec3 point)

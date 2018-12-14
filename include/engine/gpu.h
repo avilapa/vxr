@@ -62,6 +62,16 @@ namespace vxr
     gpu::Material createMaterial(const gpu::Material::Info& info);
     gpu::Framebuffer createFramebuffer(const gpu::Framebuffer::Info &info);
 
+    uint32 num_buffers() const;
+    uint32 num_textures() const;
+    uint32 num_materials() const;
+    uint32 num_framebuffers() const;
+
+    uint32 num_used_buffers() const;
+    uint32 num_used_textures() const;
+    uint32 num_used_materials() const;
+    uint32 num_used_framebuffers() const;
+
     RenderContext* ctx_;
 
   protected:
@@ -103,6 +113,12 @@ namespace vxr
       bool initialized = false;
     } thread_data_;
 #endif
+
+  private:
+    uint32 num_used_buffers_ = 0;
+    uint32 num_used_textures_ = 0;
+    uint32 num_used_materials_ = 0;
+    uint32 num_used_framebuffers_ = 0;
 	};
 
 } /* end of vxr namespace */

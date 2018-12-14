@@ -16,6 +16,9 @@
     <Filter Include="include\graphics">
       <UniqueIdentifier>{367BE17A-2274-00CD-4BA6-E55137FEDFD8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\graphics\materials">
+      <UniqueIdentifier>{741CC65B-602C-722C-C9E5-D64AB51461C5}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\memory">
       <UniqueIdentifier>{DE34C8E4-CA02-BCEA-B396-2C119F03984F}</UniqueIdentifier>
     </Filter>
@@ -28,11 +31,14 @@
     <Filter Include="src\graphics">
       <UniqueIdentifier>{5ACF6266-4632-F20A-EFB7-2AC1DBF9BD8D}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\graphics\dx11">
-      <UniqueIdentifier>{D4202668-4037-24FE-89AE-AF1FF503F585}</UniqueIdentifier>
+    <Filter Include="src\graphics\backend">
+      <UniqueIdentifier>{BE937584-AA22-FF4D-5341-13493FAF0FF4}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\graphics\opengl">
-      <UniqueIdentifier>{9B356723-0797-4431-9004-8BE3FC647BF0}</UniqueIdentifier>
+    <Filter Include="src\graphics\backend\dx11">
+      <UniqueIdentifier>{B843D73D-2406-0BC8-6DB6-9954D9B7E3A5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\graphics\backend\opengl">
+      <UniqueIdentifier>{7FA1EC29-EBAE-1A10-7495-16FBE0A1E6C6}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\components">
       <UniqueIdentifier>{AF1A7A40-9BE8-6D46-847C-DE6C70E949AB}</UniqueIdentifier>
@@ -42,6 +48,9 @@
     </Filter>
     <Filter Include="src\engine">
       <UniqueIdentifier>{1F63D4E0-0B1B-162E-7422-EF8960F9B01E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\graphics\materials">
+      <UniqueIdentifier>{98ED0989-84E7-32DB-6D54-C9EB59ED9847}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\utils">
       <UniqueIdentifier>{BACE3A1F-2639-EF95-6F77-A03BDB20CDEA}</UniqueIdentifier>
@@ -509,9 +518,6 @@
     <ClInclude Include="..\..\include\engine\types.h">
       <Filter>include\engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\graphics\default_materials.h">
-      <Filter>include\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\graphics\display_list.h">
       <Filter>include\graphics</Filter>
     </ClInclude>
@@ -524,16 +530,10 @@
     <ClInclude Include="..\..\include\graphics\gpu_resources.h">
       <Filter>include\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\graphics\material.h">
-      <Filter>include\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\graphics\mesh.h">
       <Filter>include\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\graphics\render_context.h">
-      <Filter>include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\graphics\shader.h">
       <Filter>include\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\graphics\texture.h">
@@ -544,6 +544,18 @@
     </ClInclude>
     <ClInclude Include="..\..\include\graphics\window.h">
       <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\default_materials.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\material.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\material_instance.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\shader.h">
+      <Filter>include\graphics\materials</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\memory\referenced.h">
       <Filter>include\memory</Filter>
@@ -578,35 +590,35 @@
     <ClInclude Include="..\..\src\graphics\window_structure.h">
       <Filter>src\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\graphics\dx11\dx11.h">
-      <Filter>src\graphics\dx11</Filter>
+    <ClInclude Include="..\..\src\graphics\backend\dx11\dx11.h">
+      <Filter>src\graphics\backend\dx11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\graphics\dx11\dx11_backend.h">
-      <Filter>src\graphics\dx11</Filter>
+    <ClInclude Include="..\..\src\graphics\backend\dx11\dx11_backend.h">
+      <Filter>src\graphics\backend\dx11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\graphics\dx11\dx11_imgui.h">
-      <Filter>src\graphics\dx11</Filter>
+    <ClInclude Include="..\..\src\graphics\backend\dx11\dx11_imgui.h">
+      <Filter>src\graphics\backend\dx11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\graphics\dx11\dx11_window.h">
-      <Filter>src\graphics\dx11</Filter>
+    <ClInclude Include="..\..\src\graphics\backend\dx11\dx11_window.h">
+      <Filter>src\graphics\backend\dx11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\graphics\dx11\dx11_window_struct.h">
-      <Filter>src\graphics\dx11</Filter>
+    <ClInclude Include="..\..\src\graphics\backend\dx11\dx11_window_struct.h">
+      <Filter>src\graphics\backend\dx11</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\graphics\opengl\gl.h">
-      <Filter>src\graphics\opengl</Filter>
+    <ClInclude Include="..\..\src\graphics\backend\opengl\gl.h">
+      <Filter>src\graphics\backend\opengl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\graphics\opengl\gl_backend.h">
-      <Filter>src\graphics\opengl</Filter>
+    <ClInclude Include="..\..\src\graphics\backend\opengl\gl_backend.h">
+      <Filter>src\graphics\backend\opengl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\graphics\opengl\gl_imgui.h">
-      <Filter>src\graphics\opengl</Filter>
+    <ClInclude Include="..\..\src\graphics\backend\opengl\gl_imgui.h">
+      <Filter>src\graphics\backend\opengl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\graphics\opengl\gl_window.h">
-      <Filter>src\graphics\opengl</Filter>
+    <ClInclude Include="..\..\src\graphics\backend\opengl\gl_window.h">
+      <Filter>src\graphics\backend\opengl</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\graphics\opengl\gl_window_struct.h">
-      <Filter>src\graphics\opengl</Filter>
+    <ClInclude Include="..\..\src\graphics\backend\opengl\gl_window_struct.h">
+      <Filter>src\graphics\backend\opengl</Filter>
     </ClInclude>
     <ClInclude Include="..\..\deps\glm\common.hpp">
       <Filter>deps\glm</Filter>
@@ -1138,9 +1150,6 @@
     <ClCompile Include="..\..\src\engine\gpu.cpp">
       <Filter>src\engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\default_materials.cpp">
-      <Filter>src\graphics</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\graphics\display_list.cpp">
       <Filter>src\graphics</Filter>
     </ClCompile>
@@ -1148,9 +1157,6 @@
       <Filter>src\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\gpu_resources.cpp">
-      <Filter>src\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\graphics\material.cpp">
       <Filter>src\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\mesh.cpp">
@@ -1168,23 +1174,32 @@
     <ClCompile Include="..\..\src\graphics\window.cpp">
       <Filter>src\graphics</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\dx11\dx11_backend.cpp">
-      <Filter>src\graphics\dx11</Filter>
+    <ClCompile Include="..\..\src\graphics\backend\dx11\dx11_backend.cpp">
+      <Filter>src\graphics\backend\dx11</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\dx11\dx11_imgui.cpp">
-      <Filter>src\graphics\dx11</Filter>
+    <ClCompile Include="..\..\src\graphics\backend\dx11\dx11_imgui.cpp">
+      <Filter>src\graphics\backend\dx11</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\dx11\dx11_window.cpp">
-      <Filter>src\graphics\dx11</Filter>
+    <ClCompile Include="..\..\src\graphics\backend\dx11\dx11_window.cpp">
+      <Filter>src\graphics\backend\dx11</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\opengl\gl_backend.cpp">
-      <Filter>src\graphics\opengl</Filter>
+    <ClCompile Include="..\..\src\graphics\backend\opengl\gl_backend.cpp">
+      <Filter>src\graphics\backend\opengl</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\opengl\gl_imgui.cpp">
-      <Filter>src\graphics\opengl</Filter>
+    <ClCompile Include="..\..\src\graphics\backend\opengl\gl_imgui.cpp">
+      <Filter>src\graphics\backend\opengl</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\opengl\gl_window.cpp">
-      <Filter>src\graphics\opengl</Filter>
+    <ClCompile Include="..\..\src\graphics\backend\opengl\gl_window.cpp">
+      <Filter>src\graphics\backend\opengl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\default_materials.cpp">
+      <Filter>src\graphics\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\material.cpp">
+      <Filter>src\graphics\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\material_instance.cpp">
+      <Filter>src\graphics\materials</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\utils\color.cpp">
       <Filter>src\utils</Filter>

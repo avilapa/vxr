@@ -90,7 +90,7 @@ namespace vxr
 
     // 4. Initialize shader data. The engine uses UBO for the objects, so the correct syntax to use 
     // custom uniforms can be found below. Shader version 330, a set of helper functions and texture
-    // uniform names are provided by default (u_tex0, u_tex1, etc.). You can also use the function 
+    // uniform names are provided by default (u_tex2d0, u_tex2d1, etc.). You can also use the function 
     // 'Shader::Load(std::string file)' to load the shader from a file.
     gpu::Material::Info mat_info;
     mat_info.shader.vert =
@@ -113,7 +113,7 @@ namespace vxr
       "in vec3 c;                                                                             \n"
       "void main()                                                                            \n"
       "{                                                                                      \n"
-      "  setFragmentColor(c * texture(u_tex0, getUV()).rgb);                                  \n"
+      "  setFragmentColor(c * texture(u_tex2d0, getUV()).rgb);                                \n"
       "}                                                                                      \n";
 
     // 5. Initialize vertex attributes. This time, we'll pass three different buffers. One with positions 

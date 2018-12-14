@@ -25,15 +25,17 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../core/component.h"
-#include "../graphics/default_materials.h"
 #include "../graphics/mesh.h"
+#include "../graphics/materials/shader.h"
 
 /**
 * \file camera.h
 *
 * \author Victor Avila (avilapa.github.io)
 *
-* \brief Camera Component and Camera System classes. The Camera System performs internal render-to-texture procedures and controls Viewport size.
+* \brief Camera Component and Camera System classes. 
+* 
+* The Camera System performs internal render-to-texture procedures and controls Viewport size.
 *
 */
 namespace vxr 
@@ -43,90 +45,90 @@ namespace vxr
 
 	class Camera : public Component
   {
-
     VXR_OBJECT(Camera, Component);
-
     friend class System::Camera;
 	public:
     Camera();
-		virtual ~Camera();
+		~Camera();
 
+    /// UI function
     virtual void onGUI() override;
 
-#define PROPERTY(type, name, fname, ...) \
-     private:\
-      type name = __VA_ARGS__;\
-     public:\
-      void set_##fname(const type &c) { name = c; dirty_ = true; }\
+#define PROPERTY(type, name, fname, ...)                            \
+     private:                                                       \
+      type name = __VA_ARGS__;                                      \
+     public:                                                        \
+      void set_##fname(const type &c) { name = c; dirty_ = true; }  \
       type fname() const { return name; }
 
-    PROPERTY(float, fov_, fov, 70.0f);
-    PROPERTY(float, aspect_, aspect, 1280.0f / 720.0f);
-    PROPERTY(float, near_plane_, near_plane, 0.1f);
-    PROPERTY(float, far_plane_, far_plane, 900.0f);
+    PROPERTY(float, fov_, fov, 70.0f);                                        ///< Field of view.
+    PROPERTY(float, aspect_, aspect, 1280.0f / 720.0f);                       ///< Screen aspect ratio.
+    PROPERTY(float, near_plane_, near_plane, 0.1f);                           ///< Near plane distance.
+    PROPERTY(float, far_plane_, far_plane, 900.0f);                           ///< Far plane distance.
 
-    PROPERTY(Color, background_color_, background_color, Color::PhyreBlue);
+    PROPERTY(Color, background_color_, background_color, Color::PhyreBlue);   ///< Background color.
 
-    mat4 projection();
-    mat4 view();
+#undef PROPERTY
+ 
+    mat4 projection() const;
+    mat4 view() const;
 
+    /// Variables / Functions ?
     bool clear_color;
     bool clear_depth;
     bool clear_stencil;
 
-#undef PROPERTY
-
   public:
     void computeTransformations();
-    bool hasChanged();
+    bool hasChanged() const;
 
   private:
-    bool dirty_ = true;
+    bool dirty_ = true;                     ///< Marks if the matrices need updating.                                                 
 
-    mat4 projection_;
-    mat4 view_;
+    mat4 projection_;                       ///< Camera projection matrix.
+    mat4 view_;                             ///< Camera view matrix.
 	};
 
   class Scene;
+  class MaterialInstance;
 
   namespace System 
   {
     class Camera : public ComponentSystem
     {
-
       VXR_OBJECT(System::Camera, ComponentSystem);
-
       friend class Renderer;
     public:
       Camera();
-      virtual ~Camera();
+      ~Camera();
 
       void set_main(ref_ptr<vxr::Camera> camera);
-      ref_ptr<vxr::Camera> main();
+      ref_ptr<vxr::Camera> main() const;
 
-      virtual void init() override;
-      virtual void update() override;
-      virtual void renderUpdate() override;
-      virtual void renderPostUpdate() override;
+      void init() override;
+      void update() override;
+      void renderUpdate() override;
+      void renderPostUpdate() override;
 
       void set_render_to_screen(bool enabled);
       void set_render_size(uvec2 size);
 
-      bool render_to_screen();
+      bool render_to_screen() const;
       uint32 screen_id();
 
     private:
       std::vector<ref_ptr<vxr::Camera>> components_;
+
       ref_ptr<Scene> scene_;
-      ref_ptr<vxr::Camera> main_ = nullptr;
-      bool render_to_screen_ = true;
-      uvec2 render_size_{ 0, 0 };
+      ref_ptr<vxr::Camera> main_;
+      
+      bool render_to_screen_;
+      uvec2 render_size_;
 
-      gpu::Framebuffer screen_;
-      ref_ptr<Texture> screen_texture_;
-
-      ref_ptr<Screen> screen_material_;
+      ref_ptr<MaterialInstance> screen_material_;
       ref_ptr<EngineMesh::Quad> screen_quad_;
+      ref_ptr<Texture> screen_texture_;
+      gpu::Framebuffer screen_;
 
       struct CommonUniforms
       {

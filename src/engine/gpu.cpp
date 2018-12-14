@@ -197,6 +197,9 @@ namespace vxr
     uint32 pos = RenderContext::index(id);
     gpu::BufferInstance &inst = ctx_->buffers_[pos];
     inst.info = info;
+
+    num_used_buffers_++;
+
     return gpu::Buffer{ ctx_,id };
   }
 
@@ -234,6 +237,8 @@ namespace vxr
       i_obj.bytes_per_pixel = 4;
       break;
     }
+
+    num_used_textures_++;
 
     return gpu::Texture{ ctx_, id };
   }
@@ -299,6 +304,8 @@ namespace vxr
       }
     }
 
+    num_used_materials_++;
+
     return gpu::Material{ ctx_, id };
   }
 
@@ -313,9 +320,51 @@ namespace vxr
     }
     i_obj.depth_texture = createTexture(info.depth_stencil_texture_info);
 
+    num_used_framebuffers_++;
+
     return gpu::Framebuffer{ ctx_,id };
   }
 
 // ----------------------------------------------------------------------------------------
+
+  uint32 GPU::num_buffers() const
+  {
+    return params_.max_buffers;
+  }
+
+  uint32 GPU::num_textures() const
+  {
+    return params_.max_textures;
+  }
+
+  uint32 GPU::num_materials() const
+  {
+    return params_.max_materials;
+  }
+
+  uint32 GPU::num_framebuffers() const
+  {
+    return params_.max_framebuffers;
+  }
+
+  uint32 GPU::num_used_buffers() const
+  {
+    return num_used_buffers_;
+  }
+
+  uint32 GPU::num_used_textures() const
+  {
+    return num_used_textures_;
+  }
+
+  uint32 GPU::num_used_materials() const
+  {
+    return num_used_materials_;
+  }
+
+  uint32 GPU::num_used_framebuffers() const
+  {
+    return num_used_framebuffers_;
+  }
 
 } /* end of vxr namespace */

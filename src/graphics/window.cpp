@@ -26,9 +26,9 @@
 #include "../../include/graphics/window.h"
 
 #if defined (VXR_OPENGL)
-#  include "opengl/gl_window.h"
+#  include "backend/opengl/gl_window.h"
 #elif defined (VXR_DX11)
-#  include "dx11/dx11_window.h"
+#  include "backend/dx11/dx11_window.h"
 #else
 #  error Backend must be defined on GENie.lua (e.g. --gl OR --dx11).
 #endif

@@ -24,6 +24,11 @@
 
 #include "../../include/core/assets.h"
 
+#include "../../include/core/gameobject.h"
+#include "../../include/components/renderer.h"
+#include "../../include/components/mesh_filter.h"
+#include "../../include/graphics/materials/default_materials.h"
+
 #include "../../deps/mesh/tiny_obj_loader.h"
 
 namespace vxr
@@ -65,7 +70,7 @@ namespace vxr
       }
 
       ref_ptr<Mesh> mesh;
-      ref_ptr<Standard> mat; /// What kind of material should be allocated here?
+      ref_ptr<Standard::Instance> mat; /// What kind of material should be allocated here?
 
       mesh.alloc();
       mat.alloc();
@@ -162,6 +167,57 @@ namespace vxr
     m_materials.clear();
 
     return m;
+  }
+
+  AssetManager::AssetManager()
+  {
+
+  }
+
+  AssetManager::~AssetManager()
+  {
+
+  }
+
+  void AssetManager::init()
+  {
+    initializeMaterials();
+  }
+
+  void AssetManager::initializeMaterials()
+  {
+    // Adding engine materials
+    addMaterial<Screen>();
+    addMaterial<Standard>();
+    addMaterial<Standard::Textured>();
+    addMaterial<Standard::TexturedCubemap>();
+    addMaterial<Unlit>();
+    addMaterial<Wireframe>();
+    addMaterial<Skybox>();
+    /// Look for materials in assets folder and load
+  }
+
+  ref_ptr<Material> AssetManager::getSharedMaterial(const char* shared_material_name) const
+  {
+    for (uint32 i = 0; i < materials_.size(); ++i)
+    {
+      if (materials_[i]->name() == shared_material_name)
+      {
+        return materials_[i];
+      }
+    }
+    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_WARNING, "[WARNING]: Unknown shared material '%s'.\n", shared_material_name);
+    return nullptr;
+  }
+
+  std::vector<ref_ptr<Material>> AssetManager::getSharedMaterials() const
+  {
+    return materials_;
+  }
+
+  void AssetManager::addMaterial(ref_ptr<Material> material)
+  {
+    materials_.push_back(material);
   }
 
 }

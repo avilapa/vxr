@@ -34,7 +34,7 @@ namespace vxr
   Main::Main()
   {
     Params p;
-    p.gpu = { 1000, 1000, 1000, 1000 };
+    p.gpu = { 100, 100, 100, 100 };
     p.window = { { 1280, 720} };
     Engine::ref().set_preinit_params(p);
   }
@@ -56,11 +56,12 @@ namespace vxr
     scene_->addObject(cam_);
 
     ref_ptr<EngineMesh::Cube> cube;
-    ref_ptr<Standard> mat;
-
+    ref_ptr<Standard::Instance> mat;
+    ref_ptr<Standard::Instance> matc;
     obj_.alloc();
     cube.alloc();
-    mat.alloc();
+    mat.alloc()->set_color_texture("../../assets/textures/image.tga");
+    matc.alloc()->set_color_texture("../../assets/textures/skybox/sunset", "png");
 
     obj_->addComponent<Renderer>()->material = mat.get();
     obj_->addComponent<MeshFilter>()->mesh = cube.get();
@@ -73,11 +74,11 @@ namespace vxr
     for (uint32 i = 0; i < NUM_LIGHTS; ++i)
     {
       Color light_color = Color::Random().desaturate(-0.5);
-      ref_ptr<Unlit> light_mat;
+      ref_ptr<Unlit::Instance> light_mat;
       light_mat.alloc()->set_color(light_color);
       light_[i].alloc()->set_name("Light");
       light_[i]->addComponent<Light>()->set_color(light_color);
-      light_[i]->getComponent<Light>()->set_intensity(0.1f);
+      light_[i]->getComponent<Light>()->set_intensity(1.0f);
       light_[i]->transform()->set_parent(light_node_->transform());
       light_[i]->addComponent<Renderer>()->material = light_mat.get();
       light_[i]->addComponent<MeshFilter>()->mesh = cube.get();
@@ -86,6 +87,14 @@ namespace vxr
       rand_pos = glm::normalize(rand_pos - light_node_->transform()->local_position());
       light_[i]->transform()->set_local_position(rand_pos);
     }
+
+    ref_ptr<Skybox::Instance> skybox_mat;
+    skybox_mat.alloc()->set_color_texture("../../assets/textures/skybox/sunset", "png");
+    skybox_.alloc()->set_name("Skybox");
+    skybox_->addComponent<MeshFilter>()->mesh = cube.get();
+    skybox_->addComponent<Renderer>()->material = skybox_mat.get();
+    skybox_->transform()->set_local_scale(vec3(100));
+    scene_->addObject(skybox_);
 
     Engine::ref().submitUIFunction([]() { ui::Editor(); });
   }

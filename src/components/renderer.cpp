@@ -26,6 +26,7 @@
 
 #include "../../include/engine/engine.h"
 #include "../../include/core/gameobject.h"
+#include "../../include/graphics/materials/material.h"
 #include "../../include/graphics/ui.h"
 namespace vxr 
 {
@@ -114,10 +115,12 @@ namespace vxr
         continue;
       }
 
-      c->material->setupTextures();
-      if (!c->material->initialized())
+      ref_ptr<Material> shared_material = c->material->sharedMaterial();
+
+      shared_material->setupTextureTypes(c->material->textures_[c->material->active_material_]);
+      if (!shared_material->initialized_)
       {
-        c->material->setup();
+        shared_material->setup();
       }
 
       if (!mf->mesh->setup())
@@ -126,22 +129,37 @@ namespace vxr
       }
 
       VXR_TRACE_BEGIN("VXR", "Send Commands");
-      VXR_TRACE_BEGIN("VXR", "Fill Uniform Buffer");
-      frame.fillBufferCommand()
-        .set_buffer(c->material->gpu_.uniform_buffer)
-        .set_data(&c->material->uniforms_.u)
-        .set_size(sizeof(c->material->uniforms_.u));
-      VXR_TRACE_END("VXR", "Fill Uniform Buffer");
-      VXR_TRACE_BEGIN("VXR", "Setup Material");
-      frame.setupMaterialCommand()
-        .set_material(c->material->gpu_.mat)
-        .set_buffer(0, mf->mesh->gpu_.vertex.buffer)
-        .set_v_texture(c->material->gpu_.tex)
-        .set_uniform_buffer(0, c->material->gpu_.uniform_buffer)
-        .set_uniform_buffer(1, common_uniforms_buffer)
-        .set_uniform_buffer(2, lights_uniforms_buffer)
-        .set_model_matrix(c->transform()->worldMatrix());
-      VXR_TRACE_END("VXR", "Setup Material");
+      if (shared_material->use_uniforms_)
+      {
+        VXR_TRACE_BEGIN("VXR", "Fill Uniform Buffer");
+        frame.fillBufferCommand()
+          .set_buffer(shared_material->gpu_.uniform_buffer)
+          .set_data(&c->material->uniforms_)
+          .set_size(sizeof(c->material->uniforms_));
+        VXR_TRACE_END("VXR", "Fill Uniform Buffer");
+        VXR_TRACE_BEGIN("VXR", "Setup Material");
+        frame.setupMaterialCommand()
+          .set_material(shared_material->gpu_.mat)
+          .set_buffer(0, mf->mesh->gpu_.vertex.buffer)
+          .set_v_texture(shared_material->gpu_.tex)
+          .set_uniform_buffer(0, common_uniforms_buffer)
+          .set_uniform_buffer(1, lights_uniforms_buffer)
+          .set_uniform_buffer(2, shared_material->gpu_.uniform_buffer)
+          .set_model_matrix(c->transform()->worldMatrix());
+        VXR_TRACE_END("VXR", "Setup Material");
+      }
+      else
+      {
+        VXR_TRACE_BEGIN("VXR", "Setup Material");
+        frame.setupMaterialCommand()
+          .set_material(shared_material->gpu_.mat)
+          .set_buffer(0, mf->mesh->gpu_.vertex.buffer)
+          .set_v_texture(shared_material->gpu_.tex)
+          .set_uniform_buffer(0, common_uniforms_buffer)
+          .set_uniform_buffer(1, lights_uniforms_buffer)
+          .set_model_matrix(c->transform()->worldMatrix());
+        VXR_TRACE_END("VXR", "Setup Material");
+      }
       VXR_TRACE_BEGIN("VXR", "Render");
       ///TODO: Missing instancing
       frame.renderCommand()

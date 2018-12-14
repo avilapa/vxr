@@ -24,22 +24,22 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../core/gameobject.h"
-#include "../components/mesh_filter.h"
-#include "../components/renderer.h"
-
-/// WIP: AssetManager class is empty! 
+#include "object.h"
 
 /**
 * \file assets.h
 *
 * \author Victor Avila (avilapa.github.io)
 *
-* \brief Asset helper functions and loaders and AssetManager class.
+* \brief AssetManager class.
 *
 */
 namespace vxr 
 {
+
+  class GameObject;
+  class Material;
+  class Mesh;
 
   namespace Asset
   {
@@ -47,19 +47,35 @@ namespace vxr
     ref_ptr<GameObject> loadModelOBJ(const char* file);
 
     ref_ptr<Mesh> loadMeshOBJ(const char* file, uint32 mesh = 0);
-
   }
 
 	class AssetManager : public Object
   {
-
     VXR_OBJECT(AssetManager, Object);
-
 	public:
     AssetManager();
 		~AssetManager();
-    
+
+    void init();
+
+    void addMaterial(ref_ptr<Material> material);
+    template<class T> 
+    void addMaterial()
+    {
+      ref_ptr<T> m;
+      m.alloc();
+      materials_.push_back(m.get());
+    }
+
+    ref_ptr<Material> getSharedMaterial(const char* shared_material_name) const;
+    std::vector<ref_ptr<Material>> getSharedMaterials() const;
+
   private:
+    void initializeMaterials();
+    ///void initializeTextures();
+
+  private:
+    std::vector<ref_ptr<Material>> materials_;
 	};
 
 } /* end of vxr namespace */

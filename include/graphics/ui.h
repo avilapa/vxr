@@ -44,6 +44,7 @@ namespace vxr
   {
     void Test();
     void Editor();
+    void Statistics(bool *open, bool fullscreen);
     
     bool Init(Window::Data* data);
     void Update(Window::Data* data);

@@ -25,8 +25,7 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../core/component.h"
-#include "../graphics/default_materials.h"
-#include "../graphics/shader.h"
+#include "../graphics/materials/material_instance.h"
 
 /**
 * \file renderer.h
@@ -41,16 +40,14 @@ namespace vxr
 
 	class Renderer : public Component
   {
-
     VXR_OBJECT(Renderer, Component);
-
 	public:
 		Renderer();
-		virtual ~Renderer();
+		~Renderer();
 
     virtual void onGUI() override;
 
-    ref_ptr<Material> material;
+    ref_ptr<MaterialInstance> material;
 	};
 
   class Scene;
@@ -59,16 +56,14 @@ namespace vxr
   {
     class Renderer : public ComponentSystem
     {
-
       VXR_OBJECT(System::Renderer, ComponentSystem);
-
     public:
       Renderer();
-      virtual ~Renderer();
+      ~Renderer();
 
-      virtual void init() override;
-      virtual void update() override;
-      virtual void renderUpdate() override;
+      void init() override;
+      void update() override;
+      void renderUpdate() override;
 
     private:
       std::vector<ref_ptr<vxr::Renderer>> components_;
