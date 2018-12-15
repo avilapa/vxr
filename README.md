@@ -52,13 +52,21 @@ A list of examples are provided within the solution to showcase the engine's cap
 
 - Multithreaded agnostical graphics API
 - Command Based Rendering, allowing to build the render commands in advance to be run in a separate thread
-- _GameObjects_ with the following components currently implemented:
-  - Transform
-  - Mesh Filter
-  - Renderer
-  - Light
-  - Camera
-  - Custom Component
+- _GameObjects_ with the following components currently implemented (each component is controlled and updated by a specific system):
+  - Transform: Containing the object's transformation and position in the scene's hierarchy.
+    - Current Materials:
+      - Standard (Lit)
+      - Unlit
+      - Wireframe
+      - Skybox
+      - Screen
+      - Planet (_only in the PlanetEditor example!_)
+      - ___Add your own!___
+  - Mesh Filter: Reference to the mesh the object will be rendered with.
+  - Renderer: Reference to the Material Instance the object will be rendered with.
+  - Light: Turns the object into a source of light.
+  - Camera: Adds to an object all the functionality needed to render from its point of view with its unique parameters.
+  - Custom Component: Similar to _Unity's MonoBehaviour_, allows the user to create custom reusable components with specific behaviours.
 - Model loading (_.obj_)
 - UI Editor
 
