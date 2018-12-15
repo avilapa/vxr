@@ -60,6 +60,7 @@ A list of examples are provided within the solution to showcase the engine's cap
   - Camera
   - Custom Component
 - Model loading (_.obj_)
+- UI Editor
 
 # API Reference
 
@@ -119,8 +120,8 @@ namespace vxr
     // 7. Rotate the mesh in update() instead of renderUpdate() to make the rotation framerate independent 
     // by multiplying it by deltaTime(). The update() method may be executed several times in a frame to 
     // catch up with the render thread.
-    mesh_->transform()->set_local_rotation(mesh_->transform()->local_rotation() + vec3(0.21, 0.12, 0.5) * deltaTime());
-
+    mesh_->transform()->set_local_rotation(mesh_->transform()->local_rotation() 
+    				           + vec3(0.21, 0.12, 0.5) * deltaTime());
     Application::update();
   }
 
