@@ -1,6 +1,6 @@
 [![vxr engine logo](/assets/textures/readme/logo.png)](https://avilapa.github.io)
 
-_version 0.3.0_
+_version 0.4.0_
 
 # What is [vxr](https://github.com/avilapa/vxr)?
 
@@ -66,6 +66,9 @@ A list of examples are provided within the solution to showcase the engine's cap
       - ___Add your own!___
   - Light: Turns the object into a source of light.
   - Camera: Adds to an object all the functionality needed to render from its point of view with its unique parameters.
+    - Camera Composer: Organizes all post-processing needed for any specific camera, and handles updates automatically.
+      - Postprocessing Materials:
+        - One-Pass-Filters: Grayscale, Negative.
   - Custom Component: Similar to _Unity's MonoBehaviour_, allows the user to create custom reusable components with specific behaviours.
 - Model loading (_.obj_)
 - UI Editor
