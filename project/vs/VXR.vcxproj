@@ -40,13 +40,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Debug\VXR\</IntDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-release\project\vs\obj\x32\Debug\VXR\</IntDir>
     <TargetName>VXR</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Debug\VXR\</IntDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-release\project\vs\obj\x64\Debug\VXR\</IntDir>
     <TargetName>VXR</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -107,6 +107,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\include\components\camera.h" />
     <ClInclude Include="..\..\include\components\custom.h" />
+    <ClInclude Include="..\..\include\components\ibl.h" />
     <ClInclude Include="..\..\include\components\light.h" />
     <ClInclude Include="..\..\include\components\mesh_filter.h" />
     <ClInclude Include="..\..\include\components\renderer.h" />
@@ -117,10 +118,13 @@
     <ClInclude Include="..\..\include\core\object.h" />
     <ClInclude Include="..\..\include\core\scene.h" />
     <ClInclude Include="..\..\include\engine\application.h" />
+    <ClInclude Include="..\..\include\engine\core_minimal.h" />
     <ClInclude Include="..\..\include\engine\engine.h" />
     <ClInclude Include="..\..\include\engine\gpu.h" />
     <ClInclude Include="..\..\include\engine\ignore_warnings.h" />
     <ClInclude Include="..\..\include\engine\types.h" />
+    <ClInclude Include="..\..\include\gameobjects\skybox.h" />
+    <ClInclude Include="..\..\include\graphics\composer.h" />
     <ClInclude Include="..\..\include\graphics\display_list.h" />
     <ClInclude Include="..\..\include\graphics\dl_command.h" />
     <ClInclude Include="..\..\include\graphics\gpu_instances.h" />
@@ -128,12 +132,20 @@
     <ClInclude Include="..\..\include\graphics\mesh.h" />
     <ClInclude Include="..\..\include\graphics\render_context.h" />
     <ClInclude Include="..\..\include\graphics\texture.h" />
-    <ClInclude Include="..\..\include\graphics\ui.h" />
     <ClInclude Include="..\..\include\graphics\window.h" />
-    <ClInclude Include="..\..\include\graphics\materials\default_materials.h" />
     <ClInclude Include="..\..\include\graphics\materials\material.h" />
     <ClInclude Include="..\..\include\graphics\materials\material_instance.h" />
+    <ClInclude Include="..\..\include\graphics\materials\pass_filters.h" />
+    <ClInclude Include="..\..\include\graphics\materials\render_pass.h" />
+    <ClInclude Include="..\..\include\graphics\materials\render_pass_instance.h" />
     <ClInclude Include="..\..\include\graphics\materials\shader.h" />
+    <ClInclude Include="..\..\include\graphics\materials\skybox.h" />
+    <ClInclude Include="..\..\include\graphics\materials\standard.h" />
+    <ClInclude Include="..\..\include\graphics\materials\standard_pass.h" />
+    <ClInclude Include="..\..\include\graphics\materials\unlit.h" />
+    <ClInclude Include="..\..\include\graphics\ui\editor.h" />
+    <ClInclude Include="..\..\include\graphics\ui\log.h" />
+    <ClInclude Include="..\..\include\graphics\ui\ui.h" />
     <ClInclude Include="..\..\include\memory\referenced.h" />
     <ClInclude Include="..\..\include\memory\ref_ptr.h" />
     <ClInclude Include="..\..\include\memory\scoped_array.h" />
@@ -325,6 +337,9 @@
     <ClCompile Include="..\..\src\components\custom.cpp">
       <ObjectFileName>$(IntDir)src\components\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\src\components\ibl.cpp">
+      <ObjectFileName>$(IntDir)src\components\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\src\components\light.cpp">
       <ObjectFileName>$(IntDir)src\components\</ObjectFileName>
     </ClCompile>
@@ -361,6 +376,12 @@
     <ClCompile Include="..\..\src\engine\gpu.cpp">
       <ObjectFileName>$(IntDir)src\engine\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\src\gameobject\skybox.cpp">
+      <ObjectFileName>$(IntDir)src\gameobject\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\composer.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\src\graphics\display_list.cpp">
       <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
     </ClCompile>
@@ -377,9 +398,6 @@
       <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\texture.cpp">
-      <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\src\graphics\ui.cpp">
       <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\window.cpp">
@@ -403,14 +421,41 @@
     <ClCompile Include="..\..\src\graphics\backend\opengl\gl_window.cpp">
       <ObjectFileName>$(IntDir)src\graphics\backend\opengl\</ObjectFileName>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\materials\default_materials.cpp">
-      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
-    </ClCompile>
     <ClCompile Include="..\..\src\graphics\materials\material.cpp">
       <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\materials\material_instance.cpp">
       <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\pass_filters.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\render_pass.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\render_pass_instance.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\skybox.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\standard.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\standard_pass.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\unlit.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\ui\editor.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\ui\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\ui\log.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\ui\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\ui\ui.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\ui\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\utils\color.cpp">
       <ObjectFileName>$(IntDir)src\utils\</ObjectFileName>

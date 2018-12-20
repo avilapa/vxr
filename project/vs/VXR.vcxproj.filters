@@ -13,11 +13,17 @@
     <Filter Include="include\engine">
       <UniqueIdentifier>{FB67BED2-E735-B2D8-D0C9-22FFBC368E3D}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\gameobjects">
+      <UniqueIdentifier>{49FA1AF4-B55B-F801-3EC9-3EB4AA292FC1}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\graphics">
       <UniqueIdentifier>{367BE17A-2274-00CD-4BA6-E55137FEDFD8}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\graphics\materials">
       <UniqueIdentifier>{741CC65B-602C-722C-C9E5-D64AB51461C5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\graphics\ui">
+      <UniqueIdentifier>{50CED2DE-BC2F-B0EC-459D-F69EB1FDE6AB}</UniqueIdentifier>
     </Filter>
     <Filter Include="include\memory">
       <UniqueIdentifier>{DE34C8E4-CA02-BCEA-B396-2C119F03984F}</UniqueIdentifier>
@@ -49,8 +55,14 @@
     <Filter Include="src\engine">
       <UniqueIdentifier>{1F63D4E0-0B1B-162E-7422-EF8960F9B01E}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\gameobject">
+      <UniqueIdentifier>{3A043FA2-26D2-32A8-0F66-A3CEFBD20E0D}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src\graphics\materials">
       <UniqueIdentifier>{98ED0989-84E7-32DB-6D54-C9EB59ED9847}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\graphics\ui">
+      <UniqueIdentifier>{F45FD7D4-60EB-4499-69FC-C78DD506A199}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\utils">
       <UniqueIdentifier>{BACE3A1F-2639-EF95-6F77-A03BDB20CDEA}</UniqueIdentifier>
@@ -476,6 +488,9 @@
     <ClInclude Include="..\..\include\components\custom.h">
       <Filter>include\components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\components\ibl.h">
+      <Filter>include\components</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\components\light.h">
       <Filter>include\components</Filter>
     </ClInclude>
@@ -506,6 +521,9 @@
     <ClInclude Include="..\..\include\engine\application.h">
       <Filter>include\engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\engine\core_minimal.h">
+      <Filter>include\engine</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\engine\engine.h">
       <Filter>include\engine</Filter>
     </ClInclude>
@@ -517,6 +535,12 @@
     </ClInclude>
     <ClInclude Include="..\..\include\engine\types.h">
       <Filter>include\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\gameobjects\skybox.h">
+      <Filter>include\gameobjects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\composer.h">
+      <Filter>include\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\graphics\display_list.h">
       <Filter>include\graphics</Filter>
@@ -539,14 +563,8 @@
     <ClInclude Include="..\..\include\graphics\texture.h">
       <Filter>include\graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\include\graphics\ui.h">
-      <Filter>include\graphics</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\include\graphics\window.h">
       <Filter>include\graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\graphics\materials\default_materials.h">
-      <Filter>include\graphics\materials</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\graphics\materials\material.h">
       <Filter>include\graphics\materials</Filter>
@@ -554,8 +572,38 @@
     <ClInclude Include="..\..\include\graphics\materials\material_instance.h">
       <Filter>include\graphics\materials</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\pass_filters.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\render_pass.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\render_pass_instance.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\graphics\materials\shader.h">
       <Filter>include\graphics\materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\skybox.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\standard.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\standard_pass.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\unlit.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\ui\editor.h">
+      <Filter>include\graphics\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\ui\log.h">
+      <Filter>include\graphics\ui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\ui\ui.h">
+      <Filter>include\graphics\ui</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\memory\referenced.h">
       <Filter>include\memory</Filter>
@@ -1114,6 +1162,9 @@
     <ClCompile Include="..\..\src\components\custom.cpp">
       <Filter>src\components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\components\ibl.cpp">
+      <Filter>src\components</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\components\light.cpp">
       <Filter>src\components</Filter>
     </ClCompile>
@@ -1150,6 +1201,12 @@
     <ClCompile Include="..\..\src\engine\gpu.cpp">
       <Filter>src\engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\gameobject\skybox.cpp">
+      <Filter>src\gameobject</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\composer.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\graphics\display_list.cpp">
       <Filter>src\graphics</Filter>
     </ClCompile>
@@ -1166,9 +1223,6 @@
       <Filter>src\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\texture.cpp">
-      <Filter>src\graphics</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\graphics\ui.cpp">
       <Filter>src\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\window.cpp">
@@ -1192,14 +1246,41 @@
     <ClCompile Include="..\..\src\graphics\backend\opengl\gl_window.cpp">
       <Filter>src\graphics\backend\opengl</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\graphics\materials\default_materials.cpp">
-      <Filter>src\graphics\materials</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\graphics\materials\material.cpp">
       <Filter>src\graphics\materials</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\materials\material_instance.cpp">
       <Filter>src\graphics\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\pass_filters.cpp">
+      <Filter>src\graphics\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\render_pass.cpp">
+      <Filter>src\graphics\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\render_pass_instance.cpp">
+      <Filter>src\graphics\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\skybox.cpp">
+      <Filter>src\graphics\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\standard.cpp">
+      <Filter>src\graphics\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\standard_pass.cpp">
+      <Filter>src\graphics\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\unlit.cpp">
+      <Filter>src\graphics\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\ui\editor.cpp">
+      <Filter>src\graphics\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\ui\log.cpp">
+      <Filter>src\graphics\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\ui\ui.cpp">
+      <Filter>src\graphics\ui</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\utils\color.cpp">
       <Filter>src\utils</Filter>

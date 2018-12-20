@@ -40,14 +40,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Debug\dev\</IntDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-release\project\vs\obj\x32\Debug\dev\</IntDir>
     <TargetName>dev</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Debug\dev\</IntDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-release\project\vs\obj\x64\Debug\dev\</IntDir>
     <TargetName>dev</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>true</LinkIncremental>
