@@ -48,6 +48,17 @@ namespace vxr
     Light();
 		~Light();
 
+    struct Type
+    {
+      enum Enum
+      {
+        Directional,
+        Sun,
+        Point,
+        Spot,
+      };
+    };
+
     virtual void onGUI() override;
 
     void set_color(const Color& color);

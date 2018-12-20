@@ -25,6 +25,7 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../../include/engine/application.h"
+#include "../../include/engine/core_minimal.h"
 
 /**
 * \file mesh.h

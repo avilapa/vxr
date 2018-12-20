@@ -26,7 +26,7 @@
 
 #include "../../include/engine/engine.h"
 #include "../../include/core/gameobject.h"
-#include "../../include/graphics/ui.h"
+#include "../../include/core/scene.h"
 
 namespace vxr 
 {
@@ -104,7 +104,7 @@ namespace vxr
   {
     if (index > children_.size() - 1)
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_WARNING, "[WARNING]: Could not find child with index %d. Returning NULL.\n", index);
+      VXR_LOG(VXR_DEBUG_LEVEL_WARNING, "[WARNING]: Could not find child with index %d. Returning NULL.\n", index);
       return nullptr;
     }
     return children_[index];
@@ -200,6 +200,16 @@ namespace vxr
       if (c->hasChanged())
       {
         c->computeTransformations();
+      }
+    }
+
+    /// Not needed if rotation is embedded in shader
+    if (scene_->skybox() != nullptr)
+    {
+      ref_ptr<vxr::Transform> skybox = scene_->skybox()->getComponent<vxr::Transform>();
+      if (skybox->hasChanged())
+      {
+        skybox->computeTransformations();
       }
     }
   }

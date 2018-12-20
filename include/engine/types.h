@@ -32,6 +32,9 @@
 #include "../memory/scoped_ptr.h"
 #include "../memory/scoped_array.h"
 
+#include "../../deps/imgui/imgui.h"
+#include "../../deps/imgui/imgui_stl.h"
+
 // ----------------------------------------------------------------------------------------
 // Debug
 // ----------------------------------------------------------------------------------------
@@ -64,7 +67,11 @@
 
 #ifndef VXR_DEBUG_FUNC
 #  ifdef VXR_DEBUG
-#    define VXR_DEBUG_FUNC(LEVEL,...) {if(LEVEL<=VXR_DEBUG_LEVEL) {fprintf(stdout, __VA_ARGS__);fflush(stdout);}}
+#    ifdef VXR_UI
+#      define VXR_DEBUG_FUNC(LEVEL,...) {if(LEVEL<=VXR_DEBUG_LEVEL) {fprintf(stdout, __VA_ARGS__);fflush(stdout);}}
+#    else
+#      define VXR_DEBUG_FUNC(LEVEL,...) {if(LEVEL<=VXR_DEBUG_LEVEL) {fprintf(stdout, __VA_ARGS__);fflush(stdout);}}
+#    endif
 #  else
 #    define VXR_DEBUG_FUNC(...) /*nothing*/
 #  endif
@@ -103,6 +110,7 @@
 
 namespace vxr
 {
+
   typedef ::int8_t			int8;
   typedef ::int16_t			int16;
   typedef ::int32_t			int32;

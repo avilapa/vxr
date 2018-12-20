@@ -26,8 +26,6 @@
 #include "simple.h"
 #include "ridgid.h"
 
-#include "../../../include/graphics/ui.h"
-
 namespace vxr
 {
 

@@ -27,5 +27,5 @@ void main()
 	setupScreenSpaceOutput();
 	mat4 rotation_view = mat4(mat3(getViewMatrix()));
 	vec4 clip_position = getProjectionMatrix() * rotation_view * getModelMatrix() * vec4(getPosition(), 1.0);
-  	gl_Position = clip_position.xyzw;
+  	gl_Position = clip_position.xyww;	
 }

@@ -24,8 +24,6 @@
 
 #include "ridgid.h"
 
-#include "../../../include/graphics/ui.h"
-
 #include <algorithm>
 
 namespace vxr

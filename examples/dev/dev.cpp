@@ -24,8 +24,6 @@
 
 #include "dev.h"
 
-#include "../../include/graphics/ui.h"
-
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
 namespace vxr
@@ -54,14 +52,15 @@ namespace vxr
     cam_->addComponent<Camera>()->set_background_color(Color::Black);
     cam_->transform()->set_local_position(vec3(0.0f, 0.0f, 1.8f));
     scene_->addObject(cam_);
+    Engine::ref().camera()->set_main(cam_->getComponent<Camera>());
 
     ref_ptr<EngineMesh::Cube> cube;
-    ref_ptr<Standard::Instance> mat;
-    ref_ptr<Standard::Instance> matc;
+    ref_ptr<mat::Standard::Instance> mat;
+    ref_ptr<mat::Standard::Instance> matc;
     obj_.alloc();
     cube.alloc();
     mat.alloc()->set_color_texture("../../assets/textures/image.tga");
-    matc.alloc()->set_color_texture("../../assets/textures/skybox/sunset", "png");
+    //matc.alloc()->set_color_texture("../../assets/textures/skybox/sunset", "png");
 
     obj_->addComponent<Renderer>()->material = mat.get();
     obj_->addComponent<MeshFilter>()->mesh = cube.get();
@@ -74,7 +73,7 @@ namespace vxr
     for (uint32 i = 0; i < NUM_LIGHTS; ++i)
     {
       Color light_color = Color::Random().desaturate(-0.5);
-      ref_ptr<Unlit::Instance> light_mat;
+      ref_ptr<mat::Unlit::Instance> light_mat;
       light_mat.alloc()->set_color(light_color);
       light_[i].alloc()->set_name("Light");
       light_[i]->addComponent<Light>()->set_color(light_color);
@@ -88,13 +87,13 @@ namespace vxr
       light_[i]->transform()->set_local_position(rand_pos);
     }
 
-    ref_ptr<Skybox::Instance> skybox_mat;
-    skybox_mat.alloc()->set_color_texture("../../assets/textures/skybox/sunset", "png");
-    skybox_.alloc()->set_name("Skybox");
-    skybox_->addComponent<MeshFilter>()->mesh = cube.get();
-    skybox_->addComponent<Renderer>()->material = skybox_mat.get();
-    skybox_->transform()->set_local_scale(vec3(100));
-    scene_->addObject(skybox_);
+    ref_ptr<mat::Negative::Instance> m1;
+    m1.alloc();
+    Engine::ref().camera()->main()->composer()->addRenderPass(m1.get());
+
+    ref_ptr<mat::Grayscale::Instance> m2;
+    m2.alloc();
+    Engine::ref().camera()->main()->composer()->addRenderPass(m2.get());
 
     Engine::ref().submitUIFunction([]() { ui::Editor(); });
   }
@@ -102,7 +101,6 @@ namespace vxr
   void Main::update()
   {
     Application::update();
-    
     obj_->transform()->set_local_rotation(obj_->transform()->local_rotation() + vec3(0.21, 0.12, 0.5) * deltaTime());
     light_node_->transform()->set_local_rotation(light_node_->transform()->local_rotation() + vec3(0.31, 1.06, 0.3) * deltaTime());
     light_node_->transform()->set_local_scale(vec3(1 + sin(Engine::ref().window()->uptime() * 0.1f)));

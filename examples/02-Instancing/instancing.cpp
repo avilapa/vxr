@@ -23,7 +23,8 @@
 // ----------------------------------------------------------------------------------------
 
 #include "instancing.h"
-#include "../../include/graphics/display_list.h"
+#include "../../include/engine/engine.h"
+#include "../../include/engine/gpu.h"
 
 // 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)

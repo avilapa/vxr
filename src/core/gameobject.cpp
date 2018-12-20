@@ -24,8 +24,6 @@
 
 #include "../../include/core/gameobject.h"
 
-#include "../../include/graphics/ui.h"
-
 namespace vxr
 {
 
@@ -70,7 +68,6 @@ namespace vxr
         ImGui::Spacing();
       }
     }
-    ImGui::Spacing();
     ImGui::Separator();
     ImGui::Spacing();
     if (ImGui::Button(uiText("Add Component").c_str()))

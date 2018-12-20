@@ -22,7 +22,12 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
+layout(std140) uniform Unlit
+{
+  vec4 color;
+};
+
 void main()
 {
-  setFragmentColor(texture(u_texCube0, getPosition()).rgb);
+  setFragmentColor(texture(u_texCube0, getPosition()).rgb * color.rgb);
 }

@@ -22,47 +22,15 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../../include/graphics/ui.h"
-#include "../../include/engine/engine.h"
-
-#if defined (VXR_OPENGL)
-#  include "../graphics/backend/opengl/gl_imgui.h"
-#elif defined (VXR_DX11)
-#  include "../graphics/backend/dx11/dx11_imgui.h"
-#else
-#  error Backend must be defined on GENie.lua (e.g. try parameters --gl OR --dx11).
-#endif
+#include "../../../include/graphics/ui/editor.h"
+#include "../../../include/engine/engine.h"
+#include "../../../include/engine/gpu.h"
+#include "../../../include/components/camera.h"
+#include "../../../include/core/scene.h"
+#include "../../../include/graphics/composer.h"
 
 namespace vxr
 {
-
-  bool ui::Init(Window::Data* data)
-  {
-    VXR_TRACE_SCOPE("VXR", "UI Init");
-    ui::impl::Init(data);
-    return true;
-  }
-
-  void ui::Update(Window::Data* data)
-  {
-    VXR_TRACE_SCOPE("VXR", "UI Update");
-    ui::impl::Update(data);
-    ImGui::NewFrame();
-  }
-
-  void ui::Draw()
-  {
-    VXR_TRACE_SCOPE("VXR", "UI Draw");
-    ImGui::Render();
-    ui::impl::Draw(ImGui::GetDrawData());
-  }
-
-  void ui::Stop(Window::Data* data)
-  {
-    VXR_TRACE_SCOPE("VXR", "UI Stop");
-    ui::impl::Stop(data);
-    ImGui::DestroyContext();
-  }
 
   void ui::Test()
   {
@@ -108,36 +76,10 @@ namespace vxr
   }
 
   static ImVec2 screen_pos = ImVec2(0, 0);
-  static uint32 hierarchy_selected_node_ = 0;
-  static ref_ptr<GameObject> hierarchy_selected_object_ = nullptr;
-  static void RecursiveHierarchyTree(ref_ptr<GameObject> child, int *clicked_node) 
-  {
-    ImGuiTreeNodeFlags node_flags = ImGuiTreeNodeFlags_OpenOnArrow
-      | ImGuiTreeNodeFlags_OpenOnDoubleClick
-      | ((hierarchy_selected_node_ == child->id()) ? ImGuiTreeNodeFlags_Selected : 0)
-      | ((child->transform()->num_children() == 0) ? ImGuiTreeNodeFlags_Leaf : 0)
-      | ImGuiTreeNodeFlags_DefaultOpen;
-
-    bool node_open = ImGui::TreeNodeEx((void*)(intptr_t)child->id(), node_flags, "%s", child->name().c_str());
-
-    if (ImGui::IsItemClicked())
-    {
-      *clicked_node = child->id();
-      hierarchy_selected_object_ = child.get();
-    }
-
-    if (node_open) 
-    {
-      for (uint32 i = 0; i < child->transform()->num_children(); i++) 
-      {
-        RecursiveHierarchyTree(child->transform()->child(i)->gameObject(), clicked_node);
-      }
-      ImGui::TreePop();
-    }
-  }
 
   void ui::Editor()
   {
+    //Log.AddLog("asdasdasdasd");
     static bool show_editor = true;
     static bool show_statistics = false;
 
@@ -186,8 +128,8 @@ namespace vxr
 
     if (!show_editor)
     {
-      ImGui::Image((void*)(intptr_t)Engine::ref().camera()->screen_id(), { io.DisplaySize.x, io.DisplaySize.y }, ImVec2(0, 1), ImVec2(1, 0));
-      Engine::ref().camera()->set_render_size({ io.DisplaySize.x, io.DisplaySize.y });
+      ImGui::Image((void*)(intptr_t)Engine::ref().camera()->screen_texture_id(), { io.DisplaySize.x, io.DisplaySize.y }, ImVec2(0, 1), ImVec2(1, 0));
+      Engine::ref().camera()->main()->composer()->set_render_size({ io.DisplaySize.x, io.DisplaySize.y });
       Engine::ref().camera()->main()->set_aspect(io.DisplaySize.x / io.DisplaySize.y);
       Engine::ref().camera()->set_render_to_screen(true);
 
@@ -206,13 +148,8 @@ namespace vxr
     ImGui::Text("Hierarchy");
     ImGui::Separator();
     ImGui::Spacing();
-   
-    int32 clicked_node = -1;
-    RecursiveHierarchyTree(Engine::ref().scene()->root(), &clicked_node);
-    if (clicked_node != -1)
-    {
-      hierarchy_selected_node_ = clicked_node;
-    }
+
+    Engine::ref().scene()->onGUI();
 
     ImGui::EndChild();
     ImGui::SameLine();
@@ -224,10 +161,10 @@ namespace vxr
     if (Engine::ref().camera()->main() != nullptr)
     {
       ImVec2 scene_size = ImVec2(io.DisplaySize.x * 0.6f - 16.0f, io.DisplaySize.y * 0.7f - 41.0f);
-      ImGui::Image((void*)(intptr_t)Engine::ref().camera()->screen_id(), scene_size, ImVec2(0,1), ImVec2(1,0));
-      Engine::ref().camera()->set_render_to_screen(false);
-      Engine::ref().camera()->set_render_size({ scene_size.x, scene_size.y });
+      ImGui::Image((void*)(intptr_t)Engine::ref().camera()->screen_texture_id(), scene_size, ImVec2(0,1), ImVec2(1,0));
+      Engine::ref().camera()->main()->composer()->set_render_size({ scene_size.x, scene_size.y });
       Engine::ref().camera()->main()->set_aspect(scene_size.x / (scene_size.y));
+      Engine::ref().camera()->set_render_to_screen(false);
     }
     ImGui::EndChild();
 
@@ -243,6 +180,7 @@ namespace vxr
     ImGui::Text("Console");
     ImGui::Separator();
     ImGui::Spacing();
+    Engine::ref().Log.Draw();
     ImGui::EndChild();
 
     ImGui::EndGroup();
@@ -253,9 +191,9 @@ namespace vxr
     ImGui::Separator();
     ImGui::Spacing();
 
-    if (hierarchy_selected_object_ != nullptr)
+    if (Engine::ref().scene()->onGUI_SelectedObject() != nullptr)
     {
-      hierarchy_selected_object_->onGUI();
+      Engine::ref().scene()->onGUI_SelectedObject()->onGUI();
     }
 
     ImGui::EndChild();

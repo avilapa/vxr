@@ -35,7 +35,7 @@ namespace vxr
   {
     if (!glfwInit())
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Window failed at startup.\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Window failed at startup.\n");
       return;
     }
 
@@ -43,7 +43,7 @@ namespace vxr
 
     if (data->window == nullptr)
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not allocate window.\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not allocate window.\n");
       return;
     }
 
@@ -54,7 +54,7 @@ namespace vxr
 #endif
     if (glewInit() != GLEW_OK)
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not initializer backend.\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not initializer backend.\n");
       return;
     }
 

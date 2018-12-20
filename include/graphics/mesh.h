@@ -36,16 +36,16 @@
 */
 namespace vxr
 {
+
+  namespace System { class Renderer; }
   class GameObject;
-  namespace System { class Camera; class Renderer; }
+  class Composer;
 
   class Mesh : public Object
   {
-
     VXR_OBJECT(Mesh, Object);
-
-    friend class System::Camera;
     friend class System::Renderer;
+    friend class Composer;
   public:
     Mesh();
     virtual ~Mesh();

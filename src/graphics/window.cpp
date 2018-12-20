@@ -25,16 +25,14 @@
 
 #include "../../include/graphics/window.h"
 
+#include "../../include/graphics/ui/ui.h"
+
 #if defined (VXR_OPENGL)
 #  include "backend/opengl/gl_window.h"
 #elif defined (VXR_DX11)
 #  include "backend/dx11/dx11_window.h"
 #else
 #  error Backend must be defined on GENie.lua (e.g. --gl OR --dx11).
-#endif
-
-#ifdef VXR_UI
-#  include "../../include/graphics/ui.h"
 #endif
 
 namespace vxr 

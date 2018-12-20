@@ -47,10 +47,11 @@ namespace vxr
 
     virtual void onGUI() override;
 
-    ref_ptr<MaterialInstance> material;
+    ref_ptr<mat::MaterialInstance> material;
 	};
 
   class Scene;
+  class DisplayList;
 
   namespace System 
   {
@@ -64,6 +65,14 @@ namespace vxr
       void init() override;
       void update() override;
       void renderUpdate() override;
+      void renderPostUpdate() override;
+
+    private:
+      bool setup(ref_ptr<vxr::Renderer> c);
+      void render(ref_ptr<vxr::Renderer> c, DisplayList* frame);
+
+      bool setupSkybox();
+      void renderSkybox();
 
     private:
       std::vector<ref_ptr<vxr::Renderer>> components_;

@@ -25,6 +25,7 @@
 #include "../../include/graphics/display_list.h"
 #include "../../include/graphics/dl_command.h"
 #include "../../include/graphics/render_context.h"
+#include "../../include/engine/engine.h"
 
 #include <chrono>
 #include <thread>
@@ -44,13 +45,13 @@ namespace vxr
   void DisplayList::update()
   {
     VXR_TRACE_SCOPE("VXR", "Display List Update");
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Executing Display List (Commands %u)\n", commands_.size());
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Executing Display List (Commands %u)\n", commands_.size());
     for (uint32 i = 0; i < commands_.size(); i++) {
       commands_[i].get()->execute();
     }
     commands_.clear();
     ///std::this_thread::sleep_for(std::chrono::milliseconds(16)); /// Perform a wait for test purposes.
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Display List Execution Succsessful.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Display List Execution Succsessful.\n");
   }
 
   DisplayList::SetupViewData& DisplayList::setupViewCommand()

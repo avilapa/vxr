@@ -23,10 +23,7 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../../include/engine/gpu.h"
-
-#include "../../include/graphics/ui.h"
-
-#include <iterator>
+#include "../../include/engine/engine.h"
 
 namespace vxr 
 {
@@ -50,7 +47,7 @@ namespace vxr
     window_->init();
 #else
     thread_data_.thread = std::thread(&vxr::GPU::run, this);
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_INFO, "[INFO]: Launched rendering thread (VXR_THREADING).\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Launched rendering thread (VXR_THREADING).\n");
     std::unique_lock<std::mutex> lock(thread_data_.mx_l);
     thread_data_.cv_l.wait(lock, [this] { return thread_data_.initialized; });
 #endif
@@ -74,7 +71,7 @@ namespace vxr
     window_->stop();
 #else
     thread_data_.thread.join();
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_INFO, "[INFO]: Joined rendering thread (VXR_THREADING).\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Joined rendering thread (VXR_THREADING).\n");
 #endif
   }
 
@@ -96,12 +93,12 @@ namespace vxr
       VXR_TRACE_BEGIN("VXR", "Window Update");
       window_->update(&swap);
       VXR_TRACE_END("VXR", "Window Update");
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Render Waiting).\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Render Waiting).\n");
       VXR_TRACE_BEGIN("VXR", "WAITING (Render)");
       std::unique_lock<std::mutex> lock(thread_data_.mx_r); /// First condition stops engine when there are 0 commands. /*!thread_data_.next_frame.commands_.empty() &&*/
       thread_data_.cv_r.wait(lock, [this] { return !thread_data_.next_frame.commands_.empty() && render_frame_.commands_.empty(); });
       VXR_TRACE_END("VXR", "WAITING (Render)");
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Render Start).\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Render Start).\n");
       if (!thread_data_.next_frame.commands_.empty())
       {
         render_frame_.commands_.swap(thread_data_.next_frame.commands_);
@@ -115,7 +112,7 @@ namespace vxr
       VXR_TRACE_END("VXR", "UI Function");
 #  endif
       thread_data_.cv_l.notify_one();
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Render Ready).\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Render Ready).\n");
       VXR_TRACE_END("VXR", "Frame");
     }
 
@@ -125,12 +122,12 @@ namespace vxr
 
   void GPU::prepareRender()
   {
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Logic Waiting).\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Logic Waiting).\n");
     VXR_TRACE_BEGIN("VXR", "WAITING (Logic)");
     std::unique_lock<std::mutex> lock(thread_data_.mx_l);
     thread_data_.cv_l.wait(lock, [this] { return is_exiting_ || thread_data_.next_frame.commands_.empty(); });
     VXR_TRACE_END("VXR", "WAITING (Logic)");
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Logic Start).\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Logic Start).\n");
   }
 #endif
 
@@ -142,7 +139,7 @@ namespace vxr
       thread_data_.next_frame.commands_ = std::move(logic_frame_->commands_);
     }
     thread_data_.cv_r.notify_one();
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Logic Ready).\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Logic Ready).\n");
 #else
     if (logic_frame_ != NULL)
     {
@@ -187,7 +184,7 @@ namespace vxr
         }
       }
     }
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Assigned id 0 to resource instance.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Assigned id 0 to resource instance.\n");
     return 0;
   }
 
@@ -207,7 +204,7 @@ namespace vxr
   {
     if (info.format == TexelsFormat::None)
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not create texture: texels format not found.\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not create texture: texels format not found.\n");
       return gpu::Texture();
     }
 
@@ -315,14 +312,15 @@ namespace vxr
     uint32 pos = RenderContext::index(id);
     gpu::FramebufferInstance &i_obj = ctx_->framebuffers_[pos];
     i_obj.info = info;
-    for (uint32_t i = 0; i < info.num_color_textures; ++i) {
-      i_obj.color_textures[i] = createTexture(info.color_texture_info);/// Should this be an array of texture Infos?
+    for (uint32 i = 0; i < info.num_color_textures; ++i) 
+    {
+      i_obj.color_textures[i] = createTexture(info.color_texture_info[i]);/// Should this be an array of texture Infos?
     }
     i_obj.depth_texture = createTexture(info.depth_stencil_texture_info);
 
     num_used_framebuffers_++;
 
-    return gpu::Framebuffer{ ctx_,id };
+    return gpu::Framebuffer{ ctx_, id };
   }
 
 // ----------------------------------------------------------------------------------------

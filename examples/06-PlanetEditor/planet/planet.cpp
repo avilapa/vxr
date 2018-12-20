@@ -24,8 +24,6 @@
 
 #include "planet.h"
 
-#include "../../../include/graphics/ui.h"
-
 namespace vxr
 {
 

@@ -24,6 +24,18 @@
 
 #include "../../include/engine/engine.h"
 
+#include "../../include/engine/GPU.h"
+#include "../../include/core/scene.h"
+#include "../../include/core/assets.h"
+
+#include "../../include/components/ibl.h"
+#include "../../include/components/light.h"
+#include "../../include/components/renderer.h"
+#include "../../include/components/transform.h"
+#include "../../include/components/mesh_filter.h"
+#include "../../include/components/camera.h"
+#include "../../include/components/custom.h"
+
 #include <time.h>
 
 namespace vxr 
@@ -57,12 +69,14 @@ namespace vxr
 
   bool Engine::init()
   {
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_INFO, "[INFO]: Initializing engine systems.\n");
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Init.\n");
+    VXR_TRACE_BEGIN("VXR", "Engine Systems Init");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Initializing engine systems.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Init.\n");
     // Initialize systems
     gpu_->init();
     asset_manager_->init();
 
+    ibl_.alloc();
     light_.alloc();
     custom_.alloc();
     camera_.alloc();
@@ -73,20 +87,24 @@ namespace vxr
     light_->init();
     camera_->init();
 
+    VXR_TRACE_END("VXR", "Engine Systems Init");
     return true;
   }
 
   void Engine::start()
   {
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Start.\n");
+    VXR_TRACE_BEGIN("VXR", "Engine Systems Start");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Start.\n");
     custom_->start();
+    VXR_TRACE_END("VXR", "Engine Systems Start");
   }
 
   void Engine::update()
   {
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Update.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Update.\n");
     custom_->update();
     transform_->update();
+    ibl_->update();
     light_->update();
     camera_->update();
     renderer_->update();
@@ -94,7 +112,7 @@ namespace vxr
 
   void Engine::postUpdate()
   {
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Post Update.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Post Update.\n");
     custom_->postUpdate();
   }
 
@@ -104,9 +122,10 @@ namespace vxr
     gpu_->prepareRender();
 #endif
     VXR_TRACE_BEGIN("VXR", "Systems Render Update");
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Render Update.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Render Update.\n");
     custom_->renderUpdate();
     transform_->renderUpdate();
+    ibl_->renderUpdate();
     light_->renderUpdate();
     camera_->renderUpdate();
     renderer_->renderUpdate();
@@ -116,9 +135,10 @@ namespace vxr
   void Engine::renderPostUpdate()
   {
     VXR_TRACE_BEGIN("VXR", "Systems Render Post Update");
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Post Render Update.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Post Render Update.\n");
     custom_->renderPostUpdate();
     transform_->renderPostUpdate();
+    renderer_->renderPostUpdate();
     camera_->renderPostUpdate();
     VXR_TRACE_END("VXR", "Systems Render Post Update");
     gpu_->execute();
@@ -175,6 +195,11 @@ namespace vxr
   ref_ptr<AssetManager> Engine::assetManager()
   {
     return asset_manager_;
+  }
+
+  ref_ptr<System::IBL> Engine::ibl()
+  {
+    return ibl_;
   }
 
   ref_ptr<System::Light> Engine::light()

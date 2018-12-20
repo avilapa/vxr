@@ -24,8 +24,6 @@
 
 #include "planet_editor.h"
 
-#include "../../include/graphics/ui.h"
-
 // 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
@@ -48,7 +46,7 @@ namespace vxr
     cam_->addComponent<Camera>()->set_background_color(Color(0.03f, 0.03f, 0.05f, 1.0f));
     
     // 3. Create a Planet and add the custom material to the library.
-    Engine::ref().assetManager()->addMaterial<PlanetMaterial>();
+    Engine::ref().assetManager()->addMaterial<mat::Planet>();
     planet_.alloc()->set_name("Planet");
     planet_->addComponent<Planet, Custom>();
 

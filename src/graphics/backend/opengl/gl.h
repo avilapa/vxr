@@ -24,6 +24,8 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
+#include "../../../../include/engine/engine.h"
+
 #ifdef VXR_OPENGL
 
 #ifndef GLEW_STATIC

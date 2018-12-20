@@ -24,8 +24,6 @@
 
 #include "color_settings.h"
 
-#include "../../../include/graphics/ui.h"
-
 namespace vxr
 {
 

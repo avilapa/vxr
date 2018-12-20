@@ -79,7 +79,7 @@ namespace vxr
     {
       Texture::Info info;
       size_t bytes_per_pixel = 0;
-      uint32 id;
+      uint32 id = 0;
     };
 
     struct MaterialInstance : public InstanceBase

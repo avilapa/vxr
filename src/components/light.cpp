@@ -25,8 +25,9 @@
 #include "../../include/components/light.h"
 
 #include "../../include/engine/engine.h"
+#include "../../include/engine/gpu.h"
 #include "../../include/core/gameobject.h"
-#include "../../include/graphics/ui.h"
+#include "../../include/core/scene.h"
 
 namespace vxr 
 {

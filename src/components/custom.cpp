@@ -22,9 +22,10 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../../include/components/Custom.h"
+#include "../../include/components/custom.h"
 
 #include "../../include/engine/engine.h"
+#include "../../include/core/scene.h"
 
 namespace vxr 
 {

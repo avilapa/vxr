@@ -24,8 +24,9 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../core/gameobject.h"
+#include "../gameobjects/skybox.h"
 #include "../components/camera.h"
+#include "../graphics/materials/skybox.h"
 
 /**
 * \file scene.h
@@ -40,23 +41,39 @@ namespace vxr
 
 	class Scene : public Object 
   {
-
     VXR_OBJECT(Scene, Object);
-
 	public:
 		Scene();
 		~Scene();
 
+    void onGUI() override;
+    ref_ptr<GameObject> onGUI_SelectedObject() const;
+
     void addObject(ref_ptr<GameObject> obj);
+    ref_ptr<GameObject> root();
 
     void set_default_camera(ref_ptr<Camera> cam);
     ref_ptr<Camera> default_camera();
 
-    ref_ptr<GameObject> root();
+    struct RenderSettings
+    {
+      ref_ptr<mat::Skybox::Instance> skybox;
+    };
+
+    void set_skybox(ref_ptr<Skybox> skybox);
+    ref_ptr<Skybox> skybox() const;
+
+  private:
+    void recursiveHierarchyTree(ref_ptr<GameObject> child, int* clicked_node);
 
   private:
     ref_ptr<GameObject> root_;
+    ref_ptr<Skybox> skybox_;
     ref_ptr<Camera> default_camera_ = nullptr;
+
+    // UI
+    uint32 hierarchy_selected_node_ = 0;
+    ref_ptr<GameObject> hierarchy_selected_object_ = nullptr;
 	};
 
 } /* end of vxr namespace */

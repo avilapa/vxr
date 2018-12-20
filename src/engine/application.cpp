@@ -23,6 +23,8 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../../include/engine/application.h"
+#include "../../include/engine/engine.h"
+#include "../../include/graphics/window.h"
 
 namespace vxr 
 {
@@ -41,7 +43,7 @@ namespace vxr
     if (!Engine::ref().init())
     {
       exit_ = true;
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Initializing engine.\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Initializing engine.\n");
       return;
     }
   }
@@ -90,7 +92,7 @@ namespace vxr
     VXR_TRACE_SCOPE("VXR", __FUNCTION__);
 
     VXR_TRACE_BEGIN("VXR", "App Init");
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_INFO, "[INFO]: Starting application.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Starting application.\n");
     init();
 
     if (exit_)
@@ -101,7 +103,7 @@ namespace vxr
     VXR_TRACE_BEGIN("VXR", "App Start");
     start();
     VXR_TRACE_END("VXR", "App Start");
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_INFO, "[INFO]: Reached first application loop.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Reached first application loop.\n");
 
     double lastTime = Engine::ref().window()->uptime();
     double accumulator = 0.0;
@@ -112,7 +114,7 @@ namespace vxr
     while (!is_exiting())
     {
       VXR_TRACE_BEGIN("VXR", "Frame");
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: New render frame (FPS: %d) (Logic updates: %d)\n", framerate_.fps, num_updates);
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: New render frame (FPS: %d) (Logic updates: %d)\n", framerate_.fps, num_updates);
       double nowTime = Engine::ref().window()->uptime();
       double deltaTime = nowTime - lastTime;
       lastTime = nowTime;
@@ -131,7 +133,7 @@ namespace vxr
       {
         if (num_updates >= framerate_.max_steps)
         {
-          VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_WARNING, "[WARNING]: Exceded max steps per frame (Consider lowering time_step).\n");
+          VXR_LOG(VXR_DEBUG_LEVEL_WARNING, "[WARNING]: Exceeded max steps per frame (Consider lowering time_step).\n");
           break;
         }
         VXR_TRACE_BEGIN("VXR", "App Update");
@@ -151,12 +153,12 @@ namespace vxr
       VXR_TRACE_END("VXR", "Frame");
     }
 
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_INFO, "[INFO]: Stopping application.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Stopping application.\n");
     stop();
 #ifdef VXR_DEBUG_TRACING
     mtr_shutdown();
 #endif
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_INFO, "[INFO]: Stopped application with exit code 0.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Stopped application with exit code 0.\n");
     return 0;
   }
 

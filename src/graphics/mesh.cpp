@@ -25,6 +25,7 @@
 #include "../../include/graphics/mesh.h"
 
 #include "../../include/engine/engine.h"
+#include "../../include/engine/gpu.h"
 
 #define VOXELIZER_IMPLEMENTATION
 #include "../../deps/mesh/voxelizer/voxelizer.h"
@@ -57,25 +58,25 @@ namespace vxr
 
     if (vertices_.size() == 0)
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Missing vertices of mesh object with name %s", name().c_str());
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Missing vertices of mesh object with name %s", name().c_str());
       return false;
     }
 
     if (indices_.size() == 0)
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Missing indices of mesh object with name %s", name().c_str());
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Missing indices of mesh object with name %s", name().c_str());
       return false;
     }
 
     if (normals_.size() < vertices_.size())
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Automatically recomputed normals of mesh object with name %s", name().c_str());
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Automatically recomputed normals of mesh object with name %s", name().c_str());
       recomputeNormals();
     }
 
     if (uv_.size() < vertices_.size())
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Automatically recomputed texture coordinates of mesh object with name %s", name().c_str());
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Automatically recomputed texture coordinates of mesh object with name %s", name().c_str());
       uv_.clear();
       for (uint32 i = 0; i < vertices_.size(); ++i)
       {

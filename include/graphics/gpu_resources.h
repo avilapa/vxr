@@ -134,7 +134,7 @@ namespace vxr
       Framebuffer(RenderContext *ctx = nullptr, uint32 id = 0) : Resource{ ctx, id, Type::Framebuffer } {}
       struct Info
       {
-        Texture::Info color_texture_info; /// Should this be an array?
+        Texture::Info color_texture_info[kMaxTextureUnits];
         Texture::Info depth_stencil_texture_info;
         uint16 num_color_textures; /// initializer 1
         uvec2 size;

@@ -24,10 +24,16 @@
 
 #include "../../include/core/assets.h"
 
+#include "../../include/engine/engine.h"
 #include "../../include/core/gameobject.h"
 #include "../../include/components/renderer.h"
 #include "../../include/components/mesh_filter.h"
-#include "../../include/graphics/materials/default_materials.h"
+#include "../../include/graphics/texture.h"
+#include "../../include/graphics/materials/standard.h"
+#include "../../include/graphics/materials/skybox.h"
+#include "../../include/graphics/materials/unlit.h"
+#include "../../include/graphics/materials/standard_pass.h"
+#include "../../include/graphics/materials/pass_filters.h"
 
 #include "../../deps/mesh/tiny_obj_loader.h"
 
@@ -42,12 +48,12 @@ namespace vxr
 
     string name = file;
     string path = name.substr(0, name.find_last_of("/") + 1);
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[INFO]: Loading mesh: %s.\n", name.c_str());
+    VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[INFO]: Loading mesh: %s.\n", name.c_str());
     string err = tinyobj::LoadObj(m_shapes, m_materials, name.c_str(), path.c_str());
 
     if (!err.empty())
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not load mesh %s (%s).\n", name.c_str(), err.c_str());
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not load mesh %s (%s).\n", name.c_str(), err.c_str());
       return nullptr;
     }
 
@@ -70,7 +76,7 @@ namespace vxr
       }
 
       ref_ptr<Mesh> mesh;
-      ref_ptr<Standard::Instance> mat; /// What kind of material should be allocated here?
+      ref_ptr<mat::Standard::Instance> mat; /// What kind of material should be allocated here?
 
       mesh.alloc();
       mat.alloc();
@@ -122,12 +128,12 @@ namespace vxr
 
     string name = file;
     string path = name.substr(0, name.find_last_of("/") + 1);
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[INFO]: Loading mesh: %s.\n", name.c_str());
+    VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[INFO]: Loading mesh: %s.\n", name.c_str());
     string err = tinyobj::LoadObj(m_shapes, m_materials, name.c_str(), path.c_str());
 
     if (!err.empty())
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not load mesh %s (%s).\n", name.c_str(), err.c_str());
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not load mesh %s (%s).\n", name.c_str(), err.c_str());
       return nullptr;
     }
 
@@ -182,22 +188,47 @@ namespace vxr
   void AssetManager::init()
   {
     initializeMaterials();
+    initializeRenderPasses();
+    initializeTextures();
   }
 
   void AssetManager::initializeMaterials()
   {
     // Adding engine materials
-    addMaterial<Screen>();
-    addMaterial<Standard>();
-    addMaterial<Standard::Textured>();
-    addMaterial<Standard::TexturedCubemap>();
-    addMaterial<Unlit>();
-    addMaterial<Wireframe>();
-    addMaterial<Skybox>();
+    addMaterial<mat::ScreenMaterial>();
+    addMaterial<mat::Standard>();
+    addMaterial<mat::Standard::Textured>();
+    addMaterial<mat::Standard::TexturedCubemap>();
+    addMaterial<mat::Unlit>();
+    addMaterial<mat::Wireframe>();
+    addMaterial<mat::Skybox>();
     /// Look for materials in assets folder and load
   }
 
-  ref_ptr<Material> AssetManager::getSharedMaterial(const char* shared_material_name) const
+  void AssetManager::initializeRenderPasses()
+  {
+    addRenderPass<mat::Screen>();
+    addRenderPass<mat::Negative>();
+    addRenderPass<mat::Grayscale>();
+  }
+
+  void AssetManager::initializeTextures()
+  {
+    default_texture_.alloc()->set_name("Default Texture");
+    default_texture_->set_type(TextureType::T2D);
+    default_texture_->load("../../assets/textures/default.png");
+
+    default_cubemap_.alloc()->set_name("Default Texture");
+    default_cubemap_->set_type(TextureType::CubeMap);
+    default_cubemap_->load("../../assets/textures/default.png", "../../assets/textures/default.png", "../../assets/textures/default.png", "../../assets/textures/default.png", "../../assets/textures/default.png", "../../assets/textures/default.png");
+  }
+
+  void AssetManager::addMaterial(ref_ptr<mat::Material> material)
+  {
+    materials_.push_back(material);
+  }
+
+  ref_ptr<mat::Material> AssetManager::shared_material(const char* shared_material_name) const
   {
     for (uint32 i = 0; i < materials_.size(); ++i)
     {
@@ -206,18 +237,46 @@ namespace vxr
         return materials_[i];
       }
     }
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_WARNING, "[WARNING]: Unknown shared material '%s'.\n", shared_material_name);
+    VXR_LOG(VXR_DEBUG_LEVEL_WARNING, "[WARNING]: Unknown shared material '%s'.\n", shared_material_name);
     return nullptr;
   }
 
-  std::vector<ref_ptr<Material>> AssetManager::getSharedMaterials() const
+  std::vector<ref_ptr<mat::Material>> AssetManager::shared_materials() const
   {
     return materials_;
   }
 
-  void AssetManager::addMaterial(ref_ptr<Material> material)
+  void AssetManager::addRenderPass(ref_ptr<mat::RenderPass> render_pass)
   {
-    materials_.push_back(material);
+    render_passes_.push_back(render_pass);
+  }
+
+  ref_ptr<mat::RenderPass> AssetManager::shared_render_pass(const char* shared_render_pass_name) const
+  {
+    for (uint32 i = 0; i < render_passes_.size(); ++i)
+    {
+      if (render_passes_[i]->name() == shared_render_pass_name)
+      {
+        return render_passes_[i];
+      }
+    }
+    VXR_LOG(VXR_DEBUG_LEVEL_WARNING, "[WARNING]: Unknown shared render pass '%s'.\n", shared_render_pass_name);
+    return nullptr;
+  }
+
+  std::vector<ref_ptr<mat::RenderPass>> AssetManager::shared_render_passes() const
+  {
+    return render_passes_;
+  }
+
+  ref_ptr<Texture> AssetManager::default_texture() const
+  {
+    return default_texture_;
+  }
+
+  ref_ptr<Texture> AssetManager::default_cubemap() const
+  {
+    return default_cubemap_;
   }
 
 }

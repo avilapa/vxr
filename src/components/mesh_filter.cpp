@@ -25,7 +25,6 @@
 #include "../../include/components/mesh_filter.h"
 
 #include "../../include/engine/engine.h"
-#include "../../include/graphics/ui.h"
 
 namespace vxr 
 {

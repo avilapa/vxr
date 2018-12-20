@@ -26,8 +26,6 @@
 #include "../noisefilters/simple.h"
 #include "../noisefilters/ridgid.h"
 
-#include "../../../include/graphics/ui.h"
-
 namespace vxr
 {
 

@@ -36,7 +36,7 @@ static void OnError(const char *format, ...)
   char buffer[2048];
   std::vsnprintf(buffer, 2048, format, args);
   va_end(args);
-  VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: %s\n", buffer);
+  VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: %s\n", buffer);
 }
 static void CheckGLError(const char* operation) 
 {

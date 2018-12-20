@@ -26,8 +26,6 @@
 
 #ifdef VXR_OPENGL
 
-#include "../../../../include/graphics/display_list.h"
-
 #include "gl.h"
 
 // ----------------------------------------------------------------------------------------

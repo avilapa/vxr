@@ -24,15 +24,14 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../engine/GPU.h"
-#include "../core/scene.h"
-#include "../core/assets.h"
-#include "../components/renderer.h"
-#include "../components/transform.h"
-#include "../components/mesh_filter.h"
-#include "../components/camera.h"
-#include "../components/custom.h"
-#include "../components/light.h"
+#include "../core/object.h"
+#include "../graphics/display_list.h"
+
+#include "../graphics/ui/log.h"
+#include "../graphics/ui/editor.h"
+
+
+#include <functional>
 
 /**
 * \file engine.h
@@ -44,6 +43,19 @@
 */
 namespace vxr 
 {
+
+  class GPU;
+  class Window;
+  class Scene;
+  class AssetManager;
+
+  namespace System { class IBL; }
+  namespace System { class Light; }
+  namespace System { class Custom; }
+  namespace System { class Camera; }
+  namespace System { class Renderer; }
+  namespace System { class Transform; }
+  namespace System { class MeshFilter; }
 
   class Engine : public Object 
   {
@@ -69,12 +81,16 @@ namespace vxr
     ref_ptr<Window> window();
     ref_ptr<AssetManager> assetManager();
 
+    ref_ptr<System::IBL> ibl();
     ref_ptr<System::Light> light();
     ref_ptr<System::Custom> custom();
     ref_ptr<System::Camera> camera();
     ref_ptr<System::Renderer> renderer();
     ref_ptr<System::Transform> transform();
     ref_ptr<System::MeshFilter> meshFilter();
+
+
+    vxr::ui::EditorLog Log;
 
   private:
     Params preinit_params_;
@@ -83,6 +99,7 @@ namespace vxr
     ref_ptr<Scene> scene_;
     ref_ptr<AssetManager> asset_manager_;
 
+    ref_ptr<System::IBL> ibl_;
     ref_ptr<System::Light> light_;
     ref_ptr<System::Custom> custom_;
     ref_ptr<System::Camera> camera_;
@@ -101,5 +118,9 @@ namespace vxr
     void renderPostUpdate();
     void stop();
   };
+
+  #define VXR_LOG(LEVEL, ...) \
+    VXR_DEBUG_FUNC(LEVEL, __VA_ARGS__);\
+    if(LEVEL<=VXR_DEBUG_LEVEL_INFO) Engine::ref().Log.AddLog(__VA_ARGS__);
 
 } /* end of vxr namespace */

@@ -25,33 +25,38 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../../../include/core/gameobject.h"
-#include "../../../include/graphics/materials/default_materials.h"
+#include "../../../include/graphics/materials/standard.h"
 
 namespace vxr 
 {
 
-  class PlanetMaterial : public Material
+  namespace mat
   {
-    VXR_OBJECT(PlanetMaterial, Material);
-  public:
-    PlanetMaterial();
 
-    class Instance : public MaterialInstance
+    class Planet : public Material
     {
-      VXR_OBJECT(Instance, MaterialInstance);
+      VXR_OBJECT(Planet, Material);
     public:
-      Instance();
+      Planet();
 
-      void set_elevation_min_max(vec2 elevation_min_max);
-      vec2 elevation_min_max() const;
+      class Instance : public MaterialInstance
+      {
+        VXR_OBJECT(Instance, MaterialInstance);
+      public:
+        Instance();
 
-      void set_gradient_texture(ref_ptr<Texture> texture);
-      ref_ptr<Texture> gradient_texture() const;
+        void set_elevation_min_max(vec2 elevation_min_max);
+        vec2 elevation_min_max() const;
 
-    protected:
-      ref_ptr<Texture> gradient_texture_;
+        void set_gradient_texture(ref_ptr<Texture> texture);
+        ref_ptr<Texture> gradient_texture() const;
+
+      protected:
+        ref_ptr<Texture> gradient_texture_;
+      };
+
     };
 
-  };
+  } /* end of mat namespace */
 
 } /* end of vxr namespace */

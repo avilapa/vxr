@@ -24,9 +24,6 @@
 
 #include "mesh.h"
 
-#include "../../include/graphics/ui.h"
-#include "../../include/core/assets.h"
-
 // 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
 
@@ -38,7 +35,7 @@ namespace vxr
     // 1. Initialize GPU and Window parameters.
     Params p;
     p.gpu = { 100, 100, 100, 100 };
-    p.window = { { 1920, 1080} };
+    p.window = { { 1280, 720 } };
     Engine::ref().set_preinit_params(p);
   }
 

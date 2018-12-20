@@ -24,11 +24,10 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../../../include/core/gameobject.h"
+#include "../../../include/engine/core_minimal.h"
 #include "terrain_face.h"
 #include "shape_settings.h"
 #include "color_settings.h"
-#include "../../../include/components/custom.h"
 
 namespace vxr {
 

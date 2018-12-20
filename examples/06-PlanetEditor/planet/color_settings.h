@@ -28,7 +28,7 @@
 #include "../../../include/components/renderer.h"
 #include "../../../include/utils/minmax.h"
 #include "../../../include/utils/gradient.h"
-#include "../../../include/graphics/materials/default_materials.h"
+#include "../../../include/graphics/materials/unlit.h"
 #include "material/material.h"
 #include "noise_filter.h"
 #include "simple.h"
@@ -101,9 +101,9 @@ namespace vxr
     ref_ptr<NoiseFilter> biome_noise_filter;
 
     ref_ptr<Texture> gradient_texture;
-    ref_ptr<PlanetMaterial::Instance> mat;
+    ref_ptr<mat::Planet::Instance> mat;
 
-    ref_ptr<Wireframe::Instance> wireframe_mat;
+    ref_ptr<mat::Wireframe::Instance> wireframe_mat;
   };
 
 } /* end of vxr namespace */

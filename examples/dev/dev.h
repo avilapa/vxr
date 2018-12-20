@@ -25,9 +25,7 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../../include/engine/application.h"
-#include "../../include/graphics/mesh.h"
-#include "../../include/graphics/materials/default_materials.h"
-#include "../../include/core/gameobject.h"
+#include "../../include/engine/core_minimal.h"
 
 /**
 * \file dev.h
@@ -42,9 +40,7 @@ namespace vxr
 
   class Main : public Application
   {
-
     VXR_OBJECT(Main, Application);
-
   public:
     Main();
 

@@ -25,8 +25,6 @@
 #include "../../include/core/component.h"
 #include "../../include/core/gameobject.h"
 
-#include "../../include/graphics/ui.h"
-
 namespace vxr 
 {
 

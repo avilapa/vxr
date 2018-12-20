@@ -40,42 +40,48 @@
 */
 namespace vxr
 {
-  namespace System { class Camera; class Renderer; }
-
-  class Material;
+  namespace System { class Renderer; }
+  class Composer;
   class Texture;
 
-  class MaterialInstance : public Object
+  namespace mat
   {
-    VXR_OBJECT(MaterialInstance, Object);
 
-    friend class System::Camera;
-    friend class System::Renderer;
-    friend class AssetManager;
-  public:
-    MaterialInstance();
-    virtual ~MaterialInstance();
+    class Material;
 
-    virtual void onGUI() override;
+    class MaterialInstance : public Object
+    {
+      VXR_OBJECT(MaterialInstance, Object);
+      friend class System::Renderer;
+      friend class AssetManager;
+      friend class Composer;
+    public:
+      MaterialInstance();
+      virtual ~MaterialInstance();
 
-    void init(string shared_material_name, uint32 index = 0);
-    void init(std::initializer_list<string> shared_material_names);
+      virtual void onGUI() override;
 
-    void set_active_material(uint32 index);
-    uint32 active_material() const;
+      void init(string shared_material_name, uint32 index = 0);
+      void init(std::initializer_list<string> shared_material_names);
 
-    ref_ptr<Material> sharedMaterial() const;
+      void set_active_material(uint32 index);
+      uint32 active_material() const;
 
-    void set_texture(uint32 index, ref_ptr<Texture> texture);
-    ref_ptr<Texture> texture(uint32 index = 0) const;
+      ref_ptr<Material> sharedMaterial() const;
 
-  protected:
-    Shader::UniformData uniforms_;
+      void set_texture(uint32 index, ref_ptr<Texture> texture);
+      ref_ptr<Texture> texture(uint32 index = 0) const;
+      std::vector<ref_ptr<Texture>> textures() const;
 
-  private:
-    uint32 active_material_;
-    std::vector<ref_ptr<Material>> shared_materials_;
-    std::vector<std::vector<ref_ptr<Texture>>> textures_;
-  };
+    protected:
+      Shader::UniformData uniforms_;
+
+    private:
+      uint32 active_material_;
+      std::vector<ref_ptr<Material>> shared_materials_;
+      std::vector<std::vector<ref_ptr<Texture>>> textures_;
+    };
+
+  } /* end of mat namespace */
 
 } /* end of vxr namespace */

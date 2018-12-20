@@ -25,79 +25,90 @@
 #include "../../../include/graphics/materials/material_instance.h"
 #include "../../../include/graphics/materials/material.h"
 #include "../../../include/engine/engine.h"
-#include "../../../include/graphics/ui.h"
+#include "../../../include/core/assets.h"
 
 namespace vxr
 {
 
-  MaterialInstance::MaterialInstance() :
-    active_material_(0)/// vars
+  namespace mat
   {
 
-  }
-
-  MaterialInstance::~MaterialInstance()
-  {
-
-  }
-
-  void MaterialInstance::onGUI()
-  {
-    ImGui::Text((name() + "(Shader: " + type() + ")").c_str());
-    ImGui::Spacing();
-  }
-
-  void MaterialInstance::init(string shared_material_name, uint32 i)
-  {
-    uint32 num_materials = i + 1;
-    if (shared_materials_.size() < num_materials)
+    MaterialInstance::MaterialInstance() :
+      active_material_(0)/// vars
     {
-      shared_materials_.resize(num_materials);
-      textures_.resize(num_materials);
+
     }
 
-    shared_materials_[i] = Engine::ref().assetManager()->getSharedMaterial(shared_material_name.c_str());
-
-    if (!shared_materials_[i])
+    MaterialInstance::~MaterialInstance()
     {
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not intialize textures for %s (%s). Unknown shared material.\n", name().c_str(), type().c_str());
-      return;
+
     }
 
-    textures_[i].resize(shared_materials_[i]->num_textures());
-  }
-
-  void MaterialInstance::init(std::initializer_list<string> shared_material_names)
-  {
-    uint32 i = 0;
-    for (auto material : shared_material_names)
+    void MaterialInstance::onGUI()
     {
-      init(material, i++);
+      ImGui::Text(sharedMaterial()->name().c_str());
+      ImGui::Spacing();
     }
+
+    void MaterialInstance::init(string shared_material_name, uint32 i)
+    {
+      uint32 num_materials = i + 1;
+      if (shared_materials_.size() < num_materials)
+      {
+        shared_materials_.resize(num_materials);
+        textures_.resize(num_materials);
+      }
+
+      shared_materials_[i] = Engine::ref().assetManager()->shared_material(shared_material_name.c_str());
+
+      if (!shared_materials_[i])
+      {
+        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not intialize textures for %s (%s). Unknown shared material.\n", name().c_str(), type().c_str());
+        return;
+      }
+
+      textures_[i].resize(shared_materials_[i]->num_textures());
+    }
+
+    void MaterialInstance::init(std::initializer_list<string> shared_material_names)
+    {
+      uint32 i = 0;
+      for (auto material : shared_material_names)
+      {
+        init(material, i++);
+      }
+    }
+
+    void MaterialInstance::set_active_material(uint32 index)
+    {
+      active_material_ = index;
+    }
+
+    uint32 MaterialInstance::active_material() const
+    {
+      return active_material_;
+    }
+
+    ref_ptr<Material> MaterialInstance::sharedMaterial() const
+    {
+      return shared_materials_[active_material_];
+    }
+
+    void MaterialInstance::set_texture(uint32 index, ref_ptr<Texture> texture)
+    {
+      textures_[active_material_][index] = texture;
+    }
+
+    ref_ptr<Texture> MaterialInstance::texture(uint32 index /* = 0 */) const
+    {
+      return textures_[active_material_][index];
+    }
+
+    std::vector<ref_ptr<Texture>> MaterialInstance::textures() const
+    {
+      return textures_[active_material_];
+    }
+
   }
 
-  void MaterialInstance::set_active_material(uint32 index)
-  {
-    active_material_ = index;
-  }
-
-  uint32 MaterialInstance::active_material() const
-  {
-    return active_material_;
-  }
-
-  ref_ptr<Material> MaterialInstance::sharedMaterial() const
-  {
-    return shared_materials_[active_material_];
-  }
-
-  void MaterialInstance::set_texture(uint32 index, ref_ptr<Texture> texture)
-  {
-    textures_[active_material_][index] = texture;
-  }
-
-  ref_ptr<Texture> MaterialInstance::texture(uint32 index /* = 0 */) const
-  {
-    return textures_[active_material_][index];
-  }
 }

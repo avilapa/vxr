@@ -24,8 +24,6 @@
 
 #include "../../include/core/object.h"
 
-#include "../../include/graphics/ui.h"
-
 namespace vxr 
 {
 

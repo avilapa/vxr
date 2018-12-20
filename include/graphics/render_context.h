@@ -24,8 +24,8 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../graphics/display_list.h"
 #include "../../include/graphics/gpu_instances.h"
+#include "../engine/engine.h"
 
 // ----------------------------------------------------------------------------------------
 //  The following structures and functions have been partially extracted from px_render.h 
@@ -103,7 +103,7 @@ namespace vxr
         uint32 i = index(id);
         return{ &(*instance_array)[i], &(*backend_array)[i] };
       }
-      VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Invalid resource.\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Invalid resource.\n");
       return{ nullptr, nullptr };
     }
   };

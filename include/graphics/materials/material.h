@@ -37,52 +37,56 @@
 */
 namespace vxr
 {
-  namespace System { class Camera; class Renderer; }
+  namespace System { class Renderer; }
+  class Composer;
 
-  class Material : public Object
+  namespace mat
   {
 
-    VXR_OBJECT(Material, Object);
-
-    friend class System::Camera;
-    friend class System::Renderer;
-    friend class AssetManager;
-  public:
-    Material();
-    virtual ~Material();
-
-    uint32 num_textures() const;
-
-    void set_num_textures(uint32 count);
-    void set_shaders(const char* vert, const char* frag);
-    void set_cull(Cull::Enum cull);
-    void set_render_mode(RenderMode::Enum render_mode);
-    void set_blend_params(bool enabled, vec4 color, BlendFactor::Enum src_rgb, BlendFactor::Enum dst_rgb, BlendOp::Enum op_rgb, BlendFactor::Enum src_alpha, BlendFactor::Enum dst_alpha, BlendOp::Enum op_alpha);
-    void set_depth_func(CompareFunc::Enum depth_func);
-    void set_rgba_write(bool enabled);
-    void set_depth_write(bool enabled);
-
-    void set_uniforms_enabled(bool enabled);
-    void set_uniforms_name(const char* name);
-    void set_uniforms_usage(Usage::Enum usage);
-
-  private:
-    bool initialized_ = false;
-    bool use_uniforms_ = true;
-
-    const char* uniforms_name_ = "Uniforms";
-    Usage::Enum uniforms_usage_ = Usage::Dynamic;
-
-    struct GPU
+    class Material : public Object
     {
-      gpu::Material mat;
-      gpu::Material::Info info;
-      gpu::Buffer uniform_buffer;
-      std::vector<gpu::Texture> tex;
-    } gpu_;
+      VXR_OBJECT(Material, Object);
+      friend class System::Renderer;
+      friend class AssetManager;
+      friend class Composer;
+    public:
+      Material();
+      virtual ~Material();
 
-    void setup();
-    void setupTextureTypes(std::vector<ref_ptr<Texture>> textures);
-  };
+      uint32 num_textures() const;
+
+      void set_num_textures(uint32 count);
+      void set_shaders(const char* vert, const char* frag);
+      void set_cull(Cull::Enum cull);
+      void set_render_mode(RenderMode::Enum render_mode);
+      void set_blend_params(bool enabled, vec4 color, BlendFactor::Enum src_rgb, BlendFactor::Enum dst_rgb, BlendOp::Enum op_rgb, BlendFactor::Enum src_alpha, BlendFactor::Enum dst_alpha, BlendOp::Enum op_alpha);
+      void set_depth_func(CompareFunc::Enum depth_func);
+      void set_rgba_write(bool enabled);
+      void set_depth_write(bool enabled);
+
+      void set_uniforms_enabled(bool enabled);
+      void set_uniforms_name(const char* name);
+      void set_uniforms_usage(Usage::Enum usage);
+
+    private:
+      bool initialized_ = false;
+      bool use_uniforms_ = true;
+
+      const char* uniforms_name_ = "Uniforms";
+      Usage::Enum uniforms_usage_ = Usage::Dynamic;
+
+      struct GPU
+      {
+        gpu::Material mat;
+        gpu::Material::Info info;
+        gpu::Buffer uniform_buffer;
+        std::vector<gpu::Texture> tex;
+      } gpu_;
+
+      bool setup();
+      bool setupTextureTypes(std::vector<ref_ptr<Texture>> textures);
+    };
+    
+  } /* end of mat namespace */
 
 } /* end of vxr namespace */

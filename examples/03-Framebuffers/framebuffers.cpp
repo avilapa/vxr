@@ -23,9 +23,8 @@
 // ----------------------------------------------------------------------------------------
 
 #include "framebuffers.h"
-#include "../../include/graphics/display_list.h"
-
-#include "../../include/graphics/ui.h"
+#include "../../include/engine/engine.h"
+#include "../../include/engine/gpu.h"
 
 // 0. Define the entry point.
 VXR_DEFINE_APP_MAIN(vxr::Main)
@@ -214,7 +213,12 @@ namespace vxr
     fb_tex_color.format = TexelsFormat::RGBA_U8;
     fb_tex_depth.format = TexelsFormat::Depth_U16;
 
-    framebuffer_ = Engine::ref().gpu()->createFramebuffer({ fb_tex_color, fb_tex_depth, 1 });
+    gpu::Framebuffer::Info fb_info;
+    fb_info.color_texture_info[0] = fb_tex_color;
+    fb_info.depth_stencil_texture_info = fb_tex_depth;
+    fb_info.num_color_textures = 1;
+
+    framebuffer_ = Engine::ref().gpu()->createFramebuffer(fb_info);
 
     // 4. Create a model matrix for each of the translated rotating cubes.
     for (uint32 x = 0; x < kNUM_CUBES_ROW; ++x)

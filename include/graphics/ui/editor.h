@@ -24,9 +24,8 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../../include/graphics/window.h"
-#include "../../deps/imgui/imgui.h"
-#include "../../deps/imgui/imgui_stl.h"
+#include "../../../deps/imgui/imgui.h"
+#include "../../../deps/imgui/imgui_stl.h"
 
 /**
 * \file ui.h
@@ -38,19 +37,14 @@
 */
 namespace vxr
 {
-  struct Window::Data;
 
   namespace ui 
   {
+
     void Test();
     void Editor();
     void Statistics(bool *open, bool fullscreen);
     
-    bool Init(Window::Data* data);
-    void Update(Window::Data* data);
-    void Draw();
-    void Stop(Window::Data* data);
-
   } /* end of ui namespace */
 
 } /* end of vxr namespace */

@@ -25,6 +25,7 @@
 #include "../../include/graphics/texture.h"
 
 #include "../../include/engine/engine.h"
+#include "../../include/engine/gpu.h"
 
 #if defined (VXR_OPENGL)
 #  include "../graphics/backend/opengl/gl_backend.h"

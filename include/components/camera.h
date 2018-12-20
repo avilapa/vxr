@@ -25,8 +25,9 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../core/component.h"
-#include "../graphics/mesh.h"
 #include "../graphics/materials/shader.h"
+#include "../graphics/gpu_resources.h"
+#include "../graphics/composer.h"
 
 /**
 * \file camera.h
@@ -51,8 +52,19 @@ namespace vxr
     Camera();
 		~Camera();
 
-    /// UI function
+    struct ClearFlags
+    {
+      enum Enum
+      {
+        SolidColor,
+        Skybox,
+      };
+    };
+
     virtual void onGUI() override;
+
+    void set_composer(ref_ptr<Composer> composer);
+    ref_ptr<Composer> composer() const;
 
 #define PROPERTY(type, name, fname, ...)                            \
      private:                                                       \
@@ -61,36 +73,41 @@ namespace vxr
       void set_##fname(const type &c) { name = c; dirty_ = true; }  \
       type fname() const { return name; }
 
-    PROPERTY(float, fov_, fov, 70.0f);                                        ///< Field of view.
-    PROPERTY(float, aspect_, aspect, 1280.0f / 720.0f);                       ///< Screen aspect ratio.
-    PROPERTY(float, near_plane_, near_plane, 0.1f);                           ///< Near plane distance.
-    PROPERTY(float, far_plane_, far_plane, 900.0f);                           ///< Far plane distance.
+    PROPERTY(float, fov_, fov, 70.0f);
+    PROPERTY(float, aspect_, aspect, 1280.0f / 720.0f);
+    PROPERTY(float, near_plane_, near_plane, 0.1f);
+    PROPERTY(float, far_plane_, far_plane, 900.0f);
 
-    PROPERTY(Color, background_color_, background_color, Color::PhyreBlue);   ///< Background color.
+    PROPERTY(Color, background_color_, background_color, Color::PhyreBlue);
 
+    /// No need dirty
+    PROPERTY(bool, clear_color_, clear_color, true);
+    PROPERTY(bool, clear_depth_, clear_depth, true);
+    PROPERTY(bool, clear_stencil_, clear_stencil, true);
 #undef PROPERTY
- 
+
+    void set_clear_flags(ClearFlags::Enum flags);
+    ClearFlags::Enum clear_flags() const;
+
     mat4 projection() const;
     mat4 view() const;
-
-    /// Variables / Functions ?
-    bool clear_color;
-    bool clear_depth;
-    bool clear_stencil;
 
   public:
     void computeTransformations();
     bool hasChanged() const;
 
   private:
-    bool dirty_ = true;                     ///< Marks if the matrices need updating.                                                 
+    bool dirty_ = true;     
+    ClearFlags::Enum clear_flags_ = ClearFlags::SolidColor;
 
-    mat4 projection_;                       ///< Camera projection matrix.
-    mat4 view_;                             ///< Camera view matrix.
+    ref_ptr<Composer> composer_;
+
+    mat4 projection_;
+    mat4 view_;
 	};
 
   class Scene;
-  class MaterialInstance;
+  namespace mat { class MaterialInstance; }
 
   namespace System 
   {
@@ -111,10 +128,8 @@ namespace vxr
       void renderPostUpdate() override;
 
       void set_render_to_screen(bool enabled);
-      void set_render_size(uvec2 size);
-
       bool render_to_screen() const;
-      uint32 screen_id();
+      uint32 screen_texture_id();
 
     private:
       std::vector<ref_ptr<vxr::Camera>> components_;
@@ -123,12 +138,6 @@ namespace vxr
       ref_ptr<vxr::Camera> main_;
       
       bool render_to_screen_;
-      uvec2 render_size_;
-
-      ref_ptr<MaterialInstance> screen_material_;
-      ref_ptr<EngineMesh::Quad> screen_quad_;
-      ref_ptr<Texture> screen_texture_;
-      gpu::Framebuffer screen_;
 
       struct CommonUniforms
       {

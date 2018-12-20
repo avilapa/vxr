@@ -24,8 +24,6 @@
 
 #include "simple.h"
 
-#include "../../../include/graphics/ui.h"
-
 #include <algorithm>
 
 namespace vxr

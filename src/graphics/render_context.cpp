@@ -24,6 +24,7 @@
 
 #include "../../include/graphics/render_context.h"
 #include "../../include/graphics/materials/shader.h"
+#include "../../include/engine/engine.h"
 
 #if defined (VXR_OPENGL)
 #  include "../graphics/backend/opengl/gl_backend.h"
@@ -54,7 +55,7 @@ namespace vxr
     materials_.alloc(params.max_materials);
     framebuffers_.alloc(params.max_framebuffers);
 
-    VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_INFO, "[INFO]: Initialized Render Context with params: \n    - max_buffers (%u), max_textures (%u), max_materials (%u), max_framebuffers (%u)\n", params.max_buffers, params.max_textures, params.max_materials, params.max_framebuffers);
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Initialized Render Context with params:\n    - max_buffers       (%u)\n    - max_textures      (%u)\n    - max_materials     (%u)\n    - max_framebuffers  (%u)\n", params.max_buffers, params.max_textures, params.max_materials, params.max_framebuffers);
   }
 
 // ----------------------------------------------------------------------------------------

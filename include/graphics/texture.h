@@ -37,12 +37,15 @@
 namespace vxr
 {
 
+  namespace mat { class Material; class RenderPass; }
+  class Composer;
+
   class Texture : public Object
   {
-
     VXR_OBJECT(Texture, Object);
-
-    friend class Material;
+    friend class mat::Material;
+    friend class mat::RenderPass;
+    friend class Composer;
   public:
     Texture();
     ~Texture();

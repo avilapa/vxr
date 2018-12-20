@@ -38,8 +38,9 @@ namespace vxr
 {
 
   class GameObject;
-  class Material;
+  class Texture;
   class Mesh;
+  namespace mat { class Material; class MaterialInstance; class RenderPass; class RenderPassInstance; }
 
   namespace Asset
   {
@@ -58,7 +59,7 @@ namespace vxr
 
     void init();
 
-    void addMaterial(ref_ptr<Material> material);
+    void addMaterial(ref_ptr<mat::Material> material);
     template<class T> 
     void addMaterial()
     {
@@ -66,16 +67,34 @@ namespace vxr
       m.alloc();
       materials_.push_back(m.get());
     }
+    ref_ptr<mat::Material> shared_material(const char* shared_material_name) const;
+    std::vector<ref_ptr<mat::Material>> shared_materials() const;
 
-    ref_ptr<Material> getSharedMaterial(const char* shared_material_name) const;
-    std::vector<ref_ptr<Material>> getSharedMaterials() const;
+    void addRenderPass(ref_ptr<mat::RenderPass> render_pass);
+    template<class T>
+    void addRenderPass()
+    {
+      ref_ptr<T> rp;
+      rp.alloc();
+      render_passes_.push_back(rp.get());
+    }
+    ref_ptr<mat::RenderPass> shared_render_pass(const char* shared_render_pass_name) const;
+    std::vector<ref_ptr<mat::RenderPass>> shared_render_passes() const;
+
+    ref_ptr<Texture> default_texture() const;
+    ref_ptr<Texture> default_cubemap() const;
 
   private:
     void initializeMaterials();
-    ///void initializeTextures();
+    void initializeRenderPasses();
+    void initializeTextures();
 
   private:
-    std::vector<ref_ptr<Material>> materials_;
+    std::vector<ref_ptr<mat::Material>> materials_;
+    std::vector<ref_ptr<mat::RenderPass>> render_passes_;
+
+    ref_ptr<Texture> default_texture_;
+    ref_ptr<Texture> default_cubemap_;
 	};
 
 } /* end of vxr namespace */

@@ -39,9 +39,7 @@ namespace vxr
 
 	class Window : public Object 
   {
-    
     VXR_OBJECT(Window, Object)
-
     friend class GPU;
     friend class Engine;
 	public:

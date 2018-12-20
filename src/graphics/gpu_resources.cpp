@@ -23,6 +23,7 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../../include/graphics/render_context.h"
+#include "../../include/engine/engine.h"
 
 #ifndef STB_IMAGE_IMPLEMENTATION
 #define STB_IMAGE_IMPLEMENTATION
@@ -37,18 +38,19 @@ namespace vxr
 
     unsigned char* Texture::loadFromFile(const char* file, Texture::Info& tex)
     {
+      VXR_TRACE_SCOPE("VXR", "Texture Load");
       int w, h, comp;
       unsigned char *data = stbi_load(file, &w, &h, &comp, 0);
       if (!data)
       {
-        VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Unknown texture format.\n");
+        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Unknown texture format.\n");
         return nullptr;
       }
 
       if (w < 1 || h < 1)
       {
         free(data);
-        VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Invalid texture data.\n");
+        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Invalid texture data.\n");
         return nullptr;
       }
 
@@ -67,6 +69,7 @@ namespace vxr
 
     std::vector<unsigned char*> Texture::loadCubemapFromFile(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, Texture::Info& tex)
     {
+      VXR_TRACE_SCOPE("VXR", "Texture Load (Cubemap)");
       int w, h, comp;
       std::vector<unsigned char*> data;
       data.push_back(stbi_load(rt, &w, &h, &comp, 0));
@@ -81,7 +84,7 @@ namespace vxr
       {
         if (!data[i])
         {
-          VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Unknown texture format.\n");
+          VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Unknown texture format.\n");
           error = true;
         }
       }
@@ -97,7 +100,7 @@ namespace vxr
         {
           free(data[0]);
         }
-        VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Invalid texture data.\n");
+        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Invalid texture data.\n");
         return data;
       }
 

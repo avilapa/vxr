@@ -23,11 +23,15 @@
 // ----------------------------------------------------------------------------------------
 
 #include "../../include/components/camera.h"
+#include "../../include/components/transform.h"
+#include "../../include/components/light.h"
 
 #include "../../include/engine/engine.h"
+#include "../../include/engine/gpu.h"
 #include "../../include/graphics/materials/material_instance.h"
 #include "../../include/graphics/materials/material.h"
-#include "../../include/graphics/ui.h"
+#include "../../include/graphics/composer.h"
+#include "../../include/core/scene.h"
 
 namespace vxr 
 {
@@ -35,7 +39,10 @@ namespace vxr
   Camera::Camera()
   {
     set_name("Camera");
+    composer_.alloc();
+
     aspect_ = (float)Engine::ref().window()->params().size.x / (float)Engine::ref().window()->params().size.y; ///TODO: If resolution were to be editable this would need updating.
+    
   }
 
   Camera::~Camera()
@@ -45,16 +52,44 @@ namespace vxr
   void Camera::onGUI()
   {
     ImGui::Spacing();
-    ImGui::Text("Field of View"); ImGui::SameLine();
-    if (ImGui::DragFloat(uiText("##Fov").c_str(), &fov_, 0.01f, -FLT_MAX, FLT_MAX)) dirty_ = true;
-    ImGui::Text("Aspect Ratio "); ImGui::SameLine();
-    if (ImGui::DragFloat(uiText("##Aspect").c_str(), &aspect_, 0.01f, -FLT_MAX, FLT_MAX)) dirty_ = true;
-    ImGui::Text("Near Plane   "); ImGui::SameLine();
+    ImGui::Combo(uiText("Clear Flags##ClearFlags").c_str(), (int*)&clear_flags_, "Solid Color\0Skybox\0\0");
+    ImGui::Spacing();
+    switch (clear_flags_)
+    {
+    case ClearFlags::SolidColor:
+      ImGui::Text("Color      "); ImGui::SameLine();
+      ImGui::ColorEdit3(uiText("##Color").c_str(), (float*)&background_color_);
+      break;
+    case ClearFlags::Skybox:
+      if (!Engine::ref().scene()->skybox())
+      {
+        ImGui::PushStyleColor(0, ImVec4(0.8f, 0.3f, 0.12f, 1.0f));
+        ImGui::Text("No skybox has been created.");
+        ImGui::PopStyleColor();
+      }
+      else
+      {
+        Engine::ref().scene()->skybox()->material()->onGUI();
+      }
+      break;
+    default:
+      break;
+    }
+    ImGui::Spacing();
+    ImGui::Separator();
+    ImGui::Spacing();
+    ImGui::Text("Clear Color"); ImGui::SameLine();
+    ImGui::Checkbox(uiText("##ClearSettingsColor").c_str(), &clear_color_);
+    ImGui::Text("Clear Depth"); ImGui::SameLine();
+    ImGui::Checkbox(uiText("##ClearSettingsDepth").c_str(), &clear_depth_);
+    ImGui::Separator();
+    ImGui::Spacing();
+    ImGui::Text("FOV        "); ImGui::SameLine();
+    if (ImGui::DragFloat(uiText("##Fov").c_str(), &fov_, 0.1f, -FLT_MAX, FLT_MAX)) dirty_ = true;
+    ImGui::Text("Near Plane "); ImGui::SameLine();
     if (ImGui::DragFloat(uiText("##NearPlane").c_str(), &near_plane_, 0.01f, -FLT_MAX, FLT_MAX)) dirty_ = true;
-    ImGui::Text("Far Plane    "); ImGui::SameLine();
+    ImGui::Text("Far Plane  "); ImGui::SameLine();
     if (ImGui::DragFloat(uiText("##FarPlane").c_str(), &far_plane_, 0.01f, -FLT_MAX, FLT_MAX)) dirty_ = true;
-    ImGui::Text("Clear Color  "); ImGui::SameLine();
-    ImGui::ColorEdit3(uiText("##Color").c_str(), (float*)&background_color_);
   }
 
   void Camera::computeTransformations()
@@ -70,6 +105,26 @@ namespace vxr
     return dirty_;
   }
 
+  void Camera::set_clear_flags(ClearFlags::Enum flags)
+  {
+    clear_flags_ = flags;
+  }
+
+  Camera::ClearFlags::Enum Camera::clear_flags() const
+  {
+    return clear_flags_;
+  }
+
+  void Camera::set_composer(ref_ptr<Composer> composer)
+  {
+    composer_ = composer;
+  }
+
+  ref_ptr<Composer> Camera::composer() const
+  {
+    return composer_;
+  }
+
   mat4 Camera::projection() const
   {
     return projection_;
@@ -83,15 +138,8 @@ namespace vxr
   System::Camera::Camera() :
     scene_(nullptr),
     main_(nullptr),
-    render_to_screen_(true),
-    render_size_(uvec2(0)),
-    screen_(nullptr),
-    screen_texture_(nullptr),
-    screen_material_(nullptr),
-    screen_quad_(nullptr)
+    render_to_screen_(true)
   {
-    screen_texture_.alloc();
-    screen_quad_.alloc();
   }
 
   System::Camera::~Camera()
@@ -116,29 +164,6 @@ namespace vxr
   void System::Camera::init()
   {
     common_uniforms_.buffer = Engine::ref().gpu()->createBuffer({ BufferType::Uniform,  sizeof(common_uniforms_.data), Usage::Static, "Common" });
-    
-    gpu::Texture::Info fb_tex_color; fb_tex_color.width = Engine::ref().window()->params().size.x, fb_tex_color.height = Engine::ref().window()->params().size.y;
-    gpu::Texture::Info fb_tex_depth; fb_tex_depth.width = Engine::ref().window()->params().size.x, fb_tex_depth.height = Engine::ref().window()->params().size.y;
-    fb_tex_color.format = TexelsFormat::RGBA_U8;
-    fb_tex_depth.format = TexelsFormat::Depth_U16;
-
-    render_size_ = { Engine::ref().window()->params().size.x, fb_tex_color.height = Engine::ref().window()->params().size.y };
-
-    screen_ = Engine::ref().gpu()->createFramebuffer({ fb_tex_color, fb_tex_depth, 1 });
-    screen_texture_->init(screen_.color_texture());
-
-    screen_material_.alloc()->init("Screen");
-
-    screen_material_->set_texture(0, screen_texture_);
-
-    ref_ptr<Material> shared_material = screen_material_->sharedMaterial();
-    shared_material->setupTextureTypes(screen_material_->textures_[screen_material_->active_material_]);
-    if (!shared_material->initialized_)
-    {
-      shared_material->setup();
-    }
-
-    screen_quad_->setup();
   }
 
   void System::Camera::update()
@@ -148,6 +173,7 @@ namespace vxr
       scene_ = Engine::ref().scene();
       set_main(Engine::ref().scene()->default_camera());
       // Scene changed
+      main()->composer_->init();
     }
   }
 
@@ -158,6 +184,9 @@ namespace vxr
     {
       return;
     }
+
+    main()->composer_->setupFirstPass();
+
     DisplayList frame;
     if (main()->hasChanged() || main()->transform()->hasChanged())
     {
@@ -168,7 +197,7 @@ namespace vxr
       common_uniforms_.data.u_resolution = Engine::ref().window()->params().size;
       ///xy
       common_uniforms_.data.u_clear_color = main()->background_color().rgba();
-      common_uniforms_.data.u_view_pos_num_lights = vec4(main()->transform()->world_position(), (float)Engine::ref().light()->num_lights()); /// Worldpos
+      common_uniforms_.data.u_view_pos_num_lights = vec4(main()->transform()->world_position(), (float)Engine::ref().light()->num_lights());
 
       frame.fillBufferCommand()
         .set_buffer(common_uniforms_.buffer)
@@ -176,16 +205,11 @@ namespace vxr
         .set_size(sizeof(common_uniforms_.data));
     }
 
-    frame.setupViewCommand()
-      .set_viewport({ 0,0, (uint16)(render_size_.x), (uint16)render_size_.y })
-      .set_framebuffer(screen_)
-      .set_resolution(render_size_);
     frame.clearCommand()
       .set_color(main()->background_color().rgba())
-      .set_clear_color(main()->clear_color)
-      .set_clear_depth(main()->clear_depth)
-      .set_clear_stencil(main()->clear_stencil);
-    /// TODO: missing depth and stencil
+      .set_clear_color(main()->clear_color())
+      .set_clear_depth(main()->clear_depth())
+      .set_clear_stencil(main()->clear_stencil());
     Engine::ref().submitDisplayList(std::move(frame));
   }
 
@@ -201,42 +225,24 @@ namespace vxr
     {
       c->dirty_ = false;
     }
-    DisplayList frame;
-    frame.setupViewCommand()
-      .set_viewport({ 0,0, (uint16)common_uniforms_.data.u_resolution.x, (uint16)common_uniforms_.data.u_resolution.y });
-    
+
+    main()->composer_->applyPostprocessing();
+    main()->composer_->setupLastPass();
+
     if (render_to_screen_)
     {
-      frame.clearCommand()
-        .set_color(Color::Black)
-        .set_clear_color(true)
-        .set_clear_depth(true);
-      frame.setupMaterialCommand()
-        .set_material(screen_material_->sharedMaterial()->gpu_.mat)
-        .set_buffer(0, screen_quad_->gpu_.vertex.buffer)
-        .set_v_texture(screen_material_->sharedMaterial()->gpu_.tex);
-      frame.renderCommand()
-        .set_index_buffer(screen_quad_->gpu_.index.buffer)
-        .set_count(screen_quad_->indexCount())
-        .set_type(screen_quad_->indexFormat());
+      main()->composer_->renderToScreen();
     }
-
-    Engine::ref().submitDisplayList(std::move(frame));
   }
 
-  uint32 System::Camera::screen_id()
+  uint32 System::Camera::screen_texture_id()
   {
-    return screen_texture_->id();
+    return main()->composer()->final_texture_id();
   }
 
   void System::Camera::set_render_to_screen(bool enabled)
   {
     render_to_screen_ = enabled;
-  }
-
-  void System::Camera::set_render_size(uvec2 render_size)
-  {
-    render_size_ = render_size;
   }
 
   bool System::Camera::render_to_screen() const

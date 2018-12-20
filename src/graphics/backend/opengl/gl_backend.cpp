@@ -35,30 +35,32 @@
 #include "../../../../include/graphics/render_context.h"
 #include "../../../../include/graphics/materials/shader.h"
 
-static void OnError(const char *format, ...) 
+
+namespace vxr
 {
-  va_list args;
-  va_start(args, format);
-  char buffer[2048];
-  std::vsnprintf(buffer, 2048, format, args);
-  va_end(args);
-  VXR_DEBUG_FUNC(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: %s\n", buffer);
-}
-static void CheckGLError(const char* operation) 
-{
-  vxr::int32 error = glGetError();
-  if (error) 
+
+  static void OnError(const char *format, ...)
   {
-    OnError("[OPENGL_ERROR]: 0x%x (%s)\n", error, operation);
-    return;
+    va_list args;
+    va_start(args, format);
+    char buffer[2048];
+    std::vsnprintf(buffer, 2048, format, args);
+    va_end(args);
+    VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: %s\n", buffer);
   }
-}
+  static void CheckGLError(const char* operation)
+  {
+    vxr::int32 error = glGetError();
+    if (error)
+    {
+      OnError("[OPENGL_ERROR]: 0x%x (%s)\n", error, operation);
+      return;
+    }
+  }
 #define GLCHECK_STR_STR(A) #A
 #define GLCHECK_STR(A) GLCHECK_STR_STR(A)
 #define GLCHECK(...) {__VA_ARGS__; CheckGLError(__FILE__  ":" GLCHECK_STR(__LINE__) "->" #__VA_ARGS__);}
 
-namespace vxr
-{
 
   namespace gpu
   {
@@ -89,9 +91,8 @@ namespace vxr
 
       common_frag[2] = Shader::Load("common_lighting.frag");
 
-
       glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-      ///glDepthFunc(GL_LEQUAL);
+      glEnable(GL_DEPTH_TEST);
     }
 
     void DestroyBackEnd(BackEnd** b)
@@ -532,12 +533,13 @@ namespace vxr
           {
             auto tex = RenderContext::GetResource(fb.first->color_textures[i].id, &fb.first->color_textures[i].ctx->textures_, &fb.first->color_textures[i].ctx->back_end_->textures);
             InitTexture(tex);
-            if (tex.second->target != GL_TEXTURE_2D)
+            if (tex.second->target != GL_TEXTURE_2D) /// Cubemap as well!
             {
               OnError("Invalid texture type, expected texture 2D (color %u)", i);
             }
             GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, tex.second->texture, 0));
           }
+          /// glDrawBuffers?
           if (RenderContext::CheckValidResource(fb.first->depth_texture.id, &d.framebuffer.ctx->textures_))
           {
             auto tex = RenderContext::GetResource(fb.first->depth_texture.id, &fb.first->depth_texture.ctx->textures_, &fb.first->depth_texture.ctx->back_end_->textures);
@@ -567,6 +569,17 @@ namespace vxr
         {
           GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, fb_id));          
         }
+
+        if (d.resolution.x == 0)
+        {
+          d.resolution.x = d.viewport.width;
+        }
+
+        if (d.resolution.y == 0)
+        {
+          d.resolution.y = d.viewport.height;
+        }
+
         if (fb.first->info.size.x != d.resolution.x || fb.first->info.size.y != d.resolution.y)
         {
           for (uint16 i = 0; i < fb.first->info.num_color_textures; ++i)
@@ -593,6 +606,7 @@ namespace vxr
       {
         GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, 0));
       }
+
       if (d.viewport.width != 0 && d.viewport.height != 0)
       {
         GLCHECK(glViewport(d.viewport.x, d.viewport.y, d.viewport.width, d.viewport.height));
