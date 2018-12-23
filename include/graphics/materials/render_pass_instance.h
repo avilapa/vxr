@@ -40,19 +40,15 @@
 */
 namespace vxr
 {
-  class Composer;
   class Texture;
 
   namespace mat
   {
 
     class RenderPass;
-
     class RenderPassInstance : public Object
     {
       VXR_OBJECT(RenderPassInstance, Object);
-      friend class AssetManager;
-      friend class Composer;
     public:
       RenderPassInstance();
       virtual ~RenderPassInstance();
@@ -77,7 +73,6 @@ namespace vxr
       
       ref_ptr<Texture> depth_texture() const;
 
-    protected:
       Shader::UniformData uniforms_;
 
     private:

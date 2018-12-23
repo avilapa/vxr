@@ -38,7 +38,7 @@
 namespace vxr
 {
 
-  namespace EngineMesh { class Quad; }
+  namespace mesh { class Quad; }
   namespace mat { class MaterialInstance; class RenderPassInstance; }
 
   class Composer : public Object
@@ -71,8 +71,9 @@ namespace vxr
 
     ref_ptr<mat::MaterialInstance> render_to_screen_;
     ref_ptr<mat::RenderPassInstance> screen_prepass_;
-    ref_ptr<EngineMesh::Quad> screen_quad_;
+    ref_ptr<mesh::Quad> screen_quad_;
     ref_ptr<Texture> screen_texture_;
+    ref_ptr<Texture> displaytest;
 
     bool initialized_ = false;
   };

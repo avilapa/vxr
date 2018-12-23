@@ -183,7 +183,7 @@ namespace vxr
     for (uint32 v = 0; v < result->nvertices; v++) 
     {
       vertices_.push_back(vec3(result->vertices[v].x, result->vertices[v].y, result->vertices[v].z));
-      uv_.push_back(vec2()); /// UV for voxels are...? voxel size / actual size?
+      uv_.push_back(vec2()); /// UV for voxels are...?
     }
 
     vx_mesh_free(mesh);
@@ -294,7 +294,7 @@ namespace vxr
     21, 23, 22
   };
 
-  EngineMesh::Cube::Cube()
+  mesh::Cube::Cube()
   {
     set_name("Cube Mesh");
     set_indices(cube_index);
@@ -303,7 +303,7 @@ namespace vxr
     set_uv(cube_uv);
   }
 
-  EngineMesh::Cube::~Cube()
+  mesh::Cube::~Cube()
   {
 
   }
@@ -327,7 +327,7 @@ namespace vxr
     0, 2, 3
   };
 
-  EngineMesh::Quad::Quad()
+  mesh::Quad::Quad()
   {
     set_name("Quad Mesh");
     set_indices(quad_index);
@@ -336,7 +336,7 @@ namespace vxr
     set_uv(quad_uv);
   }
 
-  EngineMesh::Quad::~Quad()
+  mesh::Quad::~Quad()
   {
 
   }

@@ -80,7 +80,6 @@ namespace vxr
     class Light : public ComponentSystem
     {
       VXR_OBJECT(System::Light, ComponentSystem);
-      friend class Renderer;
     public:
       Light();
       virtual ~Light();
@@ -91,6 +90,8 @@ namespace vxr
       void renderPostUpdate() override;
 
       uint32 num_lights() const;
+
+      gpu::Buffer light_uniforms_buffer() const;
 
     private:
       std::vector<ref_ptr<vxr::Light>> components_;

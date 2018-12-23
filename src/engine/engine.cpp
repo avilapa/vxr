@@ -47,7 +47,7 @@ namespace vxr
     return *inst;
   }
 
-  Engine::Engine() /// variables
+  Engine::Engine()
   {
     set_name("Engine");
     srand(time(NULL));
@@ -84,6 +84,7 @@ namespace vxr
     transform_.alloc();
     mesh_filter_.alloc();
 
+    ibl_->init();
     light_->init();
     camera_->init();
 

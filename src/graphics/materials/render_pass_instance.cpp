@@ -35,7 +35,7 @@ namespace vxr
   {
 
     RenderPassInstance::RenderPassInstance() :
-      active_render_pass_(0)/// vars
+      active_render_pass_(0)
     {
     }
 
@@ -73,7 +73,7 @@ namespace vxr
       uvec2 screen_size = Engine::ref().window()->params().size;
       depth_texture_.alloc()->set_name("Depth");
       depth_texture_->set_type(TextureType::T2D);
-      depth_texture_->set_size(screen_size.x, screen_size.y);
+      depth_texture_->set_size(screen_size.x, screen_size.y); /// output texture size!
       depth_texture_->set_texels_format(TexelsFormat::Depth_U16); /// This should be editable
     }
 
@@ -118,10 +118,6 @@ namespace vxr
 
     void RenderPassInstance::set_output_texture(uint32 index, ref_ptr<Texture> texture)
     {
-      uvec2 screen_size = Engine::ref().window()->params().size; /// All this should be optional
-      texture->set_type(TextureType::T2D);
-      texture->set_texels_format(TexelsFormat::RGBA_U8);
-      texture->set_size(screen_size.x, screen_size.y);
       output_textures_[active_render_pass_][index] = texture;
     }
 

@@ -172,6 +172,11 @@ namespace vxr
     return num_lights_;
   }
 
+  gpu::Buffer System::Light::light_uniforms_buffer() const
+  {
+    return light_uniforms_.buffer;
+  }
+
   ref_ptr<System::Light> System::Getter<Light>::get()
   {
     return Engine::ref().light();

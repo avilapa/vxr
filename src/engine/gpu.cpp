@@ -33,6 +33,7 @@ namespace vxr
     ctx_ = new RenderContext();
     window_.alloc();
     logic_frame_.alloc();
+    is_exiting_ = false;
 	}
 
 	GPU::~GPU() 
@@ -314,7 +315,7 @@ namespace vxr
     i_obj.info = info;
     for (uint32 i = 0; i < info.num_color_textures; ++i) 
     {
-      i_obj.color_textures[i] = createTexture(info.color_texture_info[i]);/// Should this be an array of texture Infos?
+      i_obj.color_textures[i] = createTexture(info.color_texture_info[i]);
     }
     i_obj.depth_texture = createTexture(info.depth_stencil_texture_info);
 

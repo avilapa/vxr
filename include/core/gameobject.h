@@ -39,9 +39,7 @@ namespace vxr
 
 	class GameObject : public Object 
   {
-
     VXR_OBJECT(GameObject, Object);
-
     friend class Transform;
     friend class Scene;
 	public:

@@ -37,7 +37,6 @@
 */
 namespace vxr
 {
-  class Composer;
 
   namespace mat
   {
@@ -45,8 +44,8 @@ namespace vxr
     class RenderPass : public Object
     {
       VXR_OBJECT(RenderPass, Object);
-      friend class AssetManager;
       friend class Composer;
+      friend class System::IBL;
     public:
       RenderPass();
       virtual ~RenderPass();
@@ -58,6 +57,13 @@ namespace vxr
       uint32 num_output_textures() const;
 
       void set_shaders(const char* vert, const char* frag);
+
+      void set_cull(Cull::Enum cull);
+      void set_render_mode(RenderMode::Enum render_mode);
+      void set_blend_params(bool enabled, vec4 color, BlendFactor::Enum src_rgb, BlendFactor::Enum dst_rgb, BlendOp::Enum op_rgb, BlendFactor::Enum src_alpha, BlendFactor::Enum dst_alpha, BlendOp::Enum op_alpha);
+      void set_depth_func(CompareFunc::Enum depth_func);
+      void set_rgba_write(bool enabled);
+      void set_depth_write(bool enabled);
 
       void set_uniforms_enabled(bool enabled);
       void set_uniforms_name(const char* name);

@@ -235,6 +235,20 @@ namespace vxr
     };
   };
 
+  struct CubemapTarget
+  {
+    enum Enum
+    {
+      PositiveX = 0,
+      NegativeX,
+      PositiveY,
+      NegativeY,
+      PositiveZ,
+      NegativeZ,
+      Invalid,
+    };
+  };
+
   struct TexelsFormat 
   {
     enum Enum 
@@ -244,6 +258,10 @@ namespace vxr
       RG_U8,
       RGB_U8,
       RGBA_U8,
+      R_F16,
+      RG_F16,
+      RGB_F16,
+      RGBA_F16,
       Depth_U16,
       DepthStencil_U16,
       Depth_U24,

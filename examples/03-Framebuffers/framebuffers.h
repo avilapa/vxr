@@ -73,7 +73,7 @@ namespace vxr
     gpu::Buffer static_uniform_buffer_;
 
     gpu::Texture texture_;
-    unsigned char* tex_data_;
+    void* tex_data_;
 
     gpu::Material material_;
   };

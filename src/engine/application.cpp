@@ -133,7 +133,7 @@ namespace vxr
       {
         if (num_updates >= framerate_.max_steps)
         {
-          VXR_LOG(VXR_DEBUG_LEVEL_WARNING, "[WARNING]: Exceeded max steps per frame (Consider lowering time_step).\n");
+          //VXR_LOG(VXR_DEBUG_LEVEL_WARNING, "[WARNING]: Exceeded max steps per frame (Consider lowering time_step).\n");
           break;
         }
         VXR_TRACE_BEGIN("VXR", "App Update");

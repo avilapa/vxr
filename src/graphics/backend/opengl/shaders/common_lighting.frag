@@ -90,5 +90,5 @@ vec3 computeLightContribution()
     result += (ambient + diffuse + specular) * getLightIntensity(i);
   }
 
-  return result;
+  return applyGammaCorrection(result);
 }

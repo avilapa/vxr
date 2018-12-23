@@ -76,7 +76,7 @@ namespace vxr
       }
 
       ref_ptr<Mesh> mesh;
-      ref_ptr<mat::Standard::Instance> mat; /// What kind of material should be allocated here?
+      ref_ptr<mat::Standard::Instance> mat;
 
       mesh.alloc();
       mat.alloc();
@@ -202,12 +202,12 @@ namespace vxr
     addMaterial<mat::Unlit>();
     addMaterial<mat::Wireframe>();
     addMaterial<mat::Skybox>();
-    /// Look for materials in assets folder and load
   }
 
   void AssetManager::initializeRenderPasses()
   {
     addRenderPass<mat::Screen>();
+    addRenderPass<mat::BuildCubemap>();
     addRenderPass<mat::Negative>();
     addRenderPass<mat::Grayscale>();
   }

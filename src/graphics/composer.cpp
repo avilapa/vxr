@@ -26,6 +26,8 @@
 #include "../../include/graphics/mesh.h"
 #include "../../include/engine/engine.h"
 #include "../../include/engine/gpu.h"
+#include "../../include/components/camera.h"
+#include "../../include/components/light.h"
 
 namespace vxr
 {
@@ -61,7 +63,11 @@ namespace vxr
 
   uint32 Composer::final_texture_id()
   {
-    return screen_texture_->id();
+    if (screen_texture_ != nullptr)
+    {
+      return screen_texture_->id();
+    }
+    return 0;
   }
 
   void Composer::init()
@@ -76,9 +82,13 @@ namespace vxr
     screen_prepass_.alloc()->init("Screen");
 
     ref_ptr<Texture> output;
-    output.alloc();
+    output.alloc()->set_type(TextureType::T2D);
+    output->set_texels_format(TexelsFormat::RGBA_U8);
+    output->set_size(render_size_.x, render_size_.y);
     screen_prepass_->set_output_texture(0, output);
     screen_texture_ = output;
+
+    //displaytest.alloc()->load("../../assets/textures/skybox/barcelona_rooftop/barcelona_rooftop_8k.jpg");
     
     ref_ptr<mat::RenderPass> shared_pass = screen_prepass_->sharedRenderPass();
     if (!shared_pass->setupTextureOutput(screen_prepass_->output_textures(), screen_prepass_->depth_texture()))
@@ -184,10 +194,20 @@ namespace vxr
         .set_color(Color::Black)
         .set_clear_color(true)
         .set_clear_depth(true);
+      if (shared_render_pass->use_uniforms_)
+      {
+        frame.fillBufferCommand()
+          .set_buffer(shared_render_pass->gpu_.uniform_buffer)
+          .set_data(&i->uniforms_)
+          .set_size(sizeof(i->uniforms_));
+      }
       frame.setupMaterialCommand()
         .set_material(shared_render_pass->gpu_.mat)
         .set_buffer(0, screen_quad_->gpu_.vertex.buffer)
-        .set_v_texture(shared_render_pass->gpu_.in_tex);
+        .set_v_texture(shared_render_pass->gpu_.in_tex)
+        .set_uniform_buffer(0, Engine::ref().camera()->common_uniforms_buffer())
+        .set_uniform_buffer(1, Engine::ref().light()->light_uniforms_buffer())
+        .set_uniform_buffer(2, ((shared_render_pass->use_uniforms_) ? shared_render_pass->gpu_.uniform_buffer : gpu::Buffer{}));
       frame.renderCommand()
         .set_index_buffer(screen_quad_->gpu_.index.buffer)
         .set_count(screen_quad_->indexCount())

@@ -167,7 +167,6 @@ namespace vxr
   void ColorGenerator::updateElevation(vec2 elevationMinMax)
   {
     mat->set_elevation_min_max(elevationMinMax);
-    printf("\nE: %0.3f, %0.3f", elevationMinMax.x, elevationMinMax.y);
   }
 
   float ColorGenerator::percentFromPoint(vec3 point)

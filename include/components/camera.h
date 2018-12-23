@@ -47,7 +47,6 @@ namespace vxr
 	class Camera : public Component
   {
     VXR_OBJECT(Camera, Component);
-    friend class System::Camera;
 	public:
     Camera();
 		~Camera();
@@ -70,7 +69,7 @@ namespace vxr
      private:                                                       \
       type name = __VA_ARGS__;                                      \
      public:                                                        \
-      void set_##fname(const type &c) { name = c; dirty_ = true; }  \
+      void set_##fname(const type &c) { name = c; markForUpdate(); }\
       type fname() const { return name; }
 
     PROPERTY(float, fov_, fov, 70.0f);
@@ -94,6 +93,7 @@ namespace vxr
 
   public:
     void computeTransformations();
+    void markForUpdate();
     bool hasChanged() const;
 
   private:
@@ -114,7 +114,6 @@ namespace vxr
     class Camera : public ComponentSystem
     {
       VXR_OBJECT(System::Camera, ComponentSystem);
-      friend class Renderer;
     public:
       Camera();
       ~Camera();
@@ -130,6 +129,8 @@ namespace vxr
       void set_render_to_screen(bool enabled);
       bool render_to_screen() const;
       uint32 screen_texture_id();
+
+      gpu::Buffer common_uniforms_buffer() const;
 
     private:
       std::vector<ref_ptr<vxr::Camera>> components_;

@@ -34,7 +34,7 @@ namespace vxr
   {
 
     MaterialInstance::MaterialInstance() :
-      active_material_(0)/// vars
+      active_material_(0)
     {
 
     }

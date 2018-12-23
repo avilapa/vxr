@@ -72,6 +72,11 @@ namespace vxr
       {
         vec4 color;
       } standard;
+      struct CubemapConvolution
+      {
+        mat4 conv_proj;
+        mat4 conv_view;
+      } cubemap_convolution;
       struct Planet
       {
         vec2 elevationMinMax;

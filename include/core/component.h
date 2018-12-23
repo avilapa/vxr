@@ -41,9 +41,7 @@ namespace vxr
 
 	class Component : public Object
   {
-
     VXR_OBJECT(Component, Object);
-
     friend class GameObject;
 	public:
 		Component();

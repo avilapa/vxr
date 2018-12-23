@@ -26,18 +26,20 @@
 
 #include "../core/component.h"
 #include "../graphics/materials/shader.h"
+#include "../graphics/materials/standard_pass.h"
 
 /**
 * \file ibl.h
 *
 * \author Victor Avila (avilapa.github.io)
 *
-* \brief Indirect Light Component (IBL).
+* \brief Indirect Light Component for Image Based Lighting (IBL).
 *
 */
 namespace vxr 
 {
   namespace System { class IBL; }
+  namespace mesh { class Cube; }
 
 	class IBL : public Component
   {
@@ -49,8 +51,13 @@ namespace vxr
 
     virtual void onGUI() override;
 
+    ref_ptr<Texture> cubemap_texture();
+
 	private:
+    bool initialized_;
     bool contributes_;
+
+    ref_ptr<mat::BuildCubemap::Instance> build_cubemap_;
 	};
 
   class Scene;
@@ -60,10 +67,12 @@ namespace vxr
     class IBL : public ComponentSystem
     {
       VXR_OBJECT(System::IBL, ComponentSystem);
-      friend class Renderer;
     public:
       IBL();
-      virtual ~IBL();
+      ~IBL();
+
+      void set_main(ref_ptr<vxr::IBL> light);
+      ref_ptr<vxr::IBL> main() const;
 
       void init() override;
       void update() override;
@@ -71,14 +80,17 @@ namespace vxr
       void renderPostUpdate() override;
 
     private:
+      void buildCubemap();
+      void computeIrradiance();
+      void computePrefiltering();
+      void integrateBRDF();
+
+    private:
       std::vector<ref_ptr<vxr::IBL>> components_;
       ref_ptr<Scene> scene_;
+      ref_ptr<vxr::IBL> main_;
 
-      /*struct IBLUniforms
-      {
-        gpu::Buffer buffer;
-        Shader::LightData data;
-      } light_uniforms_;*/
+      ref_ptr<mesh::Cube> cubemap_;
 
     public:
       template<typename T> ref_ptr<T> createInstance()

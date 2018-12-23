@@ -49,7 +49,7 @@ namespace vxr
 
       class Instance : public RenderPassInstance
       {
-        VXR_OBJECT(Negative, RenderPass);
+        VXR_OBJECT(Instance, RenderPassInstance);
       public:
         Instance();
       };
@@ -63,7 +63,7 @@ namespace vxr
 
       class Instance : public RenderPassInstance
       {
-        VXR_OBJECT(Negative, RenderPass);
+        VXR_OBJECT(Instance, RenderPassInstance);
       public:
         Instance();
       };

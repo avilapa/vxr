@@ -26,6 +26,7 @@
 
 #include "../../../include/engine/engine.h"
 #include "../../../include/core/assets.h"
+#include "../../../include/components/ibl.h"
 
 namespace vxr
 {
@@ -63,6 +64,10 @@ namespace vxr
       if (ImGui::SmallButton(uiText("Load test##LOADtest").c_str()))
       {
         set_color_texture("../../assets/textures/skybox/sunset", "png");
+      }
+      if (ImGui::SmallButton(uiText("Load test2##LOADtest2").c_str()))
+      {
+        set_color_texture(Engine::ref().ibl()->main()->cubemap_texture());
       }
     }
 

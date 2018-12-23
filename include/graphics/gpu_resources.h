@@ -80,7 +80,7 @@ namespace vxr
     struct Texture : public Resource
     {
       Texture(RenderContext* ctx = nullptr, uint32 id = 0) : Resource{ ctx, id, Type::Texture } {}
-      struct Info /// initializer
+      struct Info
       {
         uint16 width = 1;
         uint16 height = 1;
@@ -93,8 +93,8 @@ namespace vxr
         TextureType::Enum type = TextureType::T2D;
       };
 
-      static unsigned char* loadFromFile(const char* file, Texture::Info& tex);
-      static std::vector<unsigned char*> loadCubemapFromFile(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, Texture::Info& tex);
+      static void* loadFromFile(const char* file, Texture::Info& tex, bool flip = false);
+      static std::vector<void*> loadCubemapFromFile(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, Texture::Info& tex, bool flip = false);
     };
 
     struct Material : public Resource
@@ -136,7 +136,7 @@ namespace vxr
       {
         Texture::Info color_texture_info[kMaxTextureUnits];
         Texture::Info depth_stencil_texture_info;
-        uint16 num_color_textures; /// initializer 1
+        uint16 num_color_textures;
         uvec2 size;
       };
 

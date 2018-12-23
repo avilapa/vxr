@@ -48,6 +48,26 @@ namespace vxr
       Screen();
     };
 
+    class BuildCubemap : public RenderPass
+    {
+      VXR_OBJECT(BuildCubemap, RenderPass);
+    public:
+      BuildCubemap();
+
+      class Instance : public RenderPassInstance
+      {
+        VXR_OBJECT(Instance, RenderPassInstance);
+      public:
+        Instance();
+
+        Shader::UniformData conv[6];
+
+        void set_projection_matrix(mat4 proj);
+        void set_view_matrix(mat4 view);
+      };
+    };
+
+
   } /* end of mat namespace */
 
 } /* end of vxr namespace */

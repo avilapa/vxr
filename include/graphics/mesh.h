@@ -37,14 +37,11 @@
 namespace vxr
 {
 
-  namespace System { class Renderer; }
-  class GameObject;
-  class Composer;
-
   class Mesh : public Object
   {
     VXR_OBJECT(Mesh, Object);
     friend class System::Renderer;
+    friend class System::IBL;
     friend class Composer;
   public:
     Mesh();
@@ -98,7 +95,7 @@ namespace vxr
     bool setup();
   };
 
-  namespace EngineMesh
+  namespace mesh
   {
     class Cube : public Mesh
     {

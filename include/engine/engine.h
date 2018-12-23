@@ -59,9 +59,7 @@ namespace vxr
 
   class Engine : public Object 
   {
-
     VXR_OBJECT(Engine, Object);
-
     friend class Application;
   public:
     ~Engine();

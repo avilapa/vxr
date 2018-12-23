@@ -36,11 +36,29 @@ namespace vxr
   namespace gpu
   {
 
-    unsigned char* Texture::loadFromFile(const char* file, Texture::Info& tex)
+    void* Texture::loadFromFile(const char* file, Texture::Info& tex, bool flip)
     {
       VXR_TRACE_SCOPE("VXR", "Texture Load");
+
+      stbi_set_flip_vertically_on_load(flip);
+      
       int w, h, comp;
-      unsigned char *data = stbi_load(file, &w, &h, &comp, 0);
+      void* data;
+      bool hdr = false;
+        
+      string extension = file; 
+      extension = extension.substr(extension.find_last_of(".") + 1);
+
+      if (extension == "hdr")
+      {
+        data = stbi_loadf(file, &w, &h, &comp, 0);
+        hdr = true;
+      }
+      else
+      {
+        data = stbi_load(file, &w, &h, &comp, 0);
+      }
+
       if (!data)
       {
         VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Unknown texture format.\n");
@@ -56,22 +74,24 @@ namespace vxr
 
       tex.width = w;
       tex.height = h;
+
       switch (comp)
       {
-      case 1: tex.format = TexelsFormat::R_U8; break;
-      case 2: tex.format = TexelsFormat::RG_U8; break;
-      case 3: tex.format = TexelsFormat::RGB_U8; break;
-      case 4: tex.format = TexelsFormat::RGBA_U8; break;
+      case 1: tex.format = ((hdr) ? TexelsFormat::R_F16 : TexelsFormat::R_U8); break;
+      case 2: tex.format = ((hdr) ? TexelsFormat::RG_F16 : TexelsFormat::RG_U8); break;
+      case 3: tex.format = ((hdr) ? TexelsFormat::RGB_F16 : TexelsFormat::RGB_U8); break;
+      case 4: tex.format = ((hdr) ? TexelsFormat::RGBA_F16 : TexelsFormat::RGBA_U8); break;
       }
 
       return data;
     }
 
-    std::vector<unsigned char*> Texture::loadCubemapFromFile(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, Texture::Info& tex)
+    std::vector<void*> Texture::loadCubemapFromFile(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, Texture::Info& tex, bool flip)
     {
       VXR_TRACE_SCOPE("VXR", "Texture Load (Cubemap)");
+      stbi_set_flip_vertically_on_load(flip);
       int w, h, comp;
-      std::vector<unsigned char*> data;
+      std::vector<void*> data;
       data.push_back(stbi_load(rt, &w, &h, &comp, 0));
       data.push_back(stbi_load(lf, &w, &h, &comp, 0));
       data.push_back(stbi_load(up, &w, &h, &comp, 0));

@@ -167,5 +167,42 @@ namespace vxr
       gpu_.mat_info.shader.vert = Shader::Load(vert);
       gpu_.mat_info.shader.frag = Shader::Load(frag);
     }
+
+    void RenderPass::set_cull(Cull::Enum cull)
+    {
+      gpu_.mat_info.cull = cull;
+    }
+
+    void RenderPass::set_render_mode(RenderMode::Enum render_mode)
+    {
+      gpu_.mat_info.render_mode = render_mode;
+    }
+
+    void RenderPass::set_blend_params(bool enabled, vec4 color, BlendFactor::Enum src_rgb, BlendFactor::Enum dst_rgb, BlendOp::Enum op_rgb, BlendFactor::Enum src_alpha, BlendFactor::Enum dst_alpha, BlendOp::Enum op_alpha)
+    {
+      gpu_.mat_info.blend.enabled = enabled;
+      gpu_.mat_info.blend.color = color;
+      gpu_.mat_info.blend.src_rgb = src_rgb;
+      gpu_.mat_info.blend.dst_rgb = dst_rgb;
+      gpu_.mat_info.blend.op_rgb = op_rgb;
+      gpu_.mat_info.blend.src_alpha = src_alpha;
+      gpu_.mat_info.blend.dst_alpha = dst_alpha;
+      gpu_.mat_info.blend.op_alpha = op_alpha;
+    }
+
+    void RenderPass::set_depth_func(CompareFunc::Enum depth_func)
+    {
+      gpu_.mat_info.depth_func = depth_func;
+    }
+
+    void RenderPass::set_rgba_write(bool enabled)
+    {
+      gpu_.mat_info.rgba_write = enabled;
+    }
+
+    void RenderPass::set_depth_write(bool enabled)
+    {
+      gpu_.mat_info.depth_write = enabled;
+    }
   }
 }

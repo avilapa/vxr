@@ -43,7 +43,6 @@ namespace vxr
 	class Transform : public Component
   {
     VXR_OBJECT(Transform, Component);
-    friend class System::Transform;
 	public:
     Transform();
 		~Transform();
@@ -68,7 +67,6 @@ namespace vxr
     PROPERTY(vec3, forward_, forward, vec3());
     PROPERTY(vec3, right_,   right,   vec3());
     PROPERTY(vec3, up_,      up,      vec3());
-
 #undef PROPERTY
 
     mat4 worldMatrix() const;

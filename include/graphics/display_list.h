@@ -42,9 +42,7 @@ namespace vxr
 
   class DisplayList : public Object
   {
-
     VXR_OBJECT(DisplayList, Object)
-
     friend class GPU;
   public:
     DisplayList();
@@ -83,6 +81,7 @@ namespace vxr
       PROPERTY(mat4, view_matrix, mat4());
       PROPERTY(mat4, projection_matrix, mat4());
       PROPERTY(gpu::Framebuffer, framebuffer, {});
+      PROPERTY(CubemapTarget::Enum, cubemap_target, CubemapTarget::Invalid);
       PROPERTY(uvec2, resolution, {});
     };
 

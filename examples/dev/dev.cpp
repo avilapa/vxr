@@ -54,7 +54,7 @@ namespace vxr
     scene_->addObject(cam_);
     Engine::ref().camera()->set_main(cam_->getComponent<Camera>());
 
-    ref_ptr<EngineMesh::Cube> cube;
+    ref_ptr<mesh::Cube> cube;
     ref_ptr<mat::Standard::Instance> mat;
     ref_ptr<mat::Standard::Instance> matc;
     obj_.alloc();
@@ -89,11 +89,11 @@ namespace vxr
 
     ref_ptr<mat::Negative::Instance> m1;
     m1.alloc();
-    Engine::ref().camera()->main()->composer()->addRenderPass(m1.get());
+    //Engine::ref().camera()->main()->composer()->addRenderPass(m1.get());
 
     ref_ptr<mat::Grayscale::Instance> m2;
     m2.alloc();
-    Engine::ref().camera()->main()->composer()->addRenderPass(m2.get());
+    //Engine::ref().camera()->main()->composer()->addRenderPass(m2.get());
 
     Engine::ref().submitUIFunction([]() { ui::Editor(); });
   }

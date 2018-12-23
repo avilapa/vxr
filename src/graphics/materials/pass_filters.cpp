@@ -25,6 +25,7 @@
 #include "../../../include/graphics/materials/pass_filters.h"
 
 #include "../../../include/engine/engine.h"
+#include "../../../include/graphics/window.h"
 
 namespace vxr
 {
@@ -46,8 +47,11 @@ namespace vxr
     {
       init("Filter/Negative");
 
+      uvec2 screen_size = Engine::ref().window()->params().size;
       ref_ptr<Texture> t;
-      t.alloc();
+      t.alloc()->set_type(TextureType::T2D);
+      t->set_texels_format(TexelsFormat::RGBA_U8);
+      t->set_size(screen_size.x, screen_size.y);
       set_output_texture(0, t);
     }
 
@@ -65,8 +69,11 @@ namespace vxr
     {
       init("Filter/Grayscale");
 
+      uvec2 screen_size = Engine::ref().window()->params().size;
       ref_ptr<Texture> t;
-      t.alloc();
+      t.alloc()->set_type(TextureType::T2D);
+      t->set_texels_format(TexelsFormat::RGBA_U8);
+      t->set_size(screen_size.x, screen_size.y);
       set_output_texture(0, t);
     }
   }

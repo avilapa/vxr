@@ -22,11 +22,10 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-/// WIP: This is strictly tied to WIN32 platform.
-
 #include "../../include/utils/timer.h"
 
-namespace vxr {
+namespace vxr 
+{
 
 	static unsigned tick() 
   {

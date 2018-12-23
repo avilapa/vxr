@@ -100,6 +100,11 @@ namespace vxr
     dirty_ = false;
   }
 
+  void Camera::markForUpdate()
+  {
+    dirty_ = true;
+  }
+
   bool Camera::hasChanged() const
   {
     return dirty_;
@@ -152,7 +157,7 @@ namespace vxr
     if (main_ != camera)
     {
       main_ = camera;
-      main_->dirty_ = true;
+      main_->markForUpdate();
     }
   }
 
@@ -173,19 +178,20 @@ namespace vxr
       scene_ = Engine::ref().scene();
       set_main(Engine::ref().scene()->default_camera());
       // Scene changed
-      main()->composer_->init();
+      main()->composer()->init();
     }
   }
 
   void System::Camera::renderUpdate()
   {
-    VXR_TRACE_SCOPE("VXR", "Camera Render Update");
     if (!main_ || !scene_)
     {
       return;
     }
 
-    main()->composer_->setupFirstPass();
+    VXR_TRACE_SCOPE("VXR", "Camera Render Update");
+
+    main()->composer()->setupFirstPass();
 
     DisplayList frame;
     if (main()->hasChanged() || main()->transform()->hasChanged())
@@ -215,23 +221,19 @@ namespace vxr
 
   void System::Camera::renderPostUpdate()
   {
-    VXR_TRACE_SCOPE("VXR", "Camera Render Post Update");
     if (!main_ || !scene_)
     {
       return;
     }
 
-    for (auto &c : components_)
-    {
-      c->dirty_ = false;
-    }
+    VXR_TRACE_SCOPE("VXR", "Camera Render Post Update");
 
-    main()->composer_->applyPostprocessing();
-    main()->composer_->setupLastPass();
+    main()->composer()->applyPostprocessing();
+    main()->composer()->setupLastPass();
 
     if (render_to_screen_)
     {
-      main()->composer_->renderToScreen();
+      main()->composer()->renderToScreen();
     }
   }
 
@@ -248,6 +250,11 @@ namespace vxr
   bool System::Camera::render_to_screen() const
   {
     return render_to_screen_;
+  }
+
+  gpu::Buffer System::Camera::common_uniforms_buffer() const
+  {
+    return common_uniforms_.buffer;
   }
 
   ref_ptr<System::Camera> System::Getter<Camera>::get()

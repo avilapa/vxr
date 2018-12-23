@@ -110,6 +110,7 @@ namespace vxr
     static GLenum Translate(BlendFactor::Enum e);
     static GLenum Translate(BlendOp::Enum e);
     static GLenum Translate(CompareFunc::Enum e);
+    static GLenum Translate(CubemapTarget::Enum e);
 
     void ClearScreen(const DisplayList::ClearData& d)
     {
@@ -213,6 +214,26 @@ namespace vxr
           back_end->format = GL_RGBA;
           back_end->internal_format = GL_RGBA8;
           back_end->type = GL_UNSIGNED_BYTE;
+          break;
+        case TexelsFormat::R_F16:
+          back_end->format = GL_RED;
+          back_end->internal_format = GL_R16F;
+          back_end->type = GL_FLOAT;
+          break;
+        case TexelsFormat::RG_F16:
+          back_end->format = GL_RG;
+          back_end->internal_format = GL_RG16F;
+          back_end->type = GL_FLOAT;
+          break;
+        case TexelsFormat::RGB_F16:
+          back_end->format = GL_RGB;
+          back_end->internal_format = GL_RGB16F;
+          back_end->type = GL_FLOAT;
+          break;
+        case TexelsFormat::RGBA_F16:
+          back_end->format = GL_RGBA;
+          back_end->internal_format = GL_RGBA16F;
+          back_end->type = GL_FLOAT;
           break;
         case TexelsFormat::Depth_U16:
           back_end->format = GL_DEPTH_COMPONENT;
@@ -343,7 +364,7 @@ namespace vxr
 
     void SetupMaterial(DisplayList::SetupMaterialData& d)
     {
-      bool main_material_changed = !(d.material.id == d.material.ctx->main_material.material.id); /// check uniforms and textures as well?
+      bool main_material_changed = !(d.material.id == d.material.ctx->main_material.material.id);
       d.material.ctx->main_material = d;
       auto mat = RenderContext::GetResource(d.material.ctx->main_material.material.id, &d.material.ctx->materials_, &d.material.ctx->back_end_->materials);
       if (main_material_changed)
@@ -519,6 +540,43 @@ namespace vxr
       }
     }
 
+    static void SetupFramebufferTexture(std::pair<TextureInstance*, BackEnd::Texture*> t, uint16 i)
+    {
+      switch (t.second->target)
+      {
+      case GL_TEXTURE_2D:
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, t.second->texture, 0));
+        break;
+      case GL_TEXTURE_CUBE_MAP:
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_CUBE_MAP_POSITIVE_X, t.second->texture, 0));
+        break;
+      default:
+        OnError("Invalid texture type, expected texture 2D or Cubemap (color %u)", i);
+        break;
+      }
+    }
+
+    static void SetupFramebufferDepth(std::pair<TextureInstance*, BackEnd::Texture*> t)
+    {
+      if (t.second->target != GL_TEXTURE_2D)
+      {
+        OnError("Invalid texture type, expected texture 2D (depth/stencil)");
+      }
+      switch (t.first->info.format)
+      {
+      case TexelsFormat::Depth_U16:
+      case TexelsFormat::Depth_U24:
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, t.second->texture, 0));
+        break;
+      case TexelsFormat::DepthStencil_U16:
+      case TexelsFormat::DepthStencil_U24:
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, t.second->texture, 0));
+        break;
+      default:
+        OnError("Invalid texels-format for a depth/stencil texture ... was %u", t.first->info.format);
+      }
+    }
+
     void SetupView(DisplayList::SetupViewData& d)
     {
       if (d.framebuffer.id != 0)
@@ -533,34 +591,16 @@ namespace vxr
           {
             auto tex = RenderContext::GetResource(fb.first->color_textures[i].id, &fb.first->color_textures[i].ctx->textures_, &fb.first->color_textures[i].ctx->back_end_->textures);
             InitTexture(tex);
-            if (tex.second->target != GL_TEXTURE_2D) /// Cubemap as well!
-            {
-              OnError("Invalid texture type, expected texture 2D (color %u)", i);
-            }
-            GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, tex.second->texture, 0));
+            SetupFramebufferTexture(tex, i);
           }
           /// glDrawBuffers?
+
+          /// Add Renderbuffer instead of framebuffer texture if a texture is not provided
           if (RenderContext::CheckValidResource(fb.first->depth_texture.id, &d.framebuffer.ctx->textures_))
           {
             auto tex = RenderContext::GetResource(fb.first->depth_texture.id, &fb.first->depth_texture.ctx->textures_, &fb.first->depth_texture.ctx->back_end_->textures);
             InitTexture(tex);
-            if (tex.second->target != GL_TEXTURE_2D)
-            {
-              OnError("Invalid texture type, expected texture 2D (depth/stencil)");
-            }
-            switch (tex.first->info.format)
-            {
-            case TexelsFormat::Depth_U16:
-            case TexelsFormat::Depth_U24:
-              GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, tex.second->texture, 0));
-              break;
-            case TexelsFormat::DepthStencil_U16:
-            case TexelsFormat::DepthStencil_U24:
-              GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, tex.second->texture, 0));
-              break;
-            default:
-              OnError("Invalid texels-format for a depth/stencil texture ... was %u", tex.first->info.format);
-            }
+            SetupFramebufferDepth(tex);
           }
 
           fb.second->framebuffer = fb_id;
@@ -568,6 +608,19 @@ namespace vxr
         else 
         {
           GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, fb_id));          
+        }
+
+        if (d.cubemap_target != CubemapTarget::Invalid)
+        {
+          for (uint16 i = 0; i < fb.first->info.num_color_textures; ++i)
+          {
+            auto tex = RenderContext::GetResource(fb.first->color_textures[i].id, &fb.first->color_textures[i].ctx->textures_, &fb.first->color_textures[i].ctx->back_end_->textures);
+
+            if (tex.second->target == GL_TEXTURE_CUBE_MAP)
+            {
+              glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, Translate(d.cubemap_target), tex.second->texture, 0);
+            }
+          }
         }
 
         if (d.resolution.x == 0)
@@ -859,6 +912,22 @@ namespace vxr
       }
       // ERROR!
       assert(!"Invalid CompareFunc");
+      return 0;
+    }
+
+    static GLenum Translate(CubemapTarget::Enum e)
+    {
+      switch (e)
+      {
+      case CubemapTarget::PositiveX:  return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+      case CubemapTarget::NegativeX:  return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+      case CubemapTarget::PositiveY:  return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+      case CubemapTarget::NegativeY:  return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+      case CubemapTarget::PositiveZ:  return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+      case CubemapTarget::NegativeZ:  return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+      }
+      // ERROR!
+      assert(!"Invalid CubemapTarget");
       return 0;
     }
 

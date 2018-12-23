@@ -59,20 +59,15 @@ namespace vxr
     }
   }
 
-  void Texture::init(gpu::Texture t)
+  void Texture::load(const char* file, bool flip)
   {
-    gpu_.tex = t;
-  }
-
-  void Texture::load(const char* file)
-  {
-    set_data(gpu::Texture::loadFromFile(file, gpu_.info));
+    set_data(gpu::Texture::loadFromFile(file, gpu_.info, flip));
     dirty_ = true;
   }
 
-  void Texture::load(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft)
+  void Texture::load(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, bool flip)
   {
-    std::vector<unsigned char*> data = gpu::Texture::loadCubemapFromFile(rt, lf, up, dn, bk, ft, gpu_.info);
+    std::vector<void*> data = gpu::Texture::loadCubemapFromFile(rt, lf, up, dn, bk, ft, gpu_.info, flip);
 
     for (uint32 i = 0; i < 6; ++i)
     {
@@ -82,7 +77,7 @@ namespace vxr
     dirty_ = true;
   }
 
-  void Texture::load(const char* cubemap_folder_path, const char* extension)
+  void Texture::load(const char* cubemap_folder_path, const char* extension, bool flip)
   {
     std::string folder = cubemap_folder_path;
     load((folder + "/rt." + extension).c_str(),
@@ -90,7 +85,7 @@ namespace vxr
          (folder + "/up." + extension).c_str(),
          (folder + "/dn." + extension).c_str(), 
          (folder + "/bk." + extension).c_str(), 
-         (folder + "/ft." + extension).c_str());
+         (folder + "/ft." + extension).c_str(), flip);
   }
 
   void Texture::setup()
@@ -181,7 +176,7 @@ namespace vxr
     dirty_ = true;
   }
 
-  void Texture::set_data(unsigned char* data, uint32 index)
+  void Texture::set_data(void* data, uint32 index)
   {
     if (data_[index] != nullptr)
     {
@@ -191,12 +186,17 @@ namespace vxr
     data_[index] = data;
   }
 
+  uvec2 Texture::size() const
+  {
+    return uvec2(gpu_.info.width, gpu_.info.height);
+  }
+
   bool Texture::hasChanged()
   {
     return dirty_;
   }
 
-  unsigned char* Texture::data() const
+  void* Texture::data() const
   {
     return data_[0];
   }

@@ -221,11 +221,6 @@ namespace vxr
     {
       return;
     }
-
-    for (auto &c : components_)
-    {
-      c->dirty_ = false;
-    }
   }
 
   ref_ptr<System::Transform> System::Getter<Transform>::get()

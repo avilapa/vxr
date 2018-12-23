@@ -37,8 +37,6 @@
 */
 namespace vxr
 {
-  namespace System { class Renderer; }
-  class Composer;
 
   namespace mat
   {
@@ -47,7 +45,6 @@ namespace vxr
     {
       VXR_OBJECT(Material, Object);
       friend class System::Renderer;
-      friend class AssetManager;
       friend class Composer;
     public:
       Material();

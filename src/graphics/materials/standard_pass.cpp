@@ -41,5 +41,59 @@ namespace vxr
       set_num_output_textures(1);
       set_uniforms_enabled(false);
     }
+
+    BuildCubemap::BuildCubemap()
+    {
+      set_name("Build Cubemap");
+      set_shaders("build_cubemap.vert", "build_cubemap.frag");
+
+      set_num_input_textures(1);
+      set_num_output_textures(1);
+      set_uniforms_enabled(true);
+      set_uniforms_name("CubemapConvolution");
+
+      set_cull(Cull::Front);
+      set_depth_write(false);
+      set_depth_func(CompareFunc::LessEqual);
+    }
+
+    BuildCubemap::Instance::Instance()
+    {
+      init("Build Cubemap");
+
+      ref_ptr<Texture> t;
+      t.alloc()->set_type(TextureType::CubeMap);
+      t->set_texels_format(TexelsFormat::RGBA_U8);
+      t->set_size(2048, 2048);
+      set_output_texture(0, t);
+
+      mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+      mat4 captureViews[] =
+      {
+         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+         glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+      };
+
+      for (uint32 i = 0; i < 6; ++i)
+      {
+        conv[i].cubemap_convolution.conv_proj = captureProjection;
+        conv[i].cubemap_convolution.conv_view = captureViews[i];
+      }
+    }
+
+    void BuildCubemap::Instance::set_projection_matrix(mat4 proj)
+    {
+      uniforms_.cubemap_convolution.conv_proj = proj;
+    }
+
+    void BuildCubemap::Instance::set_view_matrix(mat4 view)
+    {
+      uniforms_.cubemap_convolution.conv_view = view;
+    }
+
   }
 }

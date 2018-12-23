@@ -47,9 +47,7 @@ namespace vxr
 
 	class GPU : public Object 
   {
-
     VXR_OBJECT(GPU, Object);
-
     friend class Engine;
 	public:
 		GPU();

@@ -86,9 +86,6 @@ namespace vxr
       return;
     }
 
-    gpu::Buffer common_uniforms_buffer = Engine::ref().camera()->common_uniforms_.buffer;
-    gpu::Buffer lights_uniforms_buffer = Engine::ref().light()->light_uniforms_.buffer;
-
     DisplayList frame;
     for (auto &c : components_)
     {
@@ -186,29 +183,17 @@ namespace vxr
         .set_data(&c->material->uniforms_)
         .set_size(sizeof(c->material->uniforms_));
       VXR_TRACE_END("VXR", "Fill Uniform Buffer");
-      VXR_TRACE_BEGIN("VXR", "Setup Material");
-      frame->setupMaterialCommand()
-        .set_material(shared_material->gpu_.mat)
-        .set_buffer(0, mesh->gpu_.vertex.buffer)
-        .set_v_texture(shared_material->gpu_.tex)
-        .set_uniform_buffer(0, Engine::ref().camera()->common_uniforms_.buffer)
-        .set_uniform_buffer(1, Engine::ref().light()->light_uniforms_.buffer)
-        .set_uniform_buffer(2, shared_material->gpu_.uniform_buffer)
-        .set_model_matrix(c->transform()->worldMatrix());
-      VXR_TRACE_END("VXR", "Setup Material");
     }
-    else
-    {
-      VXR_TRACE_BEGIN("VXR", "Setup Material");
-      frame->setupMaterialCommand()
-        .set_material(shared_material->gpu_.mat)
-        .set_buffer(0, mesh->gpu_.vertex.buffer)
-        .set_v_texture(shared_material->gpu_.tex)
-        .set_uniform_buffer(0, Engine::ref().camera()->common_uniforms_.buffer)
-        .set_uniform_buffer(1, Engine::ref().light()->light_uniforms_.buffer)
-        .set_model_matrix(c->transform()->worldMatrix());
-      VXR_TRACE_END("VXR", "Setup Material");
-    }
+    VXR_TRACE_BEGIN("VXR", "Setup Material");
+    frame->setupMaterialCommand()
+      .set_material(shared_material->gpu_.mat)
+      .set_buffer(0, mesh->gpu_.vertex.buffer)
+      .set_v_texture(shared_material->gpu_.tex)
+      .set_uniform_buffer(0, Engine::ref().camera()->common_uniforms_buffer())
+      .set_uniform_buffer(1, Engine::ref().light()->light_uniforms_buffer())
+      .set_uniform_buffer(2, ((shared_material->use_uniforms_) ? shared_material->gpu_.uniform_buffer : gpu::Buffer{}))
+      .set_model_matrix(c->transform()->worldMatrix());
+    VXR_TRACE_END("VXR", "Setup Material");
     VXR_TRACE_BEGIN("VXR", "Render");
     frame->renderCommand()
       .set_index_buffer(mesh->gpu_.index.buffer)
@@ -264,7 +249,7 @@ namespace vxr
       .set_material(shared_material->gpu_.mat)
       .set_buffer(0, cube->gpu_.vertex.buffer)
       .set_v_texture(shared_material->gpu_.tex)
-      .set_uniform_buffer(0, Engine::ref().camera()->common_uniforms_.buffer)
+      .set_uniform_buffer(0, Engine::ref().camera()->common_uniforms_buffer())
       .set_uniform_buffer(1, shared_material->gpu_.uniform_buffer)
       .set_model_matrix(skybox->transform()->worldMatrix());
     frame.renderCommand()

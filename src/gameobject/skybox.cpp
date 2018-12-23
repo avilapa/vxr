@@ -40,7 +40,7 @@ namespace vxr
     material_.alloc()->set_name("Scene Skybox Material");
     addComponent<Renderer>()->material = material_.get();
 
-    ref_ptr<EngineMesh::Cube> skybox_mesh;
+    ref_ptr<mesh::Cube> skybox_mesh;
     skybox_mesh.alloc()->set_name("Scene Skybox Mesh");
     addComponent<MeshFilter>()->mesh = skybox_mesh.get();
 

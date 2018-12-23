@@ -38,7 +38,6 @@ namespace vxr
 {
 
   namespace mat { class Material; class RenderPass; }
-  class Composer;
 
   class Texture : public Object
   {
@@ -50,11 +49,9 @@ namespace vxr
     Texture();
     ~Texture();
 
-    void init(gpu::Texture t); /// TEMP: Needed for high level framebuffer usage
-    
-    void load(const char* file);
-    void load(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft);
-    void load(const char* cubemap_folder_path, const char* extension);
+    void load(const char* file, bool flip = false);
+    void load(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, bool flip = false);
+    void load(const char* cubemap_folder_path, const char* extension, bool flip = false);
 
     void set_size(uint16 width = 1, uint16 height = 1, uint16 depth = 1);
     void set_offset(uint16 x = 0, uint16 y = 0, uint16 z = 0);
@@ -65,15 +62,17 @@ namespace vxr
     void set_usage(Usage::Enum usage);
     void set_type(TextureType::Enum type);
     void set_build_mipmap(bool build_mipmap);
-    void set_data(unsigned char* data, uint32 index = 0);
+    void set_data(void* data, uint32 index = 0);
+
+    uvec2 size() const;
 
     bool hasChanged();
-    unsigned char* data() const;
+    void* data() const;
     uint32 id();
 
   private:
     bool dirty_ = false;
-    unsigned char* data_[6];
+    void* data_[6];
 
     uint32 internal_id_ = 0;
 

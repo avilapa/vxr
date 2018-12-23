@@ -25,6 +25,7 @@
 #include "../../include/core/scene.h"
 #include "../../include/components/renderer.h"
 #include "../../include/components/mesh_filter.h"
+#include "../../include/components/ibl.h"
 
 namespace vxr
 {
@@ -77,7 +78,9 @@ namespace vxr
           ImGui::Text("No skybox has been created.\nRight click to create default.");
           if (ImGui::GetIO().MouseClicked[1])
           {
-            skybox_.alloc()->set_name("Default Skybox");
+            ref_ptr<Skybox> skybox;
+            skybox.alloc()->set_name("Default Skybox");
+            set_skybox(skybox);
             Engine::ref().camera()->main()->set_clear_flags(Camera::ClearFlags::Skybox);
           }
           ImGui::EndTooltip();
@@ -119,6 +122,10 @@ namespace vxr
 
   void Scene::set_skybox(ref_ptr<Skybox> skybox)
   {
+    if (this == Engine::ref().scene().get())
+    {
+      Engine::ref().ibl()->set_main(skybox->getComponent<IBL>());
+    }
     skybox_ = skybox;
   }
 

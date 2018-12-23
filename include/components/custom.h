@@ -41,9 +41,7 @@ namespace vxr
 
 	class Custom : public Component
   {
-
     VXR_OBJECT(Custom, Component);
-
     friend class System::Custom;
 	public:
     Custom();
@@ -75,9 +73,7 @@ namespace vxr
   {
     class Custom : public ComponentSystem
     {
-
       VXR_OBJECT(System::Custom, ComponentSystem);
-
     public:
       Custom();
       virtual ~Custom();

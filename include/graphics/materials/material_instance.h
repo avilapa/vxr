@@ -48,13 +48,9 @@ namespace vxr
   {
 
     class Material;
-
     class MaterialInstance : public Object
     {
       VXR_OBJECT(MaterialInstance, Object);
-      friend class System::Renderer;
-      friend class AssetManager;
-      friend class Composer;
     public:
       MaterialInstance();
       virtual ~MaterialInstance();
@@ -73,7 +69,6 @@ namespace vxr
       ref_ptr<Texture> texture(uint32 index = 0) const;
       std::vector<ref_ptr<Texture>> textures() const;
 
-    protected:
       Shader::UniformData uniforms_;
 
     private:

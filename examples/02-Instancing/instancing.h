@@ -57,7 +57,7 @@ namespace vxr
     gpu::Material material_;
     gpu::Texture texture_;
 
-    unsigned char* tex_data_;
+    void* tex_data_;
 
     static const uint32 kNUM_INSTANCES = 40000;
     vec3 instance_positions_[kNUM_INSTANCES];
