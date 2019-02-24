@@ -54,7 +54,9 @@ namespace vxr
 
   private:
     ref_ptr<GameObject> cam_;
-    ref_ptr<GameObject> mesh_;
+    ref_ptr<GameObject> teapot_;
+    ref_ptr<GameObject> suzanne_;
+    ref_ptr<GameObject> sphere_;
     ref_ptr<GameObject> light_;
   };
 

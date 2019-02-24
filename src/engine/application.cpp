@@ -43,7 +43,7 @@ namespace vxr
     if (!Engine::ref().init())
     {
       exit_ = true;
-      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Initializing engine.\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [ENGINE] Initializing engine.\n");
       return;
     }
   }
@@ -89,10 +89,9 @@ namespace vxr
     mtr_init("trace.json");
 #endif
     VXR_TRACE_META_THREAD_NAME("Logic Thread");
-    VXR_TRACE_SCOPE("VXR", __FUNCTION__);
 
     VXR_TRACE_BEGIN("VXR", "App Init");
-    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Starting application.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [ENGINE] Starting application.\n");
     init();
 
     if (exit_)
@@ -103,7 +102,7 @@ namespace vxr
     VXR_TRACE_BEGIN("VXR", "App Start");
     start();
     VXR_TRACE_END("VXR", "App Start");
-    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Reached first application loop.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [ENGINE] Reached first application loop.\n");
 
     double lastTime = Engine::ref().window()->uptime();
     double accumulator = 0.0;
@@ -114,7 +113,7 @@ namespace vxr
     while (!is_exiting())
     {
       VXR_TRACE_BEGIN("VXR", "Frame");
-      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: New render frame (FPS: %d) (Logic updates: %d)\n", framerate_.fps, num_updates);
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [ENGINE] New render frame (FPS: %d) (Logic updates: %d)\n", framerate_.fps, num_updates);
       double nowTime = Engine::ref().window()->uptime();
       double deltaTime = nowTime - lastTime;
       lastTime = nowTime;
@@ -153,12 +152,12 @@ namespace vxr
       VXR_TRACE_END("VXR", "Frame");
     }
 
-    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Stopping application.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [ENGINE] Stopping application.\n");
     stop();
 #ifdef VXR_DEBUG_TRACING
     mtr_shutdown();
 #endif
-    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Stopped application with exit code 0.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [ENGINE] Stopped application with exit code 0.\n");
     return 0;
   }
 

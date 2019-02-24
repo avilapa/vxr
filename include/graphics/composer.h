@@ -24,7 +24,7 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
-#include "../graphics/materials/standard_pass.h"
+#include "../graphics/materials/pass_standard.h"
 #include "../graphics/materials/standard.h"
 
 /**
@@ -70,8 +70,7 @@ namespace vxr
     uvec2 render_size_;
 
     ref_ptr<mat::MaterialInstance> render_to_screen_;
-    ref_ptr<mat::RenderPassInstance> screen_prepass_;
-    ref_ptr<mesh::Quad> screen_quad_;
+    ref_ptr<mat::Screen::Instance> screen_prepass_;
     ref_ptr<Texture> screen_texture_;
     ref_ptr<Texture> displaytest;
 

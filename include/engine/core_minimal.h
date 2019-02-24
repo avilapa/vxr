@@ -57,5 +57,6 @@
 #include "../../include/graphics/materials/standard.h"
 #include "../../include/graphics/materials/unlit.h"
 
-#include "../../include/graphics/materials/standard_pass.h"
+#include "../../include/graphics/materials/pass_standard.h"
+#include "../../include/graphics/materials/pass_ibl.h"
 #include "../../include/graphics/materials/pass_filters.h"

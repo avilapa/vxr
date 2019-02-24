@@ -55,6 +55,7 @@ namespace vxr
 
       virtual void onGUI() override;
 
+      /// TODO: Depth buffer format and size are fixed at the moment. Size should be output texture size.
       void init(string shared_render_pass_name, uint32 index = 0);
       void init(std::initializer_list<string> shared_render_pass_name);
 

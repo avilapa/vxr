@@ -35,6 +35,10 @@
 #include "../../deps/imgui/imgui.h"
 #include "../../deps/imgui/imgui_stl.h"
 
+#ifdef VXR_THREADING
+#  include "../../deps/threading/px_sched.h"
+#endif
+
 // ----------------------------------------------------------------------------------------
 // Debug
 // ----------------------------------------------------------------------------------------
@@ -100,7 +104,7 @@
 # include "../../deps/glm/glm.hpp"
 # include "../../deps/glm/gtc/matrix_transform.hpp"
 # include "../../deps/glm/gtx/transform.hpp"
-# include "../../deps/glm//gtc/quaternion.hpp"
+# include "../../deps/glm/gtx/quaternion.hpp"
 # include "../../deps/glm//gtx/matrix_decompose.hpp"
 
 // ----------------------------------------------------------------------------------------
@@ -135,10 +139,25 @@ namespace vxr
   typedef glm::uvec3		uvec3;
   typedef glm::uvec4		uvec4;
 
+  typedef glm::bvec2		bvec2;
+  typedef glm::bvec3		bvec3;
+  typedef glm::bvec4		bvec4;
+
   typedef glm::mat3			mat3;
   typedef glm::mat4			mat4;
 
+  typedef glm::quat     quat;
+
   typedef std::string   string;
+
+#ifdef VXR_THREADING
+  namespace threading
+  {
+    typedef px_sched::Scheduler Scheduler;
+    typedef px_sched::Sync Sync;
+    typedef px_sched::Job Task;
+  }
+#endif 
 }
 
 #else
@@ -157,11 +176,15 @@ namespace vxr
 
   const size_t kMaxUniformBuffers           = 15;
 
-  const size_t kMaxLightSources             = 30;
+  const size_t kMaxLightSources             = 100;
 
 #ifdef VXR_OPENGL
   const size_t kGLShaderVersion             = 330;
 #endif
+
+  const vec3 kWorldForward                  = vec3(0.0f, 0.0f,-1.0f);
+  const vec3 kWorldRight                    = vec3(1.0f, 0.0f, 0.0f);
+  const vec3 kWorldUp                       = vec3(0.0f, 1.0f, 0.0f);
 
   // ----------------------------------------------------------------------------------------
   // Engine Structures
@@ -195,6 +218,16 @@ namespace vxr
       uint32 max_materials = 128;
       uint32 max_framebuffers = 128;
     } gpu;
+  };
+
+  struct TransformSpace
+  {
+    enum Enum
+    {
+      Local,
+      Parent,
+      World,
+    };
   };
 
 // ----------------------------------------------------------------------------------------

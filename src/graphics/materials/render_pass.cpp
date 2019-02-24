@@ -55,36 +55,32 @@ namespace vxr
 
     bool RenderPass::setup()
     {
-      if (initialized_)
+      if (!initialized_)
       {
-        return true;
+        VXR_TRACE_SCOPE("VXR", "Render Pass Setup");
+
+        gpu_.mat = Engine::ref().gpu()->createMaterial(gpu_.mat_info);
+
+        if (use_uniforms_)
+        {
+          gpu_.uniform_buffer = Engine::ref().gpu()->createBuffer({ BufferType::Uniform, sizeof(Shader::UniformData), uniforms_usage_, uniforms_name_ });
+        }
+
+        gpu_.fbo = Engine::ref().gpu()->createFramebuffer(gpu_.fbo_info);
+
+        initialized_ = true;
       }
 
-      VXR_TRACE_SCOPE("VXR", "Render Pass Setup");
-      gpu_.mat = Engine::ref().gpu()->createMaterial(gpu_.mat_info);
-
-      if (use_uniforms_)
+      /// TODO: Review this. Is accessing the instance to update the textures the proper thing to do?
+      /// TODO: Fix framebuffer sizes changing on scene load.
+      for (uint32 i = 0; i < gpu_.fbo_info.num_color_textures; ++i)
       {
-        gpu_.uniform_buffer = Engine::ref().gpu()->createBuffer({ BufferType::Uniform, sizeof(Shader::UniformData), uniforms_usage_, uniforms_name_ });
-      }
-
-      gpu::Framebuffer::Info fb_info;
-      for (uint32 i = 0; i < num_output_textures(); ++i)
-      {
-        fb_info.color_texture_info[i] = gpu_.out_tex[i]->gpu_.info;
-      }
-      fb_info.depth_stencil_texture_info = gpu_.depth_tex->gpu_.info;
-      fb_info.num_color_textures = (uint16)num_output_textures();
-
-      gpu_.fbo = Engine::ref().gpu()->createFramebuffer(fb_info);
-
-      for (uint32 i = 0; i < gpu_.out_tex.size(); ++i)
-      {
+        gpu_.fbo.set_color_texture(gpu_.out_tex[i]->gpu_.tex, i);
         gpu_.out_tex[i]->gpu_.tex = gpu_.fbo.color_texture(i);
       }
+      gpu_.fbo.set_depth_stencil_texture(gpu_.depth_tex->gpu_.tex);
       gpu_.depth_tex->gpu_.tex = gpu_.fbo.depth_stencil_texture();
 
-      initialized_ = true;
       return true;
     }
 
@@ -99,7 +95,10 @@ namespace vxr
 
         if (in_textures[i]->hasChanged())
         {
-          in_textures[i]->setup();
+          if (!in_textures[i]->setup())
+          {
+            return false;
+          }
         }
         gpu_.mat_info.textures[i] = in_textures[i]->gpu_.info.type;
         gpu_.in_tex[i] = in_textures[i]->gpu_.tex;
@@ -113,15 +112,25 @@ namespace vxr
       {
         if (out_textures[i]->hasChanged())
         {
-          out_textures[i]->setup();
+          if (!out_textures[i]->setup())
+          {
+            return false;
+          }
         }
+        gpu_.fbo_info.color_texture_info[i] = out_textures[i]->gpu_.info;
         gpu_.out_tex[i] = out_textures[i];
       }
 
+      gpu_.fbo_info.num_color_textures = (uint16)gpu_.out_tex.size();
+
       if (depth_texture->hasChanged())
       {
-        depth_texture->setup();
+        if (!depth_texture->setup())
+        {
+          return false;
+        }
       }
+      gpu_.fbo_info.depth_stencil_texture_info = depth_texture->gpu_.info;
       gpu_.depth_tex = depth_texture;
 
       return true;
@@ -160,6 +169,11 @@ namespace vxr
     void RenderPass::set_uniforms_usage(Usage::Enum usage)
     {
       uniforms_usage_ = usage;
+    }
+
+    bool RenderPass::uniforms_enabled() const
+    {
+      return use_uniforms_;
     }
 
     void RenderPass::set_shaders(const char* vert, const char* frag)
@@ -203,6 +217,31 @@ namespace vxr
     void RenderPass::set_depth_write(bool enabled)
     {
       gpu_.mat_info.depth_write = enabled;
+    }
+
+    gpu::Material RenderPass::material() const
+    {
+      return gpu_.mat;
+    }
+
+    gpu::Framebuffer RenderPass::framebuffer() const
+    {
+      return gpu_.fbo;
+    }
+
+    gpu::Buffer RenderPass::uniformBuffer() const
+    {
+      return gpu_.uniform_buffer;
+    }
+
+    std::vector<gpu::Texture> RenderPass::textureInput() const
+    {
+      return gpu_.in_tex;
+    }
+
+    std::vector<ref_ptr<Texture>> RenderPass::textureOutput() const
+    {
+      return gpu_.out_tex;
     }
   }
 }

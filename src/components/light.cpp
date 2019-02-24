@@ -37,9 +37,12 @@ namespace vxr
     set_name("Light");
     contributes_ = false;
 
+    type_ = Type::Punctual;
     color_ = Color::White;
     intensity_ = 1.0f;
     ambient_ = 0.15f;
+    falloff_ = 1.0f;
+    cone_angle_ = 180.0f;
   }
 
   Light::~Light()
@@ -61,12 +64,33 @@ namespace vxr
     ImGui::Text(((contributes_) ? "YES" : "NO"));
     ImGui::PopStyleColor();
     ImGui::Spacing();
+    ImGui::Text("Type         "); ImGui::SameLine();
+    ImGui::Combo(uiText("##Type").c_str(), (int*)&type_, "Punctual\0Directional\0\0");
+    ImGui::Spacing();
     ImGui::Text("Ambient      "); ImGui::SameLine();
     ImGui::DragFloat(uiText("##Ambient").c_str(), &ambient_, 0.01f, -FLT_MAX, FLT_MAX);
     ImGui::Text("Intensity    "); ImGui::SameLine();
     ImGui::DragFloat(uiText("##Intensity").c_str(), &intensity_, 0.01f, -FLT_MAX, FLT_MAX);
+    ImGui::Spacing();
+    switch (type_)
+    {
+    case Type::Directional:
+      break;
+    case Type::Punctual:
+      ImGui::Text("Falloff      "); ImGui::SameLine();
+      ImGui::DragFloat(uiText("##Falloff").c_str(), &falloff_, 0.01f, -FLT_MAX, FLT_MAX);
+      ImGui::Text("Cone Angle   "); ImGui::SameLine();
+      ImGui::DragFloat(uiText("##Cone Angle").c_str(), &cone_angle_, 1.0f, -FLT_MAX, FLT_MAX);
+      break;
+    }
+    ImGui::Spacing();
     ImGui::Text("Light Color  "); ImGui::SameLine();
     ImGui::ColorEdit3(uiText("##Color").c_str(), (float*)&color_);
+  }
+
+  void Light::set_type(Type::Enum type)
+  {
+    type_ = type;
   }
 
   void Light::set_color(const Color& color)
@@ -82,6 +106,11 @@ namespace vxr
   void Light::set_ambient(const float& ambient)
   {
     ambient_ = ambient;
+  }
+
+  void Light::set_falloff(const float& falloff)
+  {
+    falloff_ = falloff;
   }
 
   System::Light::Light()
@@ -136,9 +165,9 @@ namespace vxr
           c->computeTransformations();
         }*/
 
-        light_uniforms_.data.pos[num_lights_] = vec4(c->transform()->world_position(), 0.0f);
-        light_uniforms_.data.dir_intensity[num_lights_] = vec4(c->transform()->world_rotation(), c->intensity_);
-        light_uniforms_.data.col_ambient[num_lights_] = vec4(c->color_.rgb(), c->ambient_);
+        light_uniforms_.data.position_falloff[num_lights_] = vec4(c->transform()->world_position(), (c->type_ == vxr::Light::Type::Directional) ? 0.0f : c->falloff_);
+        light_uniforms_.data.color_intensity[num_lights_] = vec4(c->color_.rgb(), c->intensity_);
+        light_uniforms_.data.direction_ambient[num_lights_] = vec4(c->transform()->world_rotation_angles(), c->ambient_);
 
         num_lights_++;
       }

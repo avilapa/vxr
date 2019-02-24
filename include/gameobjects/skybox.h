@@ -26,6 +26,7 @@
 
 #include "../core/gameobject.h"
 #include "../graphics/materials/skybox.h"
+#include "../graphics/materials/pass_standard.h"
 
 /**
 * \file skybox.h
@@ -47,6 +48,9 @@ namespace vxr
 
     virtual void onGUI() override;
 
+    void set_texture(ref_ptr<Texture> texture);
+
+    ref_ptr<Texture> texture() const;
     ref_ptr<mat::Skybox::Instance> material();
 
   private:

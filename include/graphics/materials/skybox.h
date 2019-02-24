@@ -46,7 +46,7 @@ namespace vxr
       VXR_OBJECT(Skybox, Material);
     public:
       Skybox();
-
+      
       class Instance : public MaterialInstance
       {
         VXR_OBJECT(Instance, MaterialInstance);
@@ -59,14 +59,7 @@ namespace vxr
         Color tint() const;
 
         void set_color_texture(ref_ptr<Texture> texture);
-        void set_color_texture(const char* folder, const char* extension);
-        void set_color_texture(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft);
-        void set_color_texture(const char* file);
-
         ref_ptr<Texture> color_texture() const;
-
-      protected:
-        ref_ptr<Texture> skybox_texture_;
       };
     };
 

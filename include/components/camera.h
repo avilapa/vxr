@@ -72,14 +72,14 @@ namespace vxr
       void set_##fname(const type &c) { name = c; markForUpdate(); }\
       type fname() const { return name; }
 
-    PROPERTY(float, fov_, fov, 70.0f);
+    PROPERTY(float, fov_, fov, 50.0f);
     PROPERTY(float, aspect_, aspect, 1280.0f / 720.0f);
     PROPERTY(float, near_plane_, near_plane, 0.1f);
     PROPERTY(float, far_plane_, far_plane, 900.0f);
 
     PROPERTY(Color, background_color_, background_color, Color::PhyreBlue);
 
-    /// No need dirty
+    /// TODO: Remove dirty update.
     PROPERTY(bool, clear_color_, clear_color, true);
     PROPERTY(bool, clear_depth_, clear_depth, true);
     PROPERTY(bool, clear_stencil_, clear_stencil, true);
@@ -90,6 +90,9 @@ namespace vxr
 
     mat4 projection() const;
     mat4 view() const;
+
+    static mat4 BuildProjection(float fovy_degrees, float aspect, float z_near, float z_far);
+    static mat4 BuildView(vec3 eye, vec3 center, vec3 up);
 
   public:
     void computeTransformations();

@@ -82,6 +82,7 @@ namespace vxr
     //Log.AddLog("asdasdasdasd");
     static bool show_editor = true;
     static bool show_statistics = false;
+    static bool show_texture_viewer = false;
 
     ImGuiIO& io = ImGui::GetIO();
 
@@ -113,6 +114,7 @@ namespace vxr
       {
         ImGui::MenuItem("Show Statistics", "", &show_statistics);
         ImGui::MenuItem("Show Editor", "", &show_editor);
+        ImGui::MenuItem("Show Texture Viewer", "", &show_texture_viewer);
 
         if (ImGui::MenuItem("Exit", "Alt+F4")) 
         {
@@ -137,6 +139,7 @@ namespace vxr
       ImGui::PopStyleVar();
 
       if (show_statistics) Statistics(&show_statistics, !show_editor);
+      if (show_texture_viewer) TextureViewer(&show_texture_viewer, !show_editor);
       return;
     }
 
@@ -201,6 +204,7 @@ namespace vxr
     ImGui::End();
 
     if (show_statistics) Statistics(&show_statistics, !show_editor);
+    if (show_texture_viewer) TextureViewer(&show_texture_viewer, !show_editor);
   }
 
   void ui::Statistics(bool *open, bool fullscreen)
@@ -215,7 +219,7 @@ namespace vxr
     }
 
     ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
-    if (ImGui::Begin("Example: Simple Overlay",  open, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
+    if (ImGui::Begin("Statistics",  open, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav))
     {
       ImGui::Text("GPU data:");
       ref_ptr<GPU> gpu = Engine::ref().gpu();
@@ -223,6 +227,27 @@ namespace vxr
       ImGui::Text("Textures:        %d / %d", gpu->num_used_textures(), gpu->num_textures());
       ImGui::Text("Materials:       %d / %d", gpu->num_used_materials(), gpu->num_materials());
       ImGui::Text("Framebuffers:    %d / %d", gpu->num_used_framebuffers(), gpu->num_framebuffers());
+    }
+    ImGui::End();
+  }
+  
+  void ui::TextureViewer(bool *open, bool fullscreen)
+  { 
+    if (fullscreen)
+    {
+      ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.008f, ImGui::GetIO().DisplaySize.y * 0.035f), ImGuiCond_Always);
+    }
+    else
+    {
+      ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().DisplaySize.x * 0.172f, ImGui::GetIO().DisplaySize.y * 0.095f), ImGuiCond_Always);
+    }
+
+    ImGui::SetNextWindowBgAlpha(0.3f); // Transparent background
+    if (ImGui::Begin("Texture Viewer",  open, ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing))
+    {
+      static int id = 0;
+      ImGui::InputInt("Texture ID", &id);
+      ImGui::Image((void*)(intptr_t)id, { 256, 256 }, ImVec2(0, 1), ImVec2(1, 0));
     }
     ImGui::End();
   }

@@ -10,4 +10,14 @@
     <LocalDebuggerWorkingDirectory>..\..\examples\03-Framebuffers</LocalDebuggerWorkingDirectory>
     <LocalDebuggerCommandArguments></LocalDebuggerCommandArguments>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerWorkingDirectory>..\..\examples\03-Framebuffers</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments></LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerWorkingDirectory>..\..\examples\03-Framebuffers</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments></LocalDebuggerCommandArguments>
+  </PropertyGroup>
 </Project>

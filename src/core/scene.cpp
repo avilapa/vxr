@@ -26,6 +26,8 @@
 #include "../../include/components/renderer.h"
 #include "../../include/components/mesh_filter.h"
 #include "../../include/components/ibl.h"
+///TODO: Remove this header when removing the UI skybox stuff
+#include "../../include/core/assets.h"
 
 namespace vxr
 {
@@ -39,7 +41,6 @@ namespace vxr
 
   Scene::~Scene()
   {
-
   }
 
   void Scene::onGUI()
@@ -80,6 +81,22 @@ namespace vxr
           {
             ref_ptr<Skybox> skybox;
             skybox.alloc()->set_name("Default Skybox");
+
+            ref_ptr<Texture> input =
+            //Engine::ref().assetManager()->loadTexture("../../assets/environments/studio_small.hdr", true);
+            Engine::ref().assetManager()->loadTexture("../../assets/environments/barcelona_rooftop.hdr", true);
+            //Engine::ref().assetManager()->loadTexture("../../assets/environments/flower_road.hdr", true);
+            //Engine::ref().assetManager()->loadTexture("../../assets/environments/the_sky_is_on_fire.hdr", true);
+            //Engine::ref().assetManager()->loadTexture("../../assets/environments/potsdamer_platz.hdr", true);
+            //Engine::ref().assetManager()->loadTexture("../../assets/environments/shanghai_bund.hdr", true);
+            //Engine::ref().assetManager()->loadTexture("../../assets/environments/sunny_vondelpark.hdr", true);
+            //Engine::ref().assetManager()->loadTexture("../../assets/environments/spruit_sunrise.hdr", true);
+            //Engine::ref().assetManager()->loadTexture("../../assets/environments/tiber.hdr", true);
+            //Engine::ref().assetManager()->loadTexture("../../assets/environments/whale_skeleton.hdr", true);
+
+            //Engine::ref().assetManager()->loadTexture("../../assets/environments/milky_way.jpg", true);
+            //Engine::ref().assetManager()->loadTexture("../../assets/environments/sunset", "png");
+            skybox->set_texture(input);
             set_skybox(skybox);
             Engine::ref().camera()->main()->set_clear_flags(Camera::ClearFlags::Skybox);
           }
@@ -88,10 +105,10 @@ namespace vxr
       }
       else
       {
-        ImGui::Text("SBox");
-        /// Cubemap texture list
-        static int test = 0;
-        ImGui::Combo(uiText("Map##CubemapTexture").c_str(), (int*)&test, "White Boy\0Sunset\0\0");
+        //ImGui::Text("SBox");
+        // Cube map texture list
+        /*static int test = 0;
+        ImGui::Combo(uiText("Map##CubemapTexture").c_str(), (int*)&test, "White Boy\0Sunset\0\0");*/
       }
     }
   }
@@ -99,20 +116,24 @@ namespace vxr
   void Scene::addObject(ref_ptr<GameObject> obj)
   {
     obj->transform()->set_parent(root_->transform());
-    if (!default_camera_)
-    {
-      default_camera_ = obj->getComponent<Camera>();
-    }
   }
 
   void Scene::set_default_camera(ref_ptr<Camera> cam)
   {
-    default_camera_ = cam;
+    if (cam->gameObject()->scene_id() == id())
+    {
+      default_camera_ = cam;
+    }
   }
 
   ref_ptr<Camera> Scene::default_camera()
   {
     return default_camera_;
+  }
+
+  ref_ptr<Camera> Scene::findCameraInScene()
+  {
+    return root_->getComponentInChildren<Camera>();
   }
 
   ref_ptr<GameObject> Scene::root()
@@ -122,11 +143,8 @@ namespace vxr
 
   void Scene::set_skybox(ref_ptr<Skybox> skybox)
   {
-    if (this == Engine::ref().scene().get())
-    {
-      Engine::ref().ibl()->set_main(skybox->getComponent<IBL>());
-    }
     skybox_ = skybox;
+    skybox_->scene_id_ = id();
   }
 
   ref_ptr<Skybox> Scene::skybox() const

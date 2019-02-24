@@ -40,9 +40,7 @@ namespace vxr
     {
       VXR_TRACE_SCOPE("VXR", "Texture Load");
 
-      stbi_set_flip_vertically_on_load(flip);
-      
-      int w, h, comp;
+      int w, h, comp, bytes_per_pixel;
       void* data;
       bool hdr = false;
         
@@ -53,22 +51,29 @@ namespace vxr
       {
         data = stbi_loadf(file, &w, &h, &comp, 0);
         hdr = true;
+        bytes_per_pixel = comp * sizeof(float);
       }
       else
       {
         data = stbi_load(file, &w, &h, &comp, 0);
+        bytes_per_pixel = comp * sizeof(stbi_uc);
+      }
+
+      if (flip)
+      {
+        stbi__vertical_flip(data, w, h, bytes_per_pixel);
       }
 
       if (!data)
       {
-        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Unknown texture format.\n");
+        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [TEXTURE] Load failed. Unknown texture format.\n");
         return nullptr;
       }
 
       if (w < 1 || h < 1)
       {
         free(data);
-        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Invalid texture data.\n");
+        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [TEXTURE] Load failed. Invalid texture data.\n");
         return nullptr;
       }
 
@@ -83,13 +88,13 @@ namespace vxr
       case 4: tex.format = ((hdr) ? TexelsFormat::RGBA_F16 : TexelsFormat::RGBA_U8); break;
       }
 
+      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [TEXTURE] Loaded (%s).\n", file);
       return data;
     }
 
     std::vector<void*> Texture::loadCubemapFromFile(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, Texture::Info& tex, bool flip)
     {
       VXR_TRACE_SCOPE("VXR", "Texture Load (Cubemap)");
-      stbi_set_flip_vertically_on_load(flip);
       int w, h, comp;
       std::vector<void*> data;
       data.push_back(stbi_load(rt, &w, &h, &comp, 0));
@@ -104,7 +109,7 @@ namespace vxr
       {
         if (!data[i])
         {
-          VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Unknown texture format.\n");
+          VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [TEXTURE] Load failed. Unknown texture format.\n");
           error = true;
         }
       }
@@ -120,8 +125,16 @@ namespace vxr
         {
           free(data[0]);
         }
-        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Invalid texture data.\n");
+        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [TEXTURE] Load failed. Invalid texture data.\n");
         return data;
+      }
+
+      if (flip)
+      {
+        for (uint32 i = 0; i < 6; ++i)
+        {
+          stbi__vertical_flip(data[i], w, h, comp * sizeof(stbi_uc));
+        }
       }
 
       tex.width = w;
@@ -134,10 +147,11 @@ namespace vxr
       case 4: tex.format = TexelsFormat::RGBA_U8; break;
       }
 
+      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [TEXTURE] Loaded (%s).\n", rt);
       return data;
     }
 
-    Texture Framebuffer::color_texture(uint16 p) const 
+    Texture Framebuffer::color_texture(uint16 index) const 
     {
       if (!ctx) 
       {
@@ -145,7 +159,7 @@ namespace vxr
       }
       ctx->CheckValidResource(id, &ctx->framebuffers_);
       uint32 pos = RenderContext::index(id);
-      return ctx->framebuffers_[pos].color_textures[p];
+      return ctx->framebuffers_[pos].color_textures[index];
     }
 
     Texture Framebuffer::depth_stencil_texture() const 
@@ -157,6 +171,28 @@ namespace vxr
       ctx->CheckValidResource(id, &ctx->framebuffers_);
       uint32 pos = RenderContext::index(id);
       return ctx->framebuffers_[pos].depth_texture;
+    }
+
+    void Framebuffer::set_color_texture(Texture t, uint16 index)
+    {
+      if (!ctx)
+      {
+        return;
+      }
+      ctx->CheckValidResource(id, &ctx->framebuffers_);
+      uint32 pos = RenderContext::index(id);
+      ctx->framebuffers_[pos].color_textures[index] = t;
+    }
+
+    void Framebuffer::set_depth_stencil_texture(Texture t)
+    {
+      if (!ctx)
+      {
+        return;
+      }
+      ctx->CheckValidResource(id, &ctx->framebuffers_);
+      uint32 pos = RenderContext::index(id);
+      ctx->framebuffers_[pos].depth_texture = t;
     }
 
   } /* end of gpu namespace */

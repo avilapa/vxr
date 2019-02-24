@@ -104,8 +104,8 @@ namespace vxr
     ////////////////////////////////////////////////////////////////
 
     IM_ASSERT((int)strlen(glsl_version) + 2 < IM_ARRAYSIZE(g_GlslVersionString));
-    strcpy(g_GlslVersionString, glsl_version);
-    strcat(g_GlslVersionString, "\n");
+    strcpy_s(g_GlslVersionString, glsl_version);
+    strcat_s(g_GlslVersionString, "\n");
 
     ////////////////////////////////////////////////////////////////
 
@@ -528,7 +528,7 @@ namespace vxr
 
     // Parse GLSL version string
     int glsl_version = 130;
-    sscanf(g_GlslVersionString, "#version %d", &glsl_version);
+    sscanf_s(g_GlslVersionString, "#version %d", &glsl_version);
 
     const GLchar* vertex_shader_glsl_120 =
       "uniform mat4 ProjMtx;\n"

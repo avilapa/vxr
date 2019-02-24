@@ -61,13 +61,17 @@ namespace vxr
       MaterialInstance::onGUI();
       ImGui::Text("Tint       "); ImGui::SameLine();
       ImGui::ColorEdit4(uiText("##Tint").c_str(), (float*)& uniforms_.unlit.color);
-      if (ImGui::SmallButton(uiText("Load test##LOADtest").c_str()))
-      {
-        set_color_texture("../../assets/textures/skybox/sunset", "png");
-      }
-      if (ImGui::SmallButton(uiText("Load test2##LOADtest2").c_str()))
+      if (ImGui::SmallButton(uiText("Preview Cubemap##LOADtest2").c_str()))
       {
         set_color_texture(Engine::ref().ibl()->main()->cubemap_texture());
+      }
+      if (ImGui::SmallButton(uiText("Preview Irradiance##LOADtest3").c_str()))
+      {
+        set_color_texture(Engine::ref().ibl()->main()->irradiance_cubemap_texture());
+      }
+      if (ImGui::SmallButton(uiText("Preview Prefiltering##LOADtest4").c_str()))
+      {
+        set_color_texture(Engine::ref().ibl()->main()->prefiltered_cubemap_texture());
       }
     }
 
@@ -83,30 +87,12 @@ namespace vxr
 
     void Skybox::Instance::set_color_texture(ref_ptr<Texture> texture)
     {
-      skybox_texture_ = texture;
-      set_texture(0, skybox_texture_);
-    }
-
-    void Skybox::Instance::set_color_texture(const char* folder, const char* extension)
-    {
-      skybox_texture_->load(folder, extension);
-      set_texture(0, skybox_texture_);
-    }
-
-    void Skybox::Instance::set_color_texture(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft)
-    {
-      skybox_texture_->load(rt, lf, up, dn, bk, ft);
-      set_texture(0, skybox_texture_);
-    }
-
-    void Skybox::Instance::set_color_texture(const char* file)
-    {
-      set_color_texture(file, file, file, file, file, file);
+      set_texture(0, texture);
     }
 
     ref_ptr<Texture> Skybox::Instance::color_texture() const
     {
-      return skybox_texture_;
+      return texture(0);
     }
 
   }

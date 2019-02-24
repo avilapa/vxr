@@ -26,6 +26,8 @@
 
 #include "../core/object.h"
 
+#include <functional>
+
 /**
 * \file window.h
 *
@@ -60,11 +62,16 @@ namespace vxr
     void set_preinit_params(const Params::Window& params) { params_ = params; };
 
     void init();
-    void update(bool *swap);
+    void events();
+    void swap();
     void stop();
 
 	protected:
-		Data* data_;
+    Data* data_;
+
+#ifdef VXR_UI
+      std::function<void()> ui_ = []() {};
+#endif
 
     Params::Window params_ = { { 1280, 720 } };
 	};

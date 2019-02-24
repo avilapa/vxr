@@ -52,13 +52,14 @@ namespace vxr
       vec2 u_xy;
       vec4 u_clear_color;
       vec4 u_view_pos_num_lights;
+      vec4 u_time;
     };
 
     struct LightData
     {
-      vec4 pos[kMaxLightSources];
-      vec4 dir_intensity[kMaxLightSources];
-      vec4 col_ambient[kMaxLightSources];
+      vec4 position_falloff[kMaxLightSources];
+      vec4 color_intensity[kMaxLightSources];
+      vec4 direction_ambient[kMaxLightSources];
     };
 
     union UniformData
@@ -70,12 +71,17 @@ namespace vxr
       } unlit;
       struct Standard
       {
-        vec4 color;
+        vec4 albedo;
+        vec4 emissive;
+        vec4 metallic_roughness_reflectance_ao;
+        vec4 clear_coat_clear_coat_roughness;
+        vec4 iridescence_mask_thickness_ior_k;
       } standard;
       struct CubemapConvolution
       {
         mat4 conv_proj;
         mat4 conv_view;
+        vec4 aux;
       } cubemap_convolution;
       struct Planet
       {

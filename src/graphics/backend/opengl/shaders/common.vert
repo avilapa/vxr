@@ -68,13 +68,11 @@ layout(std140) uniform Common
 {
   mat4 u_proj;
   mat4 u_view;
-
   vec2 u_resolution;
   vec2 u_xy;
-
   vec4 u_clear_color;
-
   vec4 u_view_pos_num_lights;
+  vec4 u_time;
 };
 
 mat4 getViewMatrix()
@@ -104,6 +102,11 @@ int getNumLights()
 	return int(u_view_pos_num_lights.w);
 }
 
+float getTime()
+{
+	return u_time.x;
+}
+
 //--------------------------------------------------------------------------------
 // Helper Functions
 //--------------------------------------------------------------------------------
@@ -113,15 +116,12 @@ vec4 getClipPosition()
 	return u_proj * u_view * u_model * vec4(attr_position, 1.0);
 }
 
-vec4 getClipPosition(vec3 offset)
-{
-	return u_proj * u_view * u_model * vec4(attr_position + offset, 1.0);
-}
+
 
 void setupOutput()
 {
 	in_world_position = vec3(u_model * vec4(attr_position, 1.0));
-  	in_world_normal = mat3(transpose(inverse(u_model))) * attr_normal; 
+  	in_world_normal = mat3(u_model) * attr_normal;/// transpose inverse 
   	in_position = attr_position;
   	in_normal = attr_normal; 
   	in_uv = attr_uv;
@@ -130,7 +130,7 @@ void setupOutput()
 void setupWorldSpaceOutput()
 {
 	in_world_position = vec3(u_model * vec4(attr_position, 1.0));
-  	in_world_normal = mat3(transpose(inverse(u_model))) * attr_normal; 
+  	in_world_normal = mat3(u_model) * attr_normal; /// transpose inverse
   	in_uv = attr_uv;
 }
 

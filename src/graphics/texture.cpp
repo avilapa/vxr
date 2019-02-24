@@ -59,38 +59,15 @@ namespace vxr
     }
   }
 
-  void Texture::load(const char* file, bool flip)
+  bool Texture::setup()
   {
-    set_data(gpu::Texture::loadFromFile(file, gpu_.info, flip));
-    dirty_ = true;
-  }
-
-  void Texture::load(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, bool flip)
-  {
-    std::vector<void*> data = gpu::Texture::loadCubemapFromFile(rt, lf, up, dn, bk, ft, gpu_.info, flip);
-
-    for (uint32 i = 0; i < 6; ++i)
+    if (loading_)
     {
-      set_data(data[i], i);
+      return false;
     }
 
-    dirty_ = true;
-  }
-
-  void Texture::load(const char* cubemap_folder_path, const char* extension, bool flip)
-  {
-    std::string folder = cubemap_folder_path;
-    load((folder + "/rt." + extension).c_str(),
-         (folder + "/lf." + extension).c_str(),
-         (folder + "/up." + extension).c_str(),
-         (folder + "/dn." + extension).c_str(), 
-         (folder + "/bk." + extension).c_str(), 
-         (folder + "/ft." + extension).c_str(), flip);
-  }
-
-  void Texture::setup()
-  {
     VXR_TRACE_SCOPE("VXR", "Texture Setup");
+
     DisplayList add_to_frame;
     if (!gpu_.tex.id)
     {
@@ -113,6 +90,7 @@ namespace vxr
       .set_depth(gpu_.info.depth);
     Engine::ref().submitDisplayList(std::move(add_to_frame));
     dirty_ = false;
+    return true;
   }
 
   void Texture::set_size(uint16 width /* = 1 */, uint16 height /* = 1 */, uint16 depth /* = 1 */)
@@ -186,14 +164,29 @@ namespace vxr
     data_[index] = data;
   }
 
+  void Texture::set_hdr(bool hdr)
+  {
+    hdr_ = hdr;
+  }
+
   uvec2 Texture::size() const
   {
     return uvec2(gpu_.info.width, gpu_.info.height);
   }
 
-  bool Texture::hasChanged()
+  TextureType::Enum Texture::texture_type() const
+  {
+    return gpu_.info.type;
+  }
+
+  bool Texture::hasChanged() const
   {
     return dirty_;
+  }
+
+  bool Texture::loading() const
+  {
+    return loading_;
   }
 
   void* Texture::data() const
@@ -201,13 +194,27 @@ namespace vxr
     return data_[0];
   }
 
+  bool Texture::hdr() const
+  {
+    return hdr_;
+  }
+
   uint32 Texture::id()
   {
     if (!internal_id_)
     {
+      if (!gpu_.tex.ctx)
+      {
+        return 0;
+      }
       auto b = RenderContext::GetResource(gpu_.tex.id, &gpu_.tex.ctx->textures_, &gpu_.tex.ctx->back_end_->textures);
       internal_id_ = b.first->id;
     }
     return internal_id_;
+  }
+
+  string Texture::path() const
+  {
+    return path_;
   }
 }

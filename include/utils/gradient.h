@@ -60,7 +60,10 @@ namespace vxr
     void remKey(unsigned int index);
     Color evaluate(float value_between_zero_and_one);
 
+    /// TODO: Add texture formats.
     unsigned char* textureData(const int texture_1d_resolution = 255, TexelsFormat::Enum format = TexelsFormat::RGB_U8);
+
+    void randomizeColors();
 
     inline Gradient& operator=(const Gradient& o)
     {

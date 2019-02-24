@@ -32,14 +32,14 @@
 #include <thread>
 #include <mutex>
 
-/// WIP: Resources are not destroyed yet!
+/// TODO: Resources are not destroyed yet!
 
 /**
 * \file gpu.h
 *
 * \author Victor Avila (avilapa.github.io)
 *
-* \brief GPU class in charge of all the threading and syncrhonization, resource creation, window handling and render commands execution.
+* \brief GPU class in charge of all the threading and synchronization, resource creation, window handling and render commands execution.
 *
 */
 namespace vxr 
@@ -90,9 +90,6 @@ namespace vxr
     Params::GPU params_ = { 128, 128, 128, 128 };
     
     ref_ptr<Window> window_;
-#ifdef VXR_UI
-    std::function<void()> ui_ = []() {};
-#endif
 
     void moveOrAppendCommands(DisplayList &&dl);
 

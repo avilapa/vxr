@@ -22,6 +22,81 @@
 // SOFTWARE.
 // -------------------------------------------------------------------------------
 
+#define PI 3.14159265358979323846264338327950288
+
+//--------------------------------------------------------------------------------
+// Structures
+//--------------------------------------------------------------------------------
+
+struct MaterialInput
+{
+  	vec4  baseColor;
+  	float roughness;
+  	float metallic;
+  	float reflectance;
+  	float ambientOcclusion;
+	
+  	vec4  emissive;
+	
+  	float clearCoat;
+  	float clearCoatRoughness;
+	
+  	float anisotropy;
+  	vec3  anisotropyDirection;
+	
+  	vec3  normal;
+  	vec3  clearCoatNormal;
+
+  	float iridescenceMask;
+  	float filmThickness;
+  	float baseIor;
+  	float kExtinction;
+};
+
+struct PixelParameters
+{
+	vec3  diffuseColor;
+
+	float roughness;
+	vec3  f0;
+	float linearRoughness;
+
+	vec2  dfg;
+	vec3  energyCompensation;
+
+	float clearCoat;
+	float clearCoatRoughness;
+	float clearCoatLinearRoughness;
+
+	vec3  anisotropicT;
+	vec3  anisotropicB;
+	float anisotropy;
+
+	float iridescenceMask;
+	float filmThickness;	
+  	float baseIor;
+  	float kExtinction; 
+	vec3  iridescenceFresnel;
+};
+
+struct ShadingParameters
+{
+	vec3  V; 	// Shading View
+	vec3  N; 	// Normal
+	vec3  N_CC; // Normal (Clear Coat)
+	vec3  R; 	// Reflected vector
+	float NoV;
+};
+
+struct Light 
+{
+  	vec3  color;
+  	float intensity;
+  	vec3  L;
+  	float attenuation;
+  	float NoL;
+};
+
 //--------------------------------------------------------------------------------
 // Attributes
 //--------------------------------------------------------------------------------
@@ -158,13 +233,11 @@ layout(std140) uniform Common
 {
   mat4 u_proj;
   mat4 u_view;
-
   vec2 u_resolution;
   vec2 u_xy;
-
   vec4 u_clear_color;
-
   vec4 u_view_pos_num_lights;
+  vec4 u_time;
 };
 
 mat4 getViewMatrix()
@@ -194,12 +267,51 @@ int getNumLights()
 	return int(u_view_pos_num_lights.w);
 }
 
+float getTime()
+{
+	return u_time.x;
+}
+
 //--------------------------------------------------------------------------------
 // Helper Functions
 //--------------------------------------------------------------------------------
 
+vec3 sRGBtoLinear(vec3 color)
+{
+	return pow(color, vec3(2.2));
+}
+
+vec3 tonemapHDR(vec3 color)
+{
+	return color = color / (color + vec3(1.0));
+}
+
 vec3 applyGammaCorrection(vec3 color)
 {
-	color = color / (color + vec3(1.0));
     return pow(color, vec3(1.0/2.2)); 
+}
+
+//--------------------------------------------------------------------------------
+// Math
+//--------------------------------------------------------------------------------
+
+float pow5(float x)
+{
+	float x2 = x * x;
+	return x2 * x2 * x;
+}
+
+float sq(float x)
+{
+	return x * x;
+}
+
+vec2 sq(vec2 x)
+{
+  return vec2(x.x * x.x, x.y * x.y);
+}
+
+float rcp(float x)
+{
+  return 1 / x;
 }

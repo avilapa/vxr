@@ -26,8 +26,6 @@
 
 #include "../core/component.h"
 
-/// WIP: World position/rotation/scale & forward/right/up are not settable yet.
-
 /**
 * \file transform.h
 *
@@ -49,49 +47,95 @@ namespace vxr
 
     virtual void onGUI() override;
 
-#define PROPERTY(type, name, fname, ...) \
-     private:\
-      type name = __VA_ARGS__;\
-     public:\
-      void set_##fname(const type &value) { name = value; markForUpdate(); }\
-      type fname() const { return name; }
+    void set_local_position(const vec3& position);
+    void set_local_rotation(const quat& rotation);
+    void set_local_rotation(const vec3& rotation);
+    void set_local_scale(const float& scale);
+    void set_local_scale(const vec3& scale);
+    void set_local_forward(const vec3& direction);
 
-    PROPERTY(vec3, local_position_, local_position, vec3());
-    PROPERTY(vec3, local_rotation_, local_rotation, vec3());
-    PROPERTY(vec3, local_scale_,    local_scale, vec3());
+    void set_transform(const vec3& position, const quat& rotation, const vec3& scale);
+    void set_transform(const vec3& position, const vec3& rotation, const vec3& scale);
+    void set_transform(const vec3& position, const quat& rotation);
+    void set_transform(const vec3& position, const vec3& rotation);
+    void set_transform(const mat4& matrix);
 
-    PROPERTY(vec3, world_position_, world_position, vec3());
-    PROPERTY(vec3, world_rotation_, world_rotation, vec3());
-    PROPERTY(vec3, world_scale_,    world_scale,    vec3());
+    void set_world_position(const vec3& world_position);
+    void set_world_rotation(const quat& world_rotation);
+    void set_world_scale(const float& world_scale);
+    void set_world_scale(const vec3& world_scale);
+    void set_world_forward(const vec3& world_direction);
 
-    PROPERTY(vec3, forward_, forward, vec3());
-    PROPERTY(vec3, right_,   right,   vec3());
-    PROPERTY(vec3, up_,      up,      vec3());
-#undef PROPERTY
+    void set_world_transform(const vec3& position, const quat& rotation, const vec3& scale);
+    void set_world_transform(const vec3& position, const vec3& rotation, const vec3& scale);
+    void set_world_transform(const vec3& position, const quat& rotation);
+    void set_world_transform(const vec3& position, const vec3& rotation);
 
-    mat4 worldMatrix() const;
+    void translate(const vec3& delta, TransformSpace::Enum space = TransformSpace::Local);
+    void translateX(const float& delta, TransformSpace::Enum space = TransformSpace::Local);
+    void translateY(const float& delta, TransformSpace::Enum space = TransformSpace::Local);
+    void translateZ(const float& delta, TransformSpace::Enum space = TransformSpace::Local);
+    void rotate(const quat& delta, TransformSpace::Enum space = TransformSpace::Local);
+    void rotate(const vec3& delta, TransformSpace::Enum space = TransformSpace::Local);
+    void rotateX(const float& angle, TransformSpace::Enum space = TransformSpace::Local);
+    void rotateY(const float& angle, TransformSpace::Enum space = TransformSpace::Local);
+    void rotateZ(const float& angle, TransformSpace::Enum space = TransformSpace::Local);
+    void rotateAround(const vec3& point, const quat& delta, TransformSpace::Enum space = TransformSpace::Local);
+    void rotateAround(const vec3& point, const vec3& delta, TransformSpace::Enum space = TransformSpace::Local);
+    void rotateAround(ref_ptr<GameObject> obj, const quat& delta, TransformSpace::Enum space = TransformSpace::Local);
+    void rotateAround(ref_ptr<GameObject> obj, const vec3& delta, TransformSpace::Enum space = TransformSpace::Local);
 
+    /// TODO: Fix lookAt function.
+    void lookAt(const vec3& target, const vec3& up = vec3(0.0f, 1.0f, 0.0f), TransformSpace::Enum space = TransformSpace::World);
+
+    const quat& local_rotation() const;
+    const vec3& local_position() const;
+    vec3 local_rotation_angles() const;
+    const vec3& local_scale() const;
+    vec3 local_forward() const;
+    vec3 local_right() const;
+    vec3 local_up() const;
+
+    mat4 local_transform() const;
+
+    const vec3& world_position() const;
+    const quat& world_rotation() const;
+    vec3 world_rotation_angles() const;
+    const vec3& world_scale() const;
+    vec3 world_forward() const;
+    vec3 world_right() const;
+    vec3 world_up() const;
+
+    mat4 world_transform() const;
+
+    /// TODO: Re parenting.
     void set_parent(ref_ptr<Transform> parent);
     ref_ptr<Transform> parent() const;
     ref_ptr<Transform> child(uint32 index = 0) const;
     uint32 num_children() const;
 
-  public:
-    void computeTransformations();
-    void computeLocal();
-    void computeWorld();
+    void updateWorldTransform() const;
 
-    void markForUpdate();
+    void markForUpdate() const;
     bool hasChanged() const;
-
 	private:
-    bool dirty_ = true; 
-
-    mat4 local_model_;
-    mat4 model_;
+    mutable bool dirty_ = true;
 
     ref_ptr<Transform> parent_;
     std::vector<ref_ptr<Transform>> children_;
+
+    vec3 position_;
+    quat rotation_;
+    vec3 scale_;
+
+    mutable vec3 world_position_;
+    mutable quat world_rotation_;
+    mutable vec3 world_scale_;
+
+    mutable mat4 world_transform_;
+
+    // Euler Angles is used internally just to display quaternions in UI properly
+    vec3 euler_angles_;
 	};
 
   class Scene;

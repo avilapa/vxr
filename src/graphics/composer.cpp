@@ -24,6 +24,7 @@
 
 #include "../../include/graphics/composer.h"
 #include "../../include/graphics/mesh.h"
+#include "../../include/core/assets.h"
 #include "../../include/engine/engine.h"
 #include "../../include/engine/gpu.h"
 #include "../../include/components/camera.h"
@@ -35,11 +36,9 @@ namespace vxr
   Composer::Composer() :
     render_size_(uvec2(0)),
     screen_texture_(nullptr),
-    screen_prepass_(nullptr),
-    screen_quad_(nullptr)
+    screen_prepass_(nullptr)
   {
     set_name("Composer");
-    screen_quad_.alloc();
     render_to_screen_.alloc()->init("Screen Material");
   }
 
@@ -72,57 +71,46 @@ namespace vxr
 
   void Composer::init()
   {
-    if (initialized_)
+    if (!initialized_)
     {
-      return;
+      screen_prepass_.alloc()->set_name("Screen Material Instance");
+      initialized_ = true;
     }
-
+    
     render_size_ = Engine::ref().window()->params().size;
 
-    screen_prepass_.alloc()->init("Screen");
+    screen_texture_ = screen_prepass_->output_texture(0);
 
-    ref_ptr<Texture> output;
-    output.alloc()->set_type(TextureType::T2D);
-    output->set_texels_format(TexelsFormat::RGBA_U8);
-    output->set_size(render_size_.x, render_size_.y);
-    screen_prepass_->set_output_texture(0, output);
-    screen_texture_ = output;
-
-    //displaytest.alloc()->load("../../assets/textures/skybox/barcelona_rooftop/barcelona_rooftop_8k.jpg");
-    
     ref_ptr<mat::RenderPass> shared_pass = screen_prepass_->sharedRenderPass();
     if (!shared_pass->setupTextureOutput(screen_prepass_->output_textures(), screen_prepass_->depth_texture()))
     {
       VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR] Screen material texture output could not be setup correctly.\n");
       return;
     }
-    
+
     if (!shared_pass->setup())
     {
       VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR] Screen material could not be setup correctly.\n");
       return;
     }
-    
-    screen_quad_->setup();
-
-    initialized_ = true;
   }
 
   void Composer::setupFirstPass()
   {
+    ref_ptr<mat::RenderPass> shared_pass = screen_prepass_->sharedRenderPass();
+
     DisplayList frame;
     frame.setupViewCommand()
       .set_viewport({ 0,0, (uint16)(render_size_.x), (uint16)render_size_.y })
-      .set_framebuffer(screen_prepass_->sharedRenderPass()->gpu_.fbo)
+      .set_framebuffer(shared_pass->framebuffer())
       .set_resolution(render_size_);
-    /// TODO: missing depth and stencil
     Engine::ref().submitDisplayList(std::move(frame));
   }
 
   void Composer::setupLastPass()
   {
-    DisplayList frame;
     uvec2 size = Engine::ref().window()->params().size;
+    DisplayList frame;
     frame.setupViewCommand()
       .set_viewport({ 0,0, (uint16)size.x, (uint16)size.y });
     Engine::ref().submitDisplayList(std::move(frame));
@@ -146,17 +134,17 @@ namespace vxr
 
     DisplayList frame;
     frame.clearCommand()
-      .set_color(Color::Black)
+      .set_color(Color::Blue)
       .set_clear_color(true)
       .set_clear_depth(true);
     frame.setupMaterialCommand()
-      .set_material(shared_render_pass->gpu_.mat)
-      .set_buffer(0, screen_quad_->gpu_.vertex.buffer)
-      .set_v_texture(shared_render_pass->gpu_.tex);
+      .set_material(shared_render_pass->material())
+      .set_buffer(0, Engine::ref().assetManager()->default_quad()->vertexBuffer())
+      .set_v_texture(shared_render_pass->textureInput());
     frame.renderCommand()
-      .set_index_buffer(screen_quad_->gpu_.index.buffer)
-      .set_count(screen_quad_->indexCount())
-      .set_type(screen_quad_->indexFormat());
+      .set_index_buffer(Engine::ref().assetManager()->default_quad()->indexBuffer())
+      .set_count(Engine::ref().assetManager()->default_quad()->indexCount())
+      .set_type(Engine::ref().assetManager()->default_quad()->indexFormat());
     Engine::ref().submitDisplayList(std::move(frame));
   }
 
@@ -188,30 +176,30 @@ namespace vxr
 
       frame.setupViewCommand()
         .set_viewport({ 0,0, (uint16)(render_size_.x), (uint16)render_size_.y })
-        .set_framebuffer(shared_render_pass->gpu_.fbo)
+        .set_framebuffer(shared_render_pass->framebuffer())
         .set_resolution(render_size_);
       frame.clearCommand()
-        .set_color(Color::Black)
+        .set_color(Color::Blue)
         .set_clear_color(true)
         .set_clear_depth(true);
-      if (shared_render_pass->use_uniforms_)
+      if (shared_render_pass->uniforms_enabled())
       {
         frame.fillBufferCommand()
-          .set_buffer(shared_render_pass->gpu_.uniform_buffer)
+          .set_buffer(shared_render_pass->uniformBuffer())
           .set_data(&i->uniforms_)
           .set_size(sizeof(i->uniforms_));
       }
       frame.setupMaterialCommand()
-        .set_material(shared_render_pass->gpu_.mat)
-        .set_buffer(0, screen_quad_->gpu_.vertex.buffer)
-        .set_v_texture(shared_render_pass->gpu_.in_tex)
+        .set_material(shared_render_pass->material())
+        .set_buffer(0, Engine::ref().assetManager()->default_quad()->vertexBuffer())
+        .set_v_texture(shared_render_pass->textureInput())
         .set_uniform_buffer(0, Engine::ref().camera()->common_uniforms_buffer())
         .set_uniform_buffer(1, Engine::ref().light()->light_uniforms_buffer())
-        .set_uniform_buffer(2, ((shared_render_pass->use_uniforms_) ? shared_render_pass->gpu_.uniform_buffer : gpu::Buffer{}));
+        .set_uniform_buffer(2, ((shared_render_pass->uniforms_enabled()) ? shared_render_pass->uniformBuffer() : gpu::Buffer{}));
       frame.renderCommand()
-        .set_index_buffer(screen_quad_->gpu_.index.buffer)
-        .set_count(screen_quad_->indexCount())
-        .set_type(screen_quad_->indexFormat());
+        .set_index_buffer(Engine::ref().assetManager()->default_quad()->indexBuffer())
+        .set_count(Engine::ref().assetManager()->default_quad()->indexCount())
+        .set_type(Engine::ref().assetManager()->default_quad()->indexFormat());
 
       last_output_texture = i->output_texture(0);
     }

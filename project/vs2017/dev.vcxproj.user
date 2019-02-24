@@ -10,4 +10,14 @@
     <LocalDebuggerWorkingDirectory>..\..\examples\dev</LocalDebuggerWorkingDirectory>
     <LocalDebuggerCommandArguments></LocalDebuggerCommandArguments>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerWorkingDirectory>..\..\examples\dev</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments></LocalDebuggerCommandArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <LocalDebuggerWorkingDirectory>..\..\examples\dev</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerCommandArguments></LocalDebuggerCommandArguments>
+  </PropertyGroup>
 </Project>

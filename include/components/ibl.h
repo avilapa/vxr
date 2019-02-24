@@ -26,7 +26,8 @@
 
 #include "../core/component.h"
 #include "../graphics/materials/shader.h"
-#include "../graphics/materials/standard_pass.h"
+#include "../graphics/materials/pass_standard.h"
+#include "../graphics/materials/pass_ibl.h"
 
 /**
 * \file ibl.h
@@ -39,7 +40,7 @@
 namespace vxr 
 {
   namespace System { class IBL; }
-  namespace mesh { class Cube; }
+  namespace mesh { class Cube; class Quad; }
 
 	class IBL : public Component
   {
@@ -51,12 +52,24 @@ namespace vxr
 
     virtual void onGUI() override;
 
-    ref_ptr<Texture> cubemap_texture();
+    // Input a cubemap texture, or a 2D equirectangular texture.
+    void set_texture(ref_ptr<Texture> texture);
+
+    ref_ptr<Texture> cubemap_texture() const;
+    ref_ptr<Texture> irradiance_cubemap_texture() const;
+    ref_ptr<Texture> prefiltered_cubemap_texture() const;
+    ref_ptr<Texture> brdf_lut() const;
+
+    bool initialized() const;
 
 	private:
-    bool initialized_;
+    uint32 initialization_level_;
     bool contributes_;
 
+    ref_ptr<Texture> cubemap_texture_;
+    ref_ptr<mat::ComputeIrradiance::Instance> compute_irradiance_;
+    ref_ptr<mat::PrefilterCubemap::Instance> prefiltered_cubemap_;
+    ref_ptr<mat::BRDFIntegration::Instance> brdf_integration_;
     ref_ptr<mat::BuildCubemap::Instance> build_cubemap_;
 	};
 
@@ -79,18 +92,22 @@ namespace vxr
       void renderUpdate() override;
       void renderPostUpdate() override;
 
+      void subscribeMaterialForIBLTextures(const string& material_name);
+
     private:
-      void buildCubemap();
-      void computeIrradiance();
-      void computePrefiltering();
-      void integrateBRDF();
+      bool buildCubemap();
+      bool computeIrradiance();
+      bool computePrefiltering();
+      bool integrateBRDF();
+
+      void updateMaterialIBLTextures();
+      void cleanMaterialIBLTextures();
 
     private:
       std::vector<ref_ptr<vxr::IBL>> components_;
+      std::vector<string> pbr_materials_;
       ref_ptr<Scene> scene_;
       ref_ptr<vxr::IBL> main_;
-
-      ref_ptr<mesh::Cube> cubemap_;
 
     public:
       template<typename T> ref_ptr<T> createInstance()

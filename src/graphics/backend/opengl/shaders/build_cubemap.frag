@@ -22,16 +22,24 @@
 // SOFTWARE.
 // ----------------------------------------------------------------------------------------
 
+layout(std140) uniform CubemapConvolution
+{
+	mat4 conv_proj;
+	mat4 conv_view;
+	vec4 aux;
+};
+
 const vec2 invAtan = vec2(0.1591, 0.3183);
 vec2 sampleSphericalMap(vec3 v)
 {
     vec2 uv = vec2(atan(v.z, v.x), asin(v.y));
     uv *= invAtan;
     uv += 0.5;
-    return uv;
+    return vec2(uv.x, uv.y);
 }
 
 void main()
 {
-  setFragmentColor(applyGammaCorrection(texture(u_tex2d0, sampleSphericalMap(normalize(getPosition()))).rgb));
+	vec3 color = texture(u_tex2d0, sampleSphericalMap(normalize(getPosition()))).rgb;
+  	setFragmentColor((int(aux.x) > 0) ? applyGammaCorrection(tonemapHDR(color)) : color);
 }

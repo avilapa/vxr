@@ -40,9 +40,7 @@ namespace vxr
   class Mesh : public Object
   {
     VXR_OBJECT(Mesh, Object);
-    friend class System::Renderer;
-    friend class System::IBL;
-    friend class Composer;
+    friend class AssetManager;
   public:
     Mesh();
     virtual ~Mesh();
@@ -69,10 +67,19 @@ namespace vxr
     void set_usage(Usage::Enum usage);
 
     bool hasChanged();
-    uint32 indexCount();
-    IndexFormat::Enum indexFormat();
+    string path() const;
+
+    bool setup();
+
+    uint32 indexCount() const;
+    IndexFormat::Enum indexFormat() const;
+
+    gpu::Buffer vertexBuffer() const;
+    gpu::Buffer indexBuffer() const;
 
   private:
+    string path_ = "";
+    bool loading_ = false;
     bool dirty_ = true;
 
     Usage::Enum usage_ = Usage::Static;
@@ -91,8 +98,6 @@ namespace vxr
         std::vector<uint32> data;
       } index;
     } gpu_;
-
-    bool setup();
   };
 
   namespace mesh

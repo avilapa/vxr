@@ -79,9 +79,28 @@ namespace vxr
       return nullptr;
     }
 
+    template<class T> ref_ptr<T> getComponentInChildren()
+    {
+      ref_ptr<T> component;
+      for (uint32 i = 0; i < transform_->num_children(); ++i)
+      {
+        component = transform_->child(i)->getComponent<T>();
+        if (component.get())
+        {
+          return component;
+        }
+        
+        component = transform_->child(i)->gameObject()->getComponentInChildren<T>();
+        if (component.get())
+        {
+          return component;
+        }
+      }
+      return nullptr;
+    }
+
     template<class T, class L = T> ref_ptr<T> addComponent()
     {
-      ref_ptr<T> component = System::Getter<L>::get()->createInstance<T>();
       for (auto &c : components_)
       {
         auto other = dynamic_cast<T*>(c.get());
@@ -90,6 +109,7 @@ namespace vxr
           return other;
         }
       }
+      ref_ptr<T> component = System::Getter<L>::get()->createInstance<T>();
       component->obj_ = this;
       component->transform_ = transform_;
       components_.push_back(component.get());

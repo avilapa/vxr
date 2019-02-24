@@ -24,5 +24,12 @@
 
 void main()
 {
-  setFragmentColor(computeLightContribution() * texture(u_tex2d0, getUV()).rgb);
+    MaterialInput inputs = initMaterial();
+
+    inputs.baseColor.xyz = texture(u_tex2d4, getUV()).xyz;
+    inputs.metallic = 0.0;
+    inputs.roughness = 1.0;
+
+    setFragmentColor(evaluateMaterial(inputs));
+  	//setFragmentColor(computeLightContribution() * texture(u_tex2d0, getUV()).rgb);
 }

@@ -55,7 +55,7 @@ namespace vxr
     materials_.alloc(params.max_materials);
     framebuffers_.alloc(params.max_framebuffers);
 
-    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Initialized Render Context with params:\n    - max_buffers       (%u)\n    - max_textures      (%u)\n    - max_materials     (%u)\n    - max_framebuffers  (%u)\n", params.max_buffers, params.max_textures, params.max_materials, params.max_framebuffers);
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [GPU] Initialized Render Context with params:\n    - max_buffers       (%u)\n    - max_textures      (%u)\n    - max_materials     (%u)\n    - max_framebuffers  (%u)\n", params.max_buffers, params.max_textures, params.max_materials, params.max_framebuffers);
   }
 
 // ----------------------------------------------------------------------------------------

@@ -41,12 +41,13 @@ namespace vxr
   class Texture;
   class Mesh;
   namespace mat { class Material; class MaterialInstance; class RenderPass; class RenderPassInstance; }
+  namespace mesh { class Cube; class Quad; }
+
+  class Composer;
 
   namespace Asset
   {
-
     ref_ptr<GameObject> loadModelOBJ(const char* file);
-
     ref_ptr<Mesh> loadMeshOBJ(const char* file, uint32 mesh = 0);
   }
 
@@ -59,6 +60,7 @@ namespace vxr
 
     void init();
 
+    // Materials
     void addMaterial(ref_ptr<mat::Material> material);
     template<class T> 
     void addMaterial()
@@ -70,6 +72,7 @@ namespace vxr
     ref_ptr<mat::Material> shared_material(const char* shared_material_name) const;
     std::vector<ref_ptr<mat::Material>> shared_materials() const;
 
+    // Render Passes
     void addRenderPass(ref_ptr<mat::RenderPass> render_pass);
     template<class T>
     void addRenderPass()
@@ -81,20 +84,38 @@ namespace vxr
     ref_ptr<mat::RenderPass> shared_render_pass(const char* shared_render_pass_name) const;
     std::vector<ref_ptr<mat::RenderPass>> shared_render_passes() const;
 
-    ref_ptr<Texture> default_texture() const;
+    // Textures
+    ref_ptr<Texture> loadTexture(const char* file, bool flip = false);
+    ref_ptr<Texture> loadTexture(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, bool flip = false);
+    ref_ptr<Texture> loadTexture(const char* cubemap_folder_path, const char* extension, bool flip = false);
+
+    ref_ptr<Texture> default_texture_white() const;
+    ref_ptr<Texture> default_texture_black() const;
+    ref_ptr<Texture> default_texture_normal() const;
     ref_ptr<Texture> default_cubemap() const;
+
+    // Meshes
+    ref_ptr<Mesh> loadMesh(const char* file, uint32 mesh_index = 0);
+
+    ref_ptr<Mesh> default_cube() const;
+    ref_ptr<Mesh> default_quad() const;
+
+    // Composer
+    ref_ptr<Composer> default_camera_composer() const;
 
   private:
     void initializeMaterials();
     void initializeRenderPasses();
     void initializeTextures();
+    void initializeMeshes();
 
   private:
     std::vector<ref_ptr<mat::Material>> materials_;
     std::vector<ref_ptr<mat::RenderPass>> render_passes_;
+    std::vector<ref_ptr<Texture>> textures_;
+    std::vector<ref_ptr<Mesh>> meshes_;
 
-    ref_ptr<Texture> default_texture_;
-    ref_ptr<Texture> default_cubemap_;
+    ref_ptr<Composer> default_composer_;
 	};
 
 } /* end of vxr namespace */

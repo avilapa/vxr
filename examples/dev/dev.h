@@ -53,8 +53,8 @@ namespace vxr
   private:
     static const uint32 NUM_LIGHTS = 10;
     ref_ptr<GameObject> cam_;
-    ref_ptr<GameObject> obj_;
     ref_ptr<GameObject> light_node_;
+    ref_ptr<GameObject> objects_floor_;
     ref_ptr<GameObject> light_[NUM_LIGHTS];
     ref_ptr<GameObject> skybox_;
   };

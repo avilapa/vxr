@@ -24,10 +24,45 @@
 
 layout(std140) uniform Standard
 {
-  vec4 color;
+  	vec4 albedo;
+    vec4 emissive;
+    vec4 metallic_roughness_reflectance_ao;
+    vec4 clear_coat_clear_coat_roughness;
+    vec4 iridescence_mask_thickness_ior_k;
 };
 
 void main()
 {
-  setFragmentColor(computeLightContribution() * color.xyz);
+    MaterialInput inputs = initMaterial();
+
+    inputs.baseColor.xyz = sRGBtoLinear(texture(u_tex2d3, getUV()).xyz);
+    inputs.baseColor.xyz *= albedo.xyz;
+    inputs.baseColor.w = albedo.w;
+
+    inputs.emissive.xyz = sRGBtoLinear(texture(u_tex2d9, getUV()).xyz);
+    inputs.emissive.xyz *= emissive.xyz;
+
+    inputs.metallic = texture(u_tex2d4, getUV()).x;
+    inputs.metallic *= metallic_roughness_reflectance_ao.x;
+
+    inputs.roughness = texture(u_tex2d5, getUV()).x;
+    inputs.roughness *= metallic_roughness_reflectance_ao.y;
+
+    inputs.reflectance = metallic_roughness_reflectance_ao.z;
+
+    inputs.ambientOcclusion = texture(u_tex2d6, getUV()).x;
+    inputs.ambientOcclusion *= metallic_roughness_reflectance_ao.w;
+
+    inputs.normal = texture(u_tex2d7, getUV()).xyz * 0.5 + 0.5;
+
+    inputs.clearCoat = clear_coat_clear_coat_roughness.x;
+    inputs.clearCoatRoughness = clear_coat_clear_coat_roughness.y;
+    inputs.clearCoatNormal = texture(u_tex2d8, getUV()).xyz * 0.5 + 0.5;
+
+    inputs.iridescenceMask = iridescence_mask_thickness_ior_k.x;
+    inputs.filmThickness = iridescence_mask_thickness_ior_k.y * texture(u_tex2d10, getUV()).r;
+    inputs.baseIor = iridescence_mask_thickness_ior_k.z;
+    inputs.kExtinction = iridescence_mask_thickness_ior_k.w;
+
+    setFragmentColor(evaluateMaterial(inputs));
 }

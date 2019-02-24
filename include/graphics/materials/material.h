@@ -37,7 +37,7 @@
 */
 namespace vxr
 {
-
+  namespace System { class Renderer; }
   namespace mat
   {
 
@@ -45,7 +45,6 @@ namespace vxr
     {
       VXR_OBJECT(Material, Object);
       friend class System::Renderer;
-      friend class Composer;
     public:
       Material();
       virtual ~Material();
@@ -65,9 +64,24 @@ namespace vxr
       void set_uniforms_name(const char* name);
       void set_uniforms_usage(Usage::Enum usage);
 
+      bool uniforms_enabled() const;
+
+      // Returning false does not output any errors to console.
+      bool setup();
+      bool setupTextureTypes(std::vector<ref_ptr<Texture>> textures);
+
+      gpu::Material material() const;
+      gpu::Buffer uniformBuffer() const;
+      std::vector<gpu::Texture> textureInput() const;
+
+      // Common textures must have lower indices than instance textures.
+      void set_common_texture(uint32 index, ref_ptr<Texture> texture);
+
     private:
       bool initialized_ = false;
       bool use_uniforms_ = true;
+
+      uint32 common_textures_;
 
       const char* uniforms_name_ = "Uniforms";
       Usage::Enum uniforms_usage_ = Usage::Dynamic;
@@ -79,9 +93,6 @@ namespace vxr
         gpu::Buffer uniform_buffer;
         std::vector<gpu::Texture> tex;
       } gpu_;
-
-      bool setup();
-      bool setupTextureTypes(std::vector<ref_ptr<Texture>> textures);
     };
     
   } /* end of mat namespace */

@@ -54,6 +54,7 @@ namespace vxr
 
     void set_default_camera(ref_ptr<Camera> cam);
     ref_ptr<Camera> default_camera();
+    ref_ptr<Camera> findCameraInScene();
 
     struct RenderSettings
     {

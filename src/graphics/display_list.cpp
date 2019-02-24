@@ -50,7 +50,8 @@ namespace vxr
       commands_[i].get()->execute();
     }
     commands_.clear();
-    ///std::this_thread::sleep_for(std::chrono::milliseconds(16)); /// Perform a wait for test purposes.
+    /// DEBUG: Perform a wait for test purposes.
+    //std::this_thread::sleep_for(std::chrono::milliseconds(16)); 
     VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Display List Execution Succsessful.\n");
   }
 

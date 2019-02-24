@@ -83,6 +83,7 @@ namespace vxr
       PROPERTY(gpu::Framebuffer, framebuffer, {});
       PROPERTY(CubemapTarget::Enum, cubemap_target, CubemapTarget::Invalid);
       PROPERTY(uvec2, resolution, {});
+      PROPERTY(uint32, mip_level, 0);
     };
 
     struct ClearData 

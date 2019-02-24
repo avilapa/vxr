@@ -75,6 +75,11 @@ namespace vxr
       {
         addKey({ input, Color::White });
       }
+      ImGui::SameLine();
+      if (ImGui::SmallButton(uiText("Randomize").c_str()))
+      {
+        randomizeColors();
+      }
       ImGui::Spacing();
       ImGui::TreePop();
     }
@@ -143,7 +148,7 @@ namespace vxr
     return Color({ Math::lerp(keys_[next_index - 1].color.rgba(), keys_[next_index].color.rgba(), frac) });
   }
 
-  unsigned char* Gradient::textureData(const int texture_1d_resolution, TexelsFormat::Enum format) /// TODO: Add formats
+  unsigned char* Gradient::textureData(const int texture_1d_resolution, TexelsFormat::Enum format)
   {
     unsigned char* data = (unsigned char*)malloc(3 * texture_1d_resolution * sizeof(unsigned char));
     for (int i = 0; i < texture_1d_resolution; i++)
@@ -154,5 +159,13 @@ namespace vxr
       data[i * 3 + 2] = c[2] * 255.0f;
     }
     return data;
+  }
+
+  void Gradient::randomizeColors()
+  {
+    for (uint32 i = 0; i < keys_.size(); ++i)
+    {
+      keys_[i].color = Color::Random();
+    }
   }
 }

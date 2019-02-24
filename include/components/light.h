@@ -52,26 +52,29 @@ namespace vxr
     {
       enum Enum
       {
+        Punctual = 0,
         Directional,
-        Sun,
-        Point,
-        Spot,
       };
     };
 
     virtual void onGUI() override;
 
+    void set_type(Type::Enum type);
     void set_color(const Color& color);
     void set_intensity(const float& intensity);
     void set_ambient(const float& ambient);
+    void set_falloff(const float& falloff);
 
 	private:
     bool contributes_;
 
+    Type::Enum type_;
     Color color_;
     float intensity_;
     float ambient_;
-	};
+    float falloff_;
+    float cone_angle_;
+  };
 
   class Scene;
 

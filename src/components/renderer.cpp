@@ -41,7 +41,6 @@ namespace vxr
 
   Renderer::~Renderer()
   {
-    
   }
 
   void Renderer::onGUI()
@@ -56,12 +55,10 @@ namespace vxr
 
   System::Renderer::Renderer()
   {
-
   }
 
   System::Renderer::~Renderer()
   {
-
   }
 
   void System::Renderer::init()
@@ -86,12 +83,20 @@ namespace vxr
       return;
     }
 
+    transparent_.clear();
+
     DisplayList frame;
     for (auto &c : components_)
     {
       // Check if the object has to be rendered.
       if (setup(c))
       {
+        if (c->material->sharedMaterial()->gpu_.info.blend.enabled)
+        {
+          transparent_.push_back(c);
+          continue;
+        }
+
         // Send render commands.
         render(c, &frame);
       }
@@ -101,16 +106,30 @@ namespace vxr
 
   void System::Renderer::renderPostUpdate()
   {
-    VXR_TRACE_SCOPE("VXR", "Renderer Render Update");
+    VXR_TRACE_SCOPE("VXR", "Renderer Render Post Update");
     if (!scene_)
     {
       return;
     }
 
-    if (Engine::ref().camera()->main()->clear_flags() != vxr::Camera::ClearFlags::Skybox)
+    ref_ptr<vxr::Camera> camera = Engine::ref().camera()->main();
+    if (!camera)
     {
       return;
     }
+
+    if (camera->clear_flags() != vxr::Camera::ClearFlags::Skybox)
+    {
+      return;
+    }
+
+    DisplayList frame;
+    for (auto &c : transparent_)
+    {
+      // Send render commands.
+      render(c, &frame);
+    }
+    Engine::ref().submitDisplayList(std::move(frame));
 
     if (!scene_->skybox())
     {
@@ -128,7 +147,8 @@ namespace vxr
   {
     VXR_TRACE_SCOPE("VXR", "Setup");
 
-    if (scene_->id() != c->gameObject()->scene_id() || !c->gameObject()->active()) /// Check in transform system? Create screenData vector?
+    /// TODO: This should be checked once in Transform System and other Systems should read from a 'screenData' vector.
+    if (scene_->id() != c->gameObject()->scene_id() || !c->gameObject()->active())
     {
       return false;
     }
@@ -175,31 +195,31 @@ namespace vxr
 
     ref_ptr<mat::Material> shared_material = c->material->sharedMaterial();
     ref_ptr<Mesh> mesh = c->getComponent<vxr::MeshFilter>()->mesh;
-    if (shared_material->use_uniforms_)
+    if (shared_material->uniforms_enabled())
     {
       VXR_TRACE_BEGIN("VXR", "Fill Uniform Buffer");
       frame->fillBufferCommand()
-        .set_buffer(shared_material->gpu_.uniform_buffer)
+        .set_buffer(shared_material->uniformBuffer())
         .set_data(&c->material->uniforms_)
         .set_size(sizeof(c->material->uniforms_));
       VXR_TRACE_END("VXR", "Fill Uniform Buffer");
     }
     VXR_TRACE_BEGIN("VXR", "Setup Material");
     frame->setupMaterialCommand()
-      .set_material(shared_material->gpu_.mat)
-      .set_buffer(0, mesh->gpu_.vertex.buffer)
-      .set_v_texture(shared_material->gpu_.tex)
+      .set_material(shared_material->material())
+      .set_buffer(0, mesh->vertexBuffer())
+      .set_v_texture(shared_material->textureInput())
       .set_uniform_buffer(0, Engine::ref().camera()->common_uniforms_buffer())
       .set_uniform_buffer(1, Engine::ref().light()->light_uniforms_buffer())
-      .set_uniform_buffer(2, ((shared_material->use_uniforms_) ? shared_material->gpu_.uniform_buffer : gpu::Buffer{}))
-      .set_model_matrix(c->transform()->worldMatrix());
+      .set_uniform_buffer(2, ((shared_material->uniforms_enabled()) ? shared_material->uniformBuffer() : gpu::Buffer{}))
+      .set_model_matrix(c->transform()->world_transform());
     VXR_TRACE_END("VXR", "Setup Material");
     VXR_TRACE_BEGIN("VXR", "Render");
     frame->renderCommand()
-      .set_index_buffer(mesh->gpu_.index.buffer)
+      .set_index_buffer(mesh->indexBuffer())
       .set_count(mesh->indexCount())
       .set_type(mesh->indexFormat());
-    ///TODO: Missing instancing
+    ///TODO: Missing instancing.
     VXR_TRACE_END("VXR", "Render");
   }
 
@@ -208,6 +228,12 @@ namespace vxr
     VXR_TRACE_SCOPE("VXR", "Setup Skybox");
 
     ref_ptr<vxr::Renderer> skybox = scene_->skybox()->getComponent<vxr::Renderer>();
+
+    if (skybox->material->texture(0)->loading())
+    {
+      return false;
+    }
+
     ref_ptr<mat::Material> shared_material = skybox->material->sharedMaterial();
     if (!shared_material->setupTextureTypes(skybox->material->textures()))
     {
@@ -215,9 +241,10 @@ namespace vxr
       return false;
     }
 
-    if (!shared_material->initialized_)
+    if (!shared_material->setup())
     {
-      shared_material->setup();
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Invalid scene skybox material data.\n");
+      return false;
     }
 
     ref_ptr<Mesh> cube = scene_->skybox()->getComponent<vxr::MeshFilter>()->mesh;
@@ -233,7 +260,6 @@ namespace vxr
   void System::Renderer::renderSkybox()
   {
     VXR_TRACE_SCOPE("VXR", "Render Skybox");
-
     DisplayList frame;
     VXR_TRACE_BEGIN("VXR", "Skybox");
     ref_ptr<vxr::Renderer> skybox = scene_->skybox()->getComponent<vxr::Renderer>();
@@ -241,19 +267,19 @@ namespace vxr
     ref_ptr<Mesh> cube = scene_->skybox()->getComponent<vxr::MeshFilter>()->mesh;
     VXR_TRACE_BEGIN("VXR", "Fill Uniform Buffer");
     frame.fillBufferCommand()
-      .set_buffer(shared_material->gpu_.uniform_buffer)
+      .set_buffer(shared_material->uniformBuffer())
       .set_data(&skybox->material->uniforms_)
       .set_size(sizeof(skybox->material->uniforms_));
     VXR_TRACE_END("VXR", "Fill Uniform Buffer");
     frame.setupMaterialCommand()
-      .set_material(shared_material->gpu_.mat)
-      .set_buffer(0, cube->gpu_.vertex.buffer)
-      .set_v_texture(shared_material->gpu_.tex)
+      .set_material(shared_material->material())
+      .set_buffer(0, cube->vertexBuffer())
+      .set_v_texture(shared_material->textureInput())
       .set_uniform_buffer(0, Engine::ref().camera()->common_uniforms_buffer())
-      .set_uniform_buffer(1, shared_material->gpu_.uniform_buffer)
-      .set_model_matrix(skybox->transform()->worldMatrix());
+      .set_uniform_buffer(1, shared_material->uniformBuffer())
+      .set_model_matrix(skybox->transform()->world_transform());
     frame.renderCommand()
-      .set_index_buffer(cube->gpu_.index.buffer)
+      .set_index_buffer(cube->indexBuffer())
       .set_count(cube->indexCount())
       .set_type(cube->indexFormat());
     VXR_TRACE_END("VXR", "Skybox");

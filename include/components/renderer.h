@@ -76,6 +76,7 @@ namespace vxr
 
     private:
       std::vector<ref_ptr<vxr::Renderer>> components_;
+      std::vector<ref_ptr<vxr::Renderer>> transparent_;
       ref_ptr<Scene> scene_;
 
     public:

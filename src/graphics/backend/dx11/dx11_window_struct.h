@@ -45,7 +45,8 @@ namespace vxr
     double time = 0.0;
 	};
 
-  static bool mouse_just_pressed[5] = { false, false, false, false, false };/// global dude
+  /// TODO: This should not be global!
+  static bool mouse_just_pressed[5] = { false, false, false, false, false };
 	
 } /* end of vxr namespace */
 

@@ -44,14 +44,10 @@ namespace vxr
     VXR_OBJECT(Texture, Object);
     friend class mat::Material;
     friend class mat::RenderPass;
-    friend class Composer;
+    friend class AssetManager;
   public:
     Texture();
     ~Texture();
-
-    void load(const char* file, bool flip = false);
-    void load(const char* rt, const char* lf, const char* up, const char* dn, const char* bk, const char* ft, bool flip = false);
-    void load(const char* cubemap_folder_path, const char* extension, bool flip = false);
 
     void set_size(uint16 width = 1, uint16 height = 1, uint16 depth = 1);
     void set_offset(uint16 x = 0, uint16 y = 0, uint16 z = 0);
@@ -63,15 +59,25 @@ namespace vxr
     void set_type(TextureType::Enum type);
     void set_build_mipmap(bool build_mipmap);
     void set_data(void* data, uint32 index = 0);
+    void set_hdr(bool hdr);
 
     uvec2 size() const;
+    TextureType::Enum texture_type() const;
 
-    bool hasChanged();
+    bool hasChanged() const;
+    bool loading() const;
     void* data() const;
+    bool hdr() const;
+
+    // Returns 0 if the texture is not yet initialized by the back end.
     uint32 id();
+    string path() const;
 
   private:
+    string path_ = "";
+    bool hdr_ = false;
     bool dirty_ = false;
+    bool loading_ = false;
     void* data_[6];
 
     uint32 internal_id_ = 0;
@@ -84,7 +90,7 @@ namespace vxr
       bool build_mipmap = false;
     } gpu_;
 
-    void setup();
+    bool setup();
   };
 
 } /* end of vxr namespace */

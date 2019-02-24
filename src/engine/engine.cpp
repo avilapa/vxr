@@ -38,6 +38,11 @@
 
 #include <time.h>
 
+#ifdef VXR_THREADING
+#  define PX_SCHED_IMPLEMENTATION 1
+#  include "../../deps/threading/px_sched.h"
+#endif
+
 namespace vxr 
 {
 
@@ -70,12 +75,10 @@ namespace vxr
   bool Engine::init()
   {
     VXR_TRACE_BEGIN("VXR", "Engine Systems Init");
-    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Initializing engine systems.\n");
-    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Init.\n");
-    // Initialize systems
-    gpu_->init();
-    asset_manager_->init();
-
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [ENGINE] Initializing engine systems.\n");
+#ifdef VXR_THREADING
+    scheduler_.init();
+#endif
     ibl_.alloc();
     light_.alloc();
     custom_.alloc();
@@ -83,6 +86,10 @@ namespace vxr
     renderer_.alloc();
     transform_.alloc();
     mesh_filter_.alloc();
+
+    // Initialize systems
+    gpu_->init();
+    asset_manager_->init();
 
     ibl_->init();
     light_->init();
@@ -95,14 +102,14 @@ namespace vxr
   void Engine::start()
   {
     VXR_TRACE_BEGIN("VXR", "Engine Systems Start");
-    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Start.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [ENGINE] Engine Start.\n");
     custom_->start();
     VXR_TRACE_END("VXR", "Engine Systems Start");
   }
 
   void Engine::update()
   {
-    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Update.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [ENGINE] Engine Update.\n");
     custom_->update();
     transform_->update();
     ibl_->update();
@@ -113,7 +120,7 @@ namespace vxr
 
   void Engine::postUpdate()
   {
-    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Post Update.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [ENGINE] Engine Post Update.\n");
     custom_->postUpdate();
   }
 
@@ -123,7 +130,7 @@ namespace vxr
     gpu_->prepareRender();
 #endif
     VXR_TRACE_BEGIN("VXR", "Systems Render Update");
-    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Render Update.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [ENGINE] Engine Render Update.\n");
     custom_->renderUpdate();
     transform_->renderUpdate();
     ibl_->renderUpdate();
@@ -136,7 +143,7 @@ namespace vxr
   void Engine::renderPostUpdate()
   {
     VXR_TRACE_BEGIN("VXR", "Systems Render Post Update");
-    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Engine Post Render Update.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [ENGINE] Engine Post Render Update.\n");
     custom_->renderPostUpdate();
     transform_->renderPostUpdate();
     renderer_->renderPostUpdate();
@@ -169,9 +176,16 @@ namespace vxr
   void Engine::submitUIFunction(std::function<void()> function)
   {
 #ifdef VXR_UI
-    gpu_->ui_ = function;
+    gpu_->window_->ui_ = function;
 #endif
   }
+
+#ifdef VXR_THREADING
+  void Engine::submitAsyncTask(threading::Task& task, threading::Sync* sync)
+  {
+    scheduler_.run(task, sync);
+  }
+#endif
 
   ref_ptr<GPU> Engine::gpu() 
   {

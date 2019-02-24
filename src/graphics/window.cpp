@@ -58,7 +58,6 @@ namespace vxr
     window::init(data_);
 #ifdef VXR_UI
     ui::Init(data_);
-    ui::Update(data_); /// Doing a first frame for synchronization (instead of having to pass a "is first time" bool to update).
 #endif
 	}
 
@@ -72,33 +71,37 @@ namespace vxr
     window::forceExit(data_);
 	}
 
-  void Window::update(bool *swap)
+  void Window::events()
   {
-#ifdef VXR_UI
-    ui::Draw();
+#ifdef VXR_THREADING
+    /// TODO: Do this in a less expensive way.
+    //set_title(data_);
 #endif
-    if (*swap)
-    {
-      VXR_TRACE_BEGIN("VXR", "Window Swap");
-      window::swap(data_);
-      *swap = false;
-      VXR_TRACE_END("VXR", "Window Swap");
-    }
-#  ifdef VXR_THREADING
-    ///set_title(data_); /// This is quite expensive
-#  endif
     VXR_TRACE_BEGIN("VXR", "Window Events");
     window::events(data_);
     VXR_TRACE_END("VXR", "Window Events");
 #ifdef VXR_UI
     ui::Update(data_);
+    VXR_TRACE_BEGIN("VXR", "UI Function");
+    ui_();
+    VXR_TRACE_END("VXR", "UI Function");
 #endif
+  }
+
+  void Window::swap()
+  {
+#ifdef VXR_UI
+    ui::Draw();
+#endif
+    VXR_TRACE_BEGIN("VXR", "Window Swap");
+    window::swap(data_);
+    VXR_TRACE_END("VXR", "Window Swap");
+
   }
 
 	void Window::stop() 
   {
 #ifdef VXR_UI
-    ui::Draw();
     ui::Stop(data_);
 #endif
     window::stop(data_);

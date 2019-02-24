@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="examples">
+      <UniqueIdentifier>{84D830B1-70A5-8BBC-99BE-796485EAC04A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\06-Procedural">
+      <UniqueIdentifier>{84A91CB7-70A3-4509-5910-DC1945A9AB75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\06-Procedural\noisefilters">
+      <UniqueIdentifier>{17F66B94-83AF-D63E-0C0F-F11878C78CAE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\06-Procedural\planet">
+      <UniqueIdentifier>{64511F1E-D069-0648-9916-96E105EE9AE1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\06-Procedural\planet\material">
+      <UniqueIdentifier>{CFC99612-BB1B-6E02-A43A-AB12902B87EB}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\examples\06-Procedural\06-Procedural.exe">
+      <Filter>examples\06-Procedural</Filter>
+    </None>
+    <None Include="..\..\examples\06-Procedural\06-Procedural.pdb">
+      <Filter>examples\06-Procedural</Filter>
+    </None>
+    <None Include="..\..\examples\06-Procedural\imgui.ini">
+      <Filter>examples\06-Procedural</Filter>
+    </None>
+    <None Include="..\..\examples\06-Procedural\planet\material\planet.frag">
+      <Filter>examples\06-Procedural\planet\material</Filter>
+    </None>
+    <None Include="..\..\examples\06-Procedural\planet\material\planet.vert">
+      <Filter>examples\06-Procedural\planet\material</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\examples\06-Procedural\procedural.h">
+      <Filter>examples\06-Procedural</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-Procedural\noisefilters\noise_filter.h">
+      <Filter>examples\06-Procedural\noisefilters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-Procedural\noisefilters\ridgid.h">
+      <Filter>examples\06-Procedural\noisefilters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-Procedural\noisefilters\simple.h">
+      <Filter>examples\06-Procedural\noisefilters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-Procedural\planet\color_settings.h">
+      <Filter>examples\06-Procedural\planet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-Procedural\planet\planet.h">
+      <Filter>examples\06-Procedural\planet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-Procedural\planet\shape_settings.h">
+      <Filter>examples\06-Procedural\planet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-Procedural\planet\terrain_face.h">
+      <Filter>examples\06-Procedural\planet</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\examples\06-Procedural\planet\material\material.h">
+      <Filter>examples\06-Procedural\planet\material</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\examples\06-Procedural\procedural.cpp">
+      <Filter>examples\06-Procedural</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-Procedural\noisefilters\noise_filter.cpp">
+      <Filter>examples\06-Procedural\noisefilters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-Procedural\noisefilters\ridgid.cpp">
+      <Filter>examples\06-Procedural\noisefilters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-Procedural\noisefilters\simple.cpp">
+      <Filter>examples\06-Procedural\noisefilters</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-Procedural\planet\color_settings.cpp">
+      <Filter>examples\06-Procedural\planet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-Procedural\planet\planet.cpp">
+      <Filter>examples\06-Procedural\planet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-Procedural\planet\shape_settings.cpp">
+      <Filter>examples\06-Procedural\planet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-Procedural\planet\terrain_face.cpp">
+      <Filter>examples\06-Procedural\planet</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\06-Procedural\planet\material\material.cpp">
+      <Filter>examples\06-Procedural\planet\material</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

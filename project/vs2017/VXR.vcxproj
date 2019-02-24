@@ -9,6 +9,14 @@
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
     </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{652C880B-D135-887C-5AB1-9E7CC6B9937C}</ProjectGuid>
@@ -28,6 +36,16 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v141</PlatformToolset>
+  </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
@@ -37,16 +55,34 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-release\project\vs\obj\x32\Debug\VXR\</IntDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Debug\VXR\</IntDir>
     <TargetName>VXR</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\</OutDir>
-    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-release\project\vs\obj\x64\Debug\VXR\</IntDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Debug\VXR\</IntDir>
+    <TargetName>VXR</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>..\</OutDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Release\VXR\</IntDir>
+    <TargetName>VXR</TargetName>
+    <TargetExt>.lib</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>..\</OutDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Release\VXR\</IntDir>
     <TargetName>VXR</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -104,6 +140,62 @@
       <ProgramDataBaseFileName>$(OutDir)VXR.pdb</ProgramDataBaseFileName>
     </Link>
   </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalOptions>/wd4100 /wd4127 /wd4244  %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Full</Optimization>
+      <PreprocessorDefinitions>VXR_RELEASE;VXR_OPENGL;GLEW_STATIC;_GLFW_WIN32;VXR_THREADING;VXR_UI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader></PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>VXR_RELEASE;VXR_OPENGL;GLEW_STATIC;_GLFW_WIN32;VXR_THREADING;VXR_UI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  <Lib>
+    <OutputFile>$(OutDir)VXR.lib</OutputFile>
+    <TargetMachine>MachineX86</TargetMachine>
+  </Lib>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalOptions>/wd4100 /wd4127 /wd4244  %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Full</Optimization>
+      <PreprocessorDefinitions>VXR_RELEASE;VXR_OPENGL;GLEW_STATIC;_GLFW_WIN32;VXR_THREADING;VXR_UI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PrecompiledHeader></PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat></DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>VXR_RELEASE;VXR_OPENGL;GLEW_STATIC;_GLFW_WIN32;VXR_THREADING;VXR_UI;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+  <Lib>
+    <OutputFile>$(OutDir)VXR.lib</OutputFile>
+    <TargetMachine>MachineX64</TargetMachine>
+  </Lib>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\components\camera.h" />
     <ClInclude Include="..\..\include\components\custom.h" />
@@ -136,12 +228,13 @@
     <ClInclude Include="..\..\include\graphics\materials\material.h" />
     <ClInclude Include="..\..\include\graphics\materials\material_instance.h" />
     <ClInclude Include="..\..\include\graphics\materials\pass_filters.h" />
+    <ClInclude Include="..\..\include\graphics\materials\pass_ibl.h" />
+    <ClInclude Include="..\..\include\graphics\materials\pass_standard.h" />
     <ClInclude Include="..\..\include\graphics\materials\render_pass.h" />
     <ClInclude Include="..\..\include\graphics\materials\render_pass_instance.h" />
     <ClInclude Include="..\..\include\graphics\materials\shader.h" />
     <ClInclude Include="..\..\include\graphics\materials\skybox.h" />
     <ClInclude Include="..\..\include\graphics\materials\standard.h" />
-    <ClInclude Include="..\..\include\graphics\materials\standard_pass.h" />
     <ClInclude Include="..\..\include\graphics\materials\unlit.h" />
     <ClInclude Include="..\..\include\graphics\ui\editor.h" />
     <ClInclude Include="..\..\include\graphics\ui\log.h" />
@@ -156,7 +249,6 @@
     <ClInclude Include="..\..\include\utils\minmax.h" />
     <ClInclude Include="..\..\include\utils\noise.h" />
     <ClInclude Include="..\..\include\utils\timer.h" />
-    <ClInclude Include="..\..\src\graphics\window_structure.h" />
     <ClInclude Include="..\..\src\graphics\backend\dx11\dx11.h" />
     <ClInclude Include="..\..\src\graphics\backend\dx11\dx11_backend.h" />
     <ClInclude Include="..\..\src\graphics\backend\dx11\dx11_imgui.h" />
@@ -321,6 +413,7 @@
     <ClInclude Include="..\..\deps\imgui\imgui.h" />
     <ClInclude Include="..\..\deps\imgui\imgui_internal.h" />
     <ClInclude Include="..\..\deps\imgui\imgui_stl.h" />
+    <ClInclude Include="..\..\deps\threading\px_sched.h" />
     <ClInclude Include="..\..\deps\glfw\include\GLFW\glfw3.h" />
     <ClInclude Include="..\..\deps\glfw\include\GLFW\glfw3native.h" />
     <ClInclude Include="..\..\deps\glfw\src\egl_context.h" />
@@ -430,6 +523,12 @@
     <ClCompile Include="..\..\src\graphics\materials\pass_filters.cpp">
       <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\pass_ibl.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\pass_standard.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\src\graphics\materials\render_pass.cpp">
       <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
     </ClCompile>
@@ -440,9 +539,6 @@
       <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\materials\standard.cpp">
-      <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\src\graphics\materials\standard_pass.cpp">
       <ObjectFileName>$(IntDir)src\graphics\materials\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\materials\unlit.cpp">

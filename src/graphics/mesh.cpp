@@ -50,33 +50,39 @@ namespace vxr
 
   bool Mesh::setup()
   {
+    if (loading_)
+    {
+      return false;
+    }
+
     if (!hasChanged())
     {
       return true;
     }
+
     VXR_TRACE_SCOPE("VXR", "Mesh Setup");
 
     if (vertices_.size() == 0)
     {
-      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Missing vertices of mesh object with name %s", name().c_str());
+      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Missing vertices of mesh object with name %s\n", name().c_str());
       return false;
     }
 
     if (indices_.size() == 0)
     {
-      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Missing indices of mesh object with name %s", name().c_str());
+      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Missing indices of mesh object with name %s\n", name().c_str());
       return false;
     }
 
     if (normals_.size() < vertices_.size())
     {
-      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Automatically recomputed normals of mesh object with name %s", name().c_str());
+      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Automatically recomputed normals of mesh object with name %s\n", name().c_str());
       recomputeNormals();
     }
 
     if (uv_.size() < vertices_.size())
     {
-      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: Automatically recomputed texture coordinates of mesh object with name %s", name().c_str());
+      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Automatically recomputed texture coordinates of mesh object with name %s\n", name().c_str());
       uv_.clear();
       for (uint32 i = 0; i < vertices_.size(); ++i)
       {
@@ -104,12 +110,12 @@ namespace vxr
 		size_t i_size = gpu_.index.data.size() * sizeof(uint32);
     if (!gpu_.vertex.buffer.id)
     { 
-      /// This size is rendered useless after the first mesh rebuild.
+      /// TODO: This size is useless after the first mesh rebuild.
       gpu_.vertex.buffer = Engine::ref().gpu()->createBuffer({ BufferType::Vertex, v_size, usage_ });
     }
     if (!gpu_.index.buffer.id)
     {
-      /// This size is rendered useless after the first mesh rebuild.
+      /// TODO: This size is useless after the first mesh rebuild.
       gpu_.index.buffer = Engine::ref().gpu()->createBuffer({ BufferType::Index, i_size, usage_ });
     }
     add_to_frame.fillBufferCommand()
@@ -136,14 +142,29 @@ namespace vxr
     return dirty_;
   }
 
-  uint32 Mesh::indexCount()
+  string Mesh::path() const
+  {
+    return path_;
+  }
+
+  uint32 Mesh::indexCount() const
   {
     return indices_.size();
   }
 
-  IndexFormat::Enum Mesh::indexFormat()
+  IndexFormat::Enum Mesh::indexFormat() const
   {
     return IndexFormat::UInt32;
+  }
+
+  gpu::Buffer Mesh::vertexBuffer() const
+  {
+    return gpu_.vertex.buffer;
+  }
+
+  gpu::Buffer Mesh::indexBuffer() const
+  {
+    return gpu_.index.buffer;
   }
 
   void Mesh::voxelize(vec3 voxel_size, double precision)
@@ -173,7 +194,8 @@ namespace vxr
     uv_.clear();
 
     for (uint32 v = 0; v < result->nindices; v += 3) 
-    { /// Voxel normals are incorrect
+    {
+      /// TODO: Fix voxel normals.
       normals_.push_back(vec3(result->normals[result->normalindices[v]].x, result->normals[result->normalindices[v+1]].y, result->normals[result->normalindices[v+2]].z));
       indices_.push_back(result->indices[v]);
       indices_.push_back(result->indices[v+1]);
@@ -183,7 +205,8 @@ namespace vxr
     for (uint32 v = 0; v < result->nvertices; v++) 
     {
       vertices_.push_back(vec3(result->vertices[v].x, result->vertices[v].y, result->vertices[v].z));
-      uv_.push_back(vec2()); /// UV for voxels are...?
+      /// TODO: Give proper UV to voxel meshes.
+      uv_.push_back(vec2());
     }
 
     vx_mesh_free(mesh);

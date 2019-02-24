@@ -47,6 +47,8 @@ namespace vxr
       gpu_.info.attribs[0] = { "attr_position", VertexFormat::Float3 };
       gpu_.info.attribs[1] = { "attr_normal",   VertexFormat::Float3 };
       gpu_.info.attribs[2] = { "attr_uv",       VertexFormat::Float2 };
+
+      common_textures_ = 0;
     }
 
     Material::~Material()
@@ -55,26 +57,24 @@ namespace vxr
 
     bool Material::setup()
     {
-      if (initialized_)
+      if (!initialized_)
       {
-        return true;
-      }
+        VXR_TRACE_SCOPE("VXR", "Material Setup");
+        gpu_.mat = Engine::ref().gpu()->createMaterial(gpu_.info);
 
-      VXR_TRACE_SCOPE("VXR", "Material Setup");
-      gpu_.mat = Engine::ref().gpu()->createMaterial(gpu_.info);
-
-      if (use_uniforms_)
-      {
-        gpu_.uniform_buffer = Engine::ref().gpu()->createBuffer({ BufferType::Uniform, sizeof(Shader::UniformData), uniforms_usage_, uniforms_name_ });
+        if (use_uniforms_)
+        {
+          gpu_.uniform_buffer = Engine::ref().gpu()->createBuffer({ BufferType::Uniform, sizeof(Shader::UniformData), uniforms_usage_, uniforms_name_ });
+        }
+        initialized_ = true;
       }
-      initialized_ = true;
 
       return true;
     }
 
     bool Material::setupTextureTypes(std::vector<ref_ptr<Texture>> textures)
     {
-      for (uint32 i = 0; i < gpu_.tex.size(); ++i)
+      for (uint32 i = common_textures_; i < gpu_.tex.size(); ++i)
       {
         if (!textures[i])
         {
@@ -83,7 +83,10 @@ namespace vxr
 
         if (textures[i]->hasChanged())
         {
-          textures[i]->setup();
+          if (!textures[i]->setup())
+          {
+            return false;
+          }
         }
         gpu_.info.textures[i] = textures[i]->gpu_.info.type;
         gpu_.tex[i] = textures[i]->gpu_.tex;
@@ -160,6 +163,52 @@ namespace vxr
       gpu_.info.depth_write = enabled;
     }
 
+    bool Material::uniforms_enabled() const
+    {
+      return use_uniforms_;
+    }
+
+    gpu::Material Material::material() const
+    {
+      return gpu_.mat;
+    }
+
+    gpu::Buffer Material::uniformBuffer() const
+    {
+      return gpu_.uniform_buffer;
+    }
+
+    std::vector<gpu::Texture> Material::textureInput() const
+    {
+      return gpu_.tex;
+    }
+
+    void Material::set_common_texture(uint32 index, ref_ptr<Texture> texture)
+    {
+      if (!texture)
+      {
+        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [TEXTURE] Uninitialized material common texture.\n")
+        return;
+      }
+
+      if ((index + 1) > common_textures_)
+      {
+        common_textures_ = index + 1;
+      }
+
+      if (texture->hasChanged())
+      {
+        if (!texture->setup())
+        {
+          VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [TEXTURE] Could not setup common texture.\n")
+          return;
+        }
+      }
+
+      gpu_.info.textures[index] = texture->gpu_.info.type;
+      gpu_.tex[index] = texture->gpu_.tex;
+    }
+
   }
 
   string Shader::Load(const char* file)
@@ -179,7 +228,7 @@ namespace vxr
       file_stream = std::ifstream(path + file, std::ios::in);
       if (!file_stream.is_open())
       {
-        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not read file '%s', file does not exist.\n", file);
+        VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [MATERIAL] Could not read file '%s', file does not exist.\n", file);
         return "";
       }
     }

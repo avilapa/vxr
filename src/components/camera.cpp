@@ -31,7 +31,9 @@
 #include "../../include/graphics/materials/material_instance.h"
 #include "../../include/graphics/materials/material.h"
 #include "../../include/graphics/composer.h"
+#include "../../include/graphics/window.h"
 #include "../../include/core/scene.h"
+#include "../../include/core/assets.h"
 
 namespace vxr 
 {
@@ -39,10 +41,9 @@ namespace vxr
   Camera::Camera()
   {
     set_name("Camera");
-    composer_.alloc();
-
-    aspect_ = (float)Engine::ref().window()->params().size.x / (float)Engine::ref().window()->params().size.y; ///TODO: If resolution were to be editable this would need updating.
-    
+    composer_ = Engine::ref().assetManager()->default_camera_composer();
+    ///TODO: If resolution was to be editable this would need updating.
+    aspect_ = (float)Engine::ref().window()->params().size.x / (float)Engine::ref().window()->params().size.y;
   }
 
   Camera::~Camera()
@@ -90,13 +91,31 @@ namespace vxr
     if (ImGui::DragFloat(uiText("##NearPlane").c_str(), &near_plane_, 0.01f, -FLT_MAX, FLT_MAX)) dirty_ = true;
     ImGui::Text("Far Plane  "); ImGui::SameLine();
     if (ImGui::DragFloat(uiText("##FarPlane").c_str(), &far_plane_, 0.01f, -FLT_MAX, FLT_MAX)) dirty_ = true;
+
+    ImGui::Spacing();
+    ImGui::Text("Is main camera of current scene:"); ImGui::SameLine();
+    bool is_main = (this == Engine::ref().camera()->main().get());
+    if (is_main)
+    {
+      ImGui::PushStyleColor(0, ImVec4(0.12f, 0.9f, 0.3f, 1.0f));
+    }
+    else
+    {
+      ImGui::PushStyleColor(0, ImVec4(0.8f, 0.3f, 0.12f, 1.0f));
+    }
+    ImGui::Text(((is_main) ? "YES" : "NO"));
+    ImGui::PopStyleColor();
+    if (ImGui::Button(uiText("Make Main##MakeMain").c_str()))
+    {
+      Engine::ref().camera()->set_main(this);
+    }
   }
 
   void Camera::computeTransformations()
   {
     VXR_TRACE_SCOPE("VXR", "Compute Transformations");
     projection_ = glm::perspective(glm::radians(fov_), aspect_, near_plane_, far_plane_);
-    view_ = glm::lookAt(transform()->world_position(), transform()->world_position() + transform()->forward(), transform()->up());
+    view_ = glm::lookAt(transform()->world_position(), transform()->world_position() + transform()->world_forward(), transform()->world_up());
     dirty_ = false;
   }
 
@@ -140,6 +159,16 @@ namespace vxr
     return view_;
   }
 
+  mat4 Camera::BuildProjection(float fovy_degrees, float aspect, float z_near, float z_far)
+  {
+    return glm::perspective(glm::radians(fovy_degrees), aspect, z_near, z_far);
+  }
+
+  mat4 Camera::BuildView(vec3 eye, vec3 center, vec3 up)
+  {
+    return glm::lookAt(eye, center, up);
+  }
+
   System::Camera::Camera() :
     scene_(nullptr),
     main_(nullptr),
@@ -154,10 +183,20 @@ namespace vxr
 
   void System::Camera::set_main(ref_ptr<vxr::Camera> camera)
   {
+    if (!camera || !scene_)
+    {
+      return;
+    }
+
     if (main_ != camera)
     {
+      if (camera->gameObject()->scene_id() != scene_->id())
+      {
+        return;
+      }
       main_ = camera;
       main_->markForUpdate();
+      main_->composer()->init();
     }
   }
 
@@ -176,46 +215,67 @@ namespace vxr
     if (scene_ != Engine::ref().scene())
     {
       scene_ = Engine::ref().scene();
-      set_main(Engine::ref().scene()->default_camera());
+      main_ = nullptr;
+      set_main(scene_->default_camera());
       // Scene changed
-      main()->composer()->init();
+    }
+
+    if (!main_ && scene_.get())
+    {
+      // Find camera in scene
+      set_main(scene_->findCameraInScene());
     }
   }
 
   void System::Camera::renderUpdate()
   {
-    if (!main_ || !scene_)
+    if (!scene_)
     {
+      return;
+    }
+
+    if (!main_)
+    {
+      // Dummy commands to keep the engine running.
+      DisplayList frame;
+      frame.setupViewCommand();
+      frame.clearCommand();
+      Engine::ref().submitDisplayList(std::move(frame));
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [CAMERA] No camera instantiated in the scene.\n");
       return;
     }
 
     VXR_TRACE_SCOPE("VXR", "Camera Render Update");
 
-    main()->composer()->setupFirstPass();
+    main_->composer()->setupFirstPass();
 
     DisplayList frame;
-    if (main()->hasChanged() || main()->transform()->hasChanged())
+    if (main_->hasChanged() || main_->transform()->hasChanged())
     {
-      main()->computeTransformations();
-
-      common_uniforms_.data.u_proj = main()->projection();
-      common_uniforms_.data.u_view = main()->view();
-      common_uniforms_.data.u_resolution = Engine::ref().window()->params().size;
-      ///xy
-      common_uniforms_.data.u_clear_color = main()->background_color().rgba();
-      common_uniforms_.data.u_view_pos_num_lights = vec4(main()->transform()->world_position(), (float)Engine::ref().light()->num_lights());
-
-      frame.fillBufferCommand()
-        .set_buffer(common_uniforms_.buffer)
-        .set_data(&common_uniforms_.data)
-        .set_size(sizeof(common_uniforms_.data));
+      main_->computeTransformations();
     }
+
+    common_uniforms_.data.u_proj = main_->projection();
+    common_uniforms_.data.u_view = main_->view();
+    common_uniforms_.data.u_resolution = Engine::ref().window()->params().size;
+    /// TODO: Fill xy.
+    common_uniforms_.data.u_clear_color = main_->background_color().rgba();
+    common_uniforms_.data.u_view_pos_num_lights = vec4(main_->transform()->world_position(), (float)Engine::ref().light()->num_lights());
+
+    /// TODO: Move this into a different constant update buffer OR update this every frame as doing now.
+    common_uniforms_.data.u_time = vec4(Engine::ref().window()->uptime(), 0, 0, 0);
+
+    frame.fillBufferCommand()
+      .set_buffer(common_uniforms_.buffer)
+      .set_data(&common_uniforms_.data)
+      .set_size(sizeof(common_uniforms_.data));
 
     frame.clearCommand()
       .set_color(main()->background_color().rgba())
       .set_clear_color(main()->clear_color())
       .set_clear_depth(main()->clear_depth())
       .set_clear_stencil(main()->clear_stencil());
+    /// TODO: missing depth and stencil
     Engine::ref().submitDisplayList(std::move(frame));
   }
 

@@ -65,7 +65,7 @@ namespace vxr
     glfwSetWindowIcon(data->window, 1, images); 
     stbi_image_free(images[0].pixels);
 
-    /// TODO: Set callbacks
+    /// TODO: Make own callbacks instead of ImGui ones.
   }
 
   void window::swap(Window::Data* data)

@@ -1,6 +1,6 @@
 [![vxr engine logo](/assets/textures/readme/logo.png)](https://avilapa.github.io)
 
-_version 0.4.0_
+_version 0.4.1_
 
 # What is [vxr](https://github.com/avilapa/vxr)?
 
@@ -65,6 +65,7 @@ A list of examples are provided within the solution to showcase the engine's cap
       - Planet (_only in the PlanetEditor example!_)
       - ___Add your own!___
   - Light: Turns the object into a source of light.
+  - Image Based Light.
   - Camera: Adds to an object all the functionality needed to render from its point of view with its unique parameters.
     - Camera Composer: Organizes all post-processing needed for any specific camera, and handles updates automatically.
       - Postprocessing Materials:

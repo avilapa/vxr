@@ -34,7 +34,8 @@
 
 #include "../../../../deps/glfw/include/GLFW/glfw3.h"
 
-#ifdef _WIN32 /// Belongs to ImGui
+/// TODO: This belongs to ImGui
+#ifdef _WIN32
 #undef APIENTRY
 #define GLFW_EXPOSE_NATIVE_WIN32
 #include "../../../../deps/glfw/include/GLFW/glfw3native.h"

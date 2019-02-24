@@ -44,6 +44,7 @@ namespace vxr
     void Test();
     void Editor();
     void Statistics(bool *open, bool fullscreen);
+    void TextureViewer(bool *open, bool fullscreen);
     
   } /* end of ui namespace */
 

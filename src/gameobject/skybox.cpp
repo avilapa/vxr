@@ -27,7 +27,11 @@
 #include "../../include/components/mesh_filter.h"
 #include "../../include/components/renderer.h"
 #include "../../include/components/ibl.h"
-
+#include "../../include/core/assets.h"
+#include "../../include/graphics/materials/pass_standard.h"
+#include "../../include/graphics/mesh.h"
+#include "../../include/core/assets.h"
+#include "../../include/engine/engine.h"
 #include "../../include/graphics/materials/skybox.h"
 
 namespace vxr
@@ -49,12 +53,22 @@ namespace vxr
 
   Skybox::~Skybox()
   {
-
   }
 
   void Skybox::onGUI()
   {
     material_->onGUI();
+  }
+
+  void Skybox::set_texture(ref_ptr<Texture> texture)
+  {
+    getComponent<IBL>()->set_texture(texture);
+    material_->set_color_texture(getComponent<IBL>()->cubemap_texture());
+  }
+
+  ref_ptr<Texture> Skybox::texture() const
+  {
+    return material_->color_texture();
   }
 
   ref_ptr<mat::Skybox::Instance> Skybox::material()

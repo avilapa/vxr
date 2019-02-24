@@ -28,39 +28,46 @@
 
 layout(std140) uniform Lights
 {
-  vec4 pos[MAX_LIGHT_SOURCES];
-  vec4 dir_intensity[MAX_LIGHT_SOURCES];
-  vec4 col_ambient[MAX_LIGHT_SOURCES];
+  vec4 position_falloff[MAX_LIGHT_SOURCES];
+  vec4 color_intensity[MAX_LIGHT_SOURCES];
+  vec4 direction_ambient[MAX_LIGHT_SOURCES];
 } u_light;
+
+const float cone_angle = 50.0;
 
 vec3 getLightPosition(int index)
 {
-	return u_light.pos[index].xyz;
+	return u_light.position_falloff[index].xyz;
+}
+
+float getLightFalloff(int index)
+{
+  return u_light.position_falloff[index].w;
+}
+
+bool getLightIsDirectional(int index)
+{
+  return (u_light.position_falloff[index].w == 0.0);
 }
 
 vec3 getLightDirection(int index)
 {
-	return u_light.dir_intensity[index].xyz;
+	return u_light.direction_ambient[index].xyz;
 }
 
 vec3 getLightColor(int index)
 {
-	return u_light.col_ambient[index].xyz;
-}
-
-float getLightType(int index)
-{
-	return u_light.pos[index].w;
+	return u_light.color_intensity[index].xyz;
 }
 
 float getLightIntensity(int index)
 {
-	return u_light.dir_intensity[index].w;
+	return u_light.color_intensity[index].w;
 }
 
 float getLightAmbient(int index)
 {
-	return u_light.col_ambient[index].w;
+	return u_light.direction_ambient[index].w;
 }
 
 //--------------------------------------------------------------------------------
@@ -91,4 +98,86 @@ vec3 computeLightContribution()
   }
 
   return applyGammaCorrection(result);
+}
+
+//--------------------------------------------------------------------------------
+// PBR
+//--------------------------------------------------------------------------------
+
+float getSquareFalloffAttenuation(float distanceSquare, float falloff) 
+{
+    float factor = distanceSquare * falloff;
+    float smoothFactor = clamp(1.0 - factor * factor, 0.0, 1.0);
+    return smoothFactor * smoothFactor;
+}
+
+float getDistanceAttenuation(const vec3 positionToLight, float falloff)
+{
+  float distanceSquare = dot(positionToLight, positionToLight);
+  float attenuation = getSquareFalloffAttenuation(distanceSquare, falloff);
+  return attenuation * 1.0 / max(distanceSquare, 1e-4);
+}
+
+float getDistanceAttenuationFast(const vec3 positionToLight)
+{
+  // The dot product of a vector with itself gives the squared length
+  // of that vector.
+  float distanceSquare = dot(positionToLight, positionToLight);
+  return 1.0 / max(distanceSquare, 1e-4);
+}
+
+Light getLight(int index)
+{
+  /// Evaluate visibility at per light level for shadowing directional/punctual
+  Light light;
+  light.color = getLightColor(index);
+  light.intensity = getLightIntensity(index); /// Multiply by the exposure
+  light.attenuation = light.intensity;
+  light.NoL = clamp(dot(getWorldNormal(), light.L), 0.0, 1.0);
+  if (getLightIsDirectional(index))
+  {
+    // Directional Light
+    light.L = normalize(getLightDirection(index));
+    /// sample sun area?
+  }
+  else
+  {
+    // Punctual Light
+    vec3 positionToLight = getLightPosition(index) - getWorldPosition(); 
+    light.L = normalize(positionToLight);
+    
+    /// intensity missing
+    light.attenuation = getDistanceAttenuation(positionToLight, getLightFalloff(index));
+    //light.attenuation = getDistanceAttenuationFast(positionToLight); 
+    
+    float light_to_surface_angle = degrees(acos(dot(-light.L, normalize(getLightDirection(index)))));
+    if (light_to_surface_angle > cone_angle) 
+    {
+      //attenuation = 0.0;
+    }
+    /// cone angle vs scale offset
+  }
+  return light;
+}
+
+vec3 evaluateIBL(const MaterialInput material, const PixelParameters pixel, const ShadingParameters shading)
+{
+  return surfaceShadingIBL(material, pixel, shading);
+}
+
+vec3 evaluateLights(const MaterialInput material, const PixelParameters pixel, const ShadingParameters shading)
+{
+  vec3 color = vec3(0.0);
+
+  for (int i = 0; i < getNumLights(); i++)
+  {
+    Light light = getLight(i);
+
+    float visibility = 1.0;
+    /// Calculate shadows
+
+    color += surfaceShading(pixel, shading, light, visibility);
+  }
+
+  return color;
 }

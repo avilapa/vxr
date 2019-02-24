@@ -142,6 +142,9 @@ namespace vxr
 
       Texture color_texture(uint16 index = 0) const;
       Texture depth_stencil_texture() const;
+
+      void set_color_texture(Texture t, uint16 index = 0);
+      void set_depth_stencil_texture(Texture t);
     };
 
   } /* end of gpu namespace */

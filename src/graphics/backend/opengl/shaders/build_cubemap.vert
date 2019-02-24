@@ -25,7 +25,8 @@
 layout(std140) uniform CubemapConvolution
 {
 	mat4 conv_proj;
-	mat4 conv_view; 
+	mat4 conv_view;
+	vec4 aux;
 };
 
 void main()

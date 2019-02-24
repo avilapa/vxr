@@ -61,7 +61,7 @@ newoption {
 solution "VXR-Engine"
 
 	location "../project/vs/"
-	configurations 		{ "Debug", }--"Release" }
+	configurations 		{ "Debug", "Release" }
 	platforms 			{ "x32", "x64", "Native" }
 	flags 				{  }
 
@@ -69,9 +69,9 @@ solution "VXR-Engine"
 		defines 		{ "VXR_DEBUG" }
 		flags 			{ "Symbols", "ExtraWarnings" }
 
-	---configuration "Release"
-		--defines 		{ "VXR_RELEASE" }
-		--flags 			{ "Optimize" }
+	configuration "Release"
+		defines 		{ "VXR_RELEASE" }
+		flags 			{ "Optimize" }
 
 	configuration 		{ "vs*" }
 		buildoptions{
@@ -95,13 +95,18 @@ solution "VXR-Engine"
 project "VXR"
 	kind 		"StaticLib"
 	language 	"C++"
+
+	--targetdir(path.join(PROJ_DIR, "project/vxr/bin/"))
+	--debugdir(path.join(PROJ_DIR, "project/vxr"))
+
 	includedirs { 
 		path.join(PROJ_DIR, "include/**.h"),
 		-- // Dependencies // --
 		path.join(PROJ_DIR, "deps/glm/**.h*"),
 		path.join(PROJ_DIR, "deps/stb/**.h"),
 		path.join(PROJ_DIR, "deps/mesh/**.h"),
-		path.join(PROJ_DIR, "deps/imgui/*.h")
+		path.join(PROJ_DIR, "deps/imgui/*.h"),
+		path.join(PROJ_DIR, "deps/threading/*.h")
 	}
 	files {
 		path.join(PROJ_DIR, "include/**.h"),
@@ -112,7 +117,8 @@ project "VXR"
 		path.join(PROJ_DIR, "deps/stb/**"),
 		path.join(PROJ_DIR, "deps/mesh/**"),
 		path.join(PROJ_DIR, "deps/imgui/*.h"), 
-		path.join(PROJ_DIR, "deps/imgui/*.cpp")
+		path.join(PROJ_DIR, "deps/imgui/*.cpp"),
+		path.join(PROJ_DIR, "deps/threading/*.h")
 	}
 	excludes {
 		
@@ -153,7 +159,11 @@ function makeProject(name)
 		else
 			kind "ConsoleApp"
 		end
-		debugdir(path.join(PROJ_DIR, "examples/" .. name))
+
+		--location(path.getabsolute("../examples/" .. name .. "/.vs"))
+		--objdir(path.getabsolute("../examples/" .. name .. "/.vs"))
+		debugdir(path.getabsolute("../examples/" .. name))
+		targetdir(path.getabsolute("../examples/" .. name))
 		includedirs 		{ path.join(PROJ_DIR, "examples/" .. name .. "/**") }
 		files 				{ path.join(PROJ_DIR, "examples/" .. name .. "/**") }
 		links 				{ "VXR" }
@@ -169,5 +179,5 @@ makeProject("01-HelloWorld")
 makeProject("02-Instancing")
 makeProject("03-Framebuffers")
 makeProject("04-Mesh")
-
-makeProject("06-PlanetEditor")
+makeProject("05-Materials")
+makeProject("06-Procedural")

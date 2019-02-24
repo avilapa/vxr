@@ -44,8 +44,6 @@ namespace vxr
     class RenderPass : public Object
     {
       VXR_OBJECT(RenderPass, Object);
-      friend class Composer;
-      friend class System::IBL;
     public:
       RenderPass();
       virtual ~RenderPass();
@@ -69,6 +67,19 @@ namespace vxr
       void set_uniforms_name(const char* name);
       void set_uniforms_usage(Usage::Enum usage);
 
+      bool uniforms_enabled() const;
+
+      // Returning false does not output any errors to console.
+      bool setup();
+      bool setupTextureInput(std::vector<ref_ptr<Texture>> in_textures);
+      bool setupTextureOutput(std::vector<ref_ptr<Texture>> out_textures, ref_ptr<Texture> depth_texture);
+
+      gpu::Material material() const;
+      gpu::Framebuffer framebuffer() const;
+      gpu::Buffer uniformBuffer() const;
+      std::vector<gpu::Texture> textureInput() const;
+      std::vector<ref_ptr<Texture>> textureOutput() const;
+
     private:
       bool initialized_ = false;
       bool use_uniforms_ = true;
@@ -80,16 +91,14 @@ namespace vxr
       {
         gpu::Material mat;
         gpu::Material::Info mat_info;
-        gpu::Framebuffer fbo;
         gpu::Buffer uniform_buffer;
         std::vector<gpu::Texture> in_tex;
+
+        gpu::Framebuffer fbo;
+        gpu::Framebuffer::Info fbo_info;
         std::vector<ref_ptr<Texture>> out_tex;
         ref_ptr<Texture> depth_tex;
       } gpu_;
-
-      bool setup();
-      bool setupTextureInput(std::vector<ref_ptr<Texture>> in_textures);
-      bool setupTextureOutput(std::vector<ref_ptr<Texture>> out_textures, ref_ptr<Texture> depth_texture);
     };
     
   } /* end of mat namespace */

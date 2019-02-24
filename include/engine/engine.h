@@ -71,6 +71,9 @@ namespace vxr
 
     void submitDisplayList(DisplayList &&dl);
     void submitUIFunction(std::function<void()> function);
+#ifdef VXR_THREADING
+    void submitAsyncTask(threading::Task& task, threading::Sync* sync);
+#endif 
 
     void loadScene(ref_ptr<Scene> scene);
     ref_ptr<Scene> scene();
@@ -87,11 +90,14 @@ namespace vxr
     ref_ptr<System::Transform> transform();
     ref_ptr<System::MeshFilter> meshFilter();
 
-
     vxr::ui::EditorLog Log;
 
   private:
     Params preinit_params_;
+
+#ifdef VXR_THREADING
+    threading::Scheduler scheduler_;
+#endif
 
     ref_ptr<GPU> gpu_;
     ref_ptr<Scene> scene_;

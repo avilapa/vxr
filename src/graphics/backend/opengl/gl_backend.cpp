@@ -61,11 +61,10 @@ namespace vxr
 #define GLCHECK_STR(A) GLCHECK_STR_STR(A)
 #define GLCHECK(...) {__VA_ARGS__; CheckGLError(__FILE__  ":" GLCHECK_STR(__LINE__) "->" #__VA_ARGS__);}
 
-
   namespace gpu
   {
     const int COMMON_VERT_COUNT = 2;
-    const int COMMON_FRAG_COUNT = 3;
+    const int COMMON_FRAG_COUNT = 5;
     string common_vert[COMMON_VERT_COUNT];
     string common_frag[COMMON_FRAG_COUNT];
 
@@ -89,7 +88,9 @@ namespace vxr
       common_vert[1] = Shader::Load("common.vert");
       common_frag[1] = Shader::Load("common.frag");
 
-      common_frag[2] = Shader::Load("common_lighting.frag");
+      common_frag[2] = Shader::Load("common_brdf.frag");
+      common_frag[3] = Shader::Load("common_lighting.frag");
+      common_frag[4] = Shader::Load("common_material.frag");
 
       glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
       glEnable(GL_DEPTH_TEST);
@@ -174,8 +175,8 @@ namespace vxr
 
     static void InitTextureParams(GLenum target, const Texture::Info &info)
     {
-      GLCHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, Translate(info.magnification_filter)));
       GLCHECK(glTexParameteri(target, GL_TEXTURE_MIN_FILTER, Translate(info.minification_filter)));
+      GLCHECK(glTexParameteri(target, GL_TEXTURE_MAG_FILTER, Translate(info.magnification_filter)));
       GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_S, Translate(info.wrapping[0])));
       if (target > TextureType::T1D) GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_T, Translate(info.wrapping[1])));
       if (target > TextureType::T2D) GLCHECK(glTexParameteri(target, GL_TEXTURE_WRAP_R, Translate(info.wrapping[2])));
@@ -331,7 +332,10 @@ namespace vxr
         }
           break;
       }
-      if (d.build_mipmap) GLCHECK(glGenerateMipmap(back_end.target));
+      if (d.build_mipmap)
+      {
+        GLCHECK(glGenerateMipmap(back_end.target));
+      }
     }
 
     static uint32 CompileShader(GLenum type, const char *src[], uint32 count)
@@ -383,7 +387,9 @@ namespace vxr
           { 
             common_frag[0].c_str(), // frag preprocessor
             common_frag[1].c_str(), // common.frag
-            common_frag[2].c_str(), // common_lighting.frag
+            common_frag[2].c_str(), // common_brdf.frag
+            common_frag[3].c_str(), // common_lighting.frag
+            common_frag[4].c_str(), // common_material.frag
             mat.first->frag_shader.c_str() 
           };
           uint32 shader_v = CompileShader(GL_VERTEX_SHADER, vert, COMMON_VERT_COUNT);
@@ -540,15 +546,17 @@ namespace vxr
       }
     }
 
-    static void SetupFramebufferTexture(std::pair<TextureInstance*, BackEnd::Texture*> t, uint16 i)
+    static void SetupFramebufferTexture(std::pair<TextureInstance*, BackEnd::Texture*> t, uint32 mip_level, uint16 i)
     {
       switch (t.second->target)
       {
       case GL_TEXTURE_2D:
-        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, t.second->texture, 0));
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, t.second->texture, mip_level));
         break;
       case GL_TEXTURE_CUBE_MAP:
-        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_CUBE_MAP_POSITIVE_X, t.second->texture, 0));
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_CUBE_MAP_POSITIVE_X, t.second->texture, mip_level));
+        /// TODO: This is generating mip maps for all cubemap framebuffers...
+        GLCHECK(glGenerateMipmap(GL_TEXTURE_CUBE_MAP));
         break;
       default:
         OnError("Invalid texture type, expected texture 2D or Cubemap (color %u)", i);
@@ -556,7 +564,7 @@ namespace vxr
       }
     }
 
-    static void SetupFramebufferDepth(std::pair<TextureInstance*, BackEnd::Texture*> t)
+    static void SetupFramebufferDepth(std::pair<TextureInstance*, BackEnd::Texture*> t, uint32 mip_level)
     {
       if (t.second->target != GL_TEXTURE_2D)
       {
@@ -566,11 +574,11 @@ namespace vxr
       {
       case TexelsFormat::Depth_U16:
       case TexelsFormat::Depth_U24:
-        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, t.second->texture, 0));
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, t.second->texture, mip_level));
         break;
       case TexelsFormat::DepthStencil_U16:
       case TexelsFormat::DepthStencil_U24:
-        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, t.second->texture, 0));
+        GLCHECK(glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_TEXTURE_2D, t.second->texture, mip_level));
         break;
       default:
         OnError("Invalid texels-format for a depth/stencil texture ... was %u", t.first->info.format);
@@ -586,42 +594,10 @@ namespace vxr
         if (!fb_id)
         {
           GLCHECK(glGenFramebuffers(1, &fb_id));
-          GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, fb_id));
-          for (uint16 i = 0; i < fb.first->info.num_color_textures; ++i)
-          {
-            auto tex = RenderContext::GetResource(fb.first->color_textures[i].id, &fb.first->color_textures[i].ctx->textures_, &fb.first->color_textures[i].ctx->back_end_->textures);
-            InitTexture(tex);
-            SetupFramebufferTexture(tex, i);
-          }
-          /// glDrawBuffers?
-
-          /// Add Renderbuffer instead of framebuffer texture if a texture is not provided
-          if (RenderContext::CheckValidResource(fb.first->depth_texture.id, &d.framebuffer.ctx->textures_))
-          {
-            auto tex = RenderContext::GetResource(fb.first->depth_texture.id, &fb.first->depth_texture.ctx->textures_, &fb.first->depth_texture.ctx->back_end_->textures);
-            InitTexture(tex);
-            SetupFramebufferDepth(tex);
-          }
-
           fb.second->framebuffer = fb_id;
         }
-        else 
-        {
-          GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, fb_id));          
-        }
-
-        if (d.cubemap_target != CubemapTarget::Invalid)
-        {
-          for (uint16 i = 0; i < fb.first->info.num_color_textures; ++i)
-          {
-            auto tex = RenderContext::GetResource(fb.first->color_textures[i].id, &fb.first->color_textures[i].ctx->textures_, &fb.first->color_textures[i].ctx->back_end_->textures);
-
-            if (tex.second->target == GL_TEXTURE_CUBE_MAP)
-            {
-              glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, Translate(d.cubemap_target), tex.second->texture, 0);
-            }
-          }
-        }
+        
+        GLCHECK(glBindFramebuffer(GL_FRAMEBUFFER, fb_id));
 
         if (d.resolution.x == 0)
         {
@@ -633,26 +609,51 @@ namespace vxr
           d.resolution.y = d.viewport.height;
         }
 
+        bool resize = false;
         if (fb.first->info.size.x != d.resolution.x || fb.first->info.size.y != d.resolution.y)
+        {
+          resize = true;
+          fb.first->info.size = d.resolution;
+        }
+
+        if (d.cubemap_target != CubemapTarget::Invalid)
         {
           for (uint16 i = 0; i < fb.first->info.num_color_textures; ++i)
           {
             auto tex = RenderContext::GetResource(fb.first->color_textures[i].id, &fb.first->color_textures[i].ctx->textures_, &fb.first->color_textures[i].ctx->back_end_->textures);
-
-            GLCHECK(glBindTexture(tex.second->target, tex.second->texture));
-            GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, tex.second->internal_format, d.resolution.x, d.resolution.y, 0, tex.second->format, tex.second->type, nullptr));
-            tex.first->info.width = d.resolution.x;
-            tex.first->info.height = d.resolution.y;
+            InitTexture(tex);
+            if (tex.second->target == GL_TEXTURE_CUBE_MAP)
+            {
+              glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, Translate(d.cubemap_target), tex.second->texture, d.mip_level);
+            }
           }
+        }
+        else
+        {
+          for (uint16 i = 0; i < fb.first->info.num_color_textures; ++i)
+          {
+            auto tex = RenderContext::GetResource(fb.first->color_textures[i].id, &fb.first->color_textures[i].ctx->textures_, &fb.first->color_textures[i].ctx->back_end_->textures);
+            if (resize)
+            {
+              tex.first->info.width = d.resolution.x;
+              tex.first->info.height = d.resolution.y;
+            }
+            InitTexture(tex, resize);
+            SetupFramebufferTexture(tex, d.mip_level, i);
+          }
+          /// TODO: Should this set the 'glDrawBuffers'?
+          /// TODO: Add renderbuffer support.
           if (RenderContext::CheckValidResource(fb.first->depth_texture.id, &d.framebuffer.ctx->textures_))
           {
             auto tex = RenderContext::GetResource(fb.first->depth_texture.id, &fb.first->depth_texture.ctx->textures_, &fb.first->depth_texture.ctx->back_end_->textures);
-            GLCHECK(glBindTexture(tex.second->target, tex.second->texture));
-            GLCHECK(glTexImage2D(GL_TEXTURE_2D, 0, tex.second->internal_format, d.resolution.x, d.resolution.y, 0, tex.second->format, tex.second->type, nullptr));
-            tex.first->info.width = d.resolution.x;
-            tex.first->info.height = d.resolution.y;
+            if (resize)
+            {
+              tex.first->info.width = d.resolution.x;
+              tex.first->info.height = d.resolution.y;
+            }
+            InitTexture(tex, resize);
+            SetupFramebufferDepth(tex, d.mip_level);
           }
-          fb.first->info.size = d.resolution;
         }
       }
       else 

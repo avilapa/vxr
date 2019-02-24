@@ -100,6 +100,9 @@
     <Filter Include="deps\imgui">
       <UniqueIdentifier>{68C4618E-547C-A3DB-BD83-7C37A95A3ECC}</UniqueIdentifier>
     </Filter>
+    <Filter Include="deps\threading">
+      <UniqueIdentifier>{635C2346-4F2A-174C-38BE-8772242BF3B0}</UniqueIdentifier>
+    </Filter>
     <Filter Include="deps\glfw">
       <UniqueIdentifier>{FDA22869-690D-DDDF-B24B-8E851EF5BA34}</UniqueIdentifier>
     </Filter>
@@ -575,6 +578,12 @@
     <ClInclude Include="..\..\include\graphics\materials\pass_filters.h">
       <Filter>include\graphics\materials</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\pass_ibl.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\materials\pass_standard.h">
+      <Filter>include\graphics\materials</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\graphics\materials\render_pass.h">
       <Filter>include\graphics\materials</Filter>
     </ClInclude>
@@ -588,9 +597,6 @@
       <Filter>include\graphics\materials</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\graphics\materials\standard.h">
-      <Filter>include\graphics\materials</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\graphics\materials\standard_pass.h">
       <Filter>include\graphics\materials</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\graphics\materials\unlit.h">
@@ -634,9 +640,6 @@
     </ClInclude>
     <ClInclude Include="..\..\include\utils\timer.h">
       <Filter>include\utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\graphics\window_structure.h">
-      <Filter>src\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\graphics\backend\dx11\dx11.h">
       <Filter>src\graphics\backend\dx11</Filter>
@@ -1130,6 +1133,9 @@
     <ClInclude Include="..\..\deps\imgui\imgui_stl.h">
       <Filter>deps\imgui</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\deps\threading\px_sched.h">
+      <Filter>deps\threading</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\deps\glfw\include\GLFW\glfw3.h">
       <Filter>deps\glfw\include\GLFW</Filter>
     </ClInclude>
@@ -1255,6 +1261,12 @@
     <ClCompile Include="..\..\src\graphics\materials\pass_filters.cpp">
       <Filter>src\graphics\materials</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\pass_ibl.cpp">
+      <Filter>src\graphics\materials</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\materials\pass_standard.cpp">
+      <Filter>src\graphics\materials</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\graphics\materials\render_pass.cpp">
       <Filter>src\graphics\materials</Filter>
     </ClCompile>
@@ -1265,9 +1277,6 @@
       <Filter>src\graphics\materials</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\materials\standard.cpp">
-      <Filter>src\graphics\materials</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\graphics\materials\standard_pass.cpp">
       <Filter>src\graphics\materials</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\materials\unlit.cpp">

@@ -48,7 +48,7 @@ namespace vxr
     window_->init();
 #else
     thread_data_.thread = std::thread(&vxr::GPU::run, this);
-    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Launched rendering thread (VXR_THREADING).\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [GPU] Launched rendering thread (VXR_THREADING).\n");
     std::unique_lock<std::mutex> lock(thread_data_.mx_l);
     thread_data_.cv_l.wait(lock, [this] { return thread_data_.initialized; });
 #endif
@@ -57,12 +57,9 @@ namespace vxr
   void GPU::update()
   {
 #ifndef VXR_THREADING
-    bool swap = true;
-    window_->update(&swap);
-#  ifdef VXR_UI
-    ui_();
-#  endif
+    window_->events();
     render_frame_.update();
+    window_->swap();
 #endif
   }
 
@@ -72,7 +69,7 @@ namespace vxr
     window_->stop();
 #else
     thread_data_.thread.join();
-    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Joined rendering thread (VXR_THREADING).\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [GPU] Joined rendering thread (VXR_THREADING).\n");
 #endif
   }
 
@@ -80,40 +77,31 @@ namespace vxr
   void GPU::run()
   {
     VXR_TRACE_META_THREAD_NAME("Render Thread");
-    VXR_TRACE_SCOPE("VXR", __FUNCTION__);
     window_->init();
 
     thread_data_.initialized = true;
     thread_data_.cv_l.notify_one();
 
-    bool swap = false;
-
     while (!(is_exiting_ = window_->is_exiting()))
     {
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Render Waiting).\n");
+      std::unique_lock<std::mutex> lock(thread_data_.mx_r);
+      thread_data_.cv_r.wait(lock, [this] { return render_frame_.commands_.empty(); });
+
       VXR_TRACE_BEGIN("VXR", "Frame");
-      VXR_TRACE_BEGIN("VXR", "Window Update");
-      window_->update(&swap);
-      VXR_TRACE_END("VXR", "Window Update");
-      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Render Waiting).\n");
-      VXR_TRACE_BEGIN("VXR", "WAITING (Render)");
-      std::unique_lock<std::mutex> lock(thread_data_.mx_r); /// First condition stops engine when there are 0 commands. /*!thread_data_.next_frame.commands_.empty() &&*/
-      thread_data_.cv_r.wait(lock, [this] { return !thread_data_.next_frame.commands_.empty() && render_frame_.commands_.empty(); });
-      VXR_TRACE_END("VXR", "WAITING (Render)");
-      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Render Start).\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Render Start).\n");
+      window_->events();
+
       if (!thread_data_.next_frame.commands_.empty())
       {
         render_frame_.commands_.swap(thread_data_.next_frame.commands_);
-        swap = true;
       }
-      //thread_data_.cv_l.notify_one();
-      render_frame_.update();
-#  ifdef VXR_UI /// UI needs to go before notify, but frame update could be done after that
-      VXR_TRACE_BEGIN("VXR", "UI Function");
-      ui_(); /// If changed: swap = true ?
-      VXR_TRACE_END("VXR", "UI Function");
-#  endif
+
       thread_data_.cv_l.notify_one();
-      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Render Ready).\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Render Ready).\n");
+
+      render_frame_.update();
+      window_->swap();
       VXR_TRACE_END("VXR", "Frame");
     }
 
@@ -123,12 +111,12 @@ namespace vxr
 
   void GPU::prepareRender()
   {
-    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Logic Waiting).\n");
     VXR_TRACE_BEGIN("VXR", "WAITING (Logic)");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Logic Waiting).\n");
     std::unique_lock<std::mutex> lock(thread_data_.mx_l);
     thread_data_.cv_l.wait(lock, [this] { return is_exiting_ || thread_data_.next_frame.commands_.empty(); });
     VXR_TRACE_END("VXR", "WAITING (Logic)");
-    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Logic Start).\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Logic Start).\n");
   }
 #endif
 
@@ -140,7 +128,7 @@ namespace vxr
       thread_data_.next_frame.commands_ = std::move(logic_frame_->commands_);
     }
     thread_data_.cv_r.notify_one();
-    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: GPU Synchronization (Logic Ready).\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Logic Ready).\n");
 #else
     if (logic_frame_ != NULL)
     {
@@ -185,7 +173,7 @@ namespace vxr
         }
       }
     }
-    VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Assigned id 0 to resource instance.\n");
+    VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [GPU] Assigned id 0 to resource instance.\n");
     return 0;
   }
 
@@ -205,7 +193,7 @@ namespace vxr
   {
     if (info.format == TexelsFormat::None)
     {
-      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: Could not create texture: texels format not found.\n");
+      VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [GPU] Could not create texture: texels format not found.\n");
       return gpu::Texture();
     }
 
