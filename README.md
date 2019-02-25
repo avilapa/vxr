@@ -48,14 +48,14 @@ A list of example projects are provided within the solution to showcase the engi
 #### 04-Mesh
 ![04-Mesh](https://github.com/avilapa/vxr/blob/media/04-Mesh.png)
 #### 05-Materials
-![05-Materials](https://github.com/avilapa/vxr/blob/media/04-Materials.png)
+![05-Material](https://github.com/avilapa/vxr/blob/media/05-Material.png)
 #### 06-Procedural
 ![06-Procedural](https://github.com/avilapa/vxr/blob/media/06-Procedural.png)
 
 # Features
 
-- Multithreaded agnostical graphics API
-- Command Based Rendering, allowing to build the render commands in advance to be run in a separate thread
+- Multithreaded agnostical graphics API.
+- Command Based Rendering, allowing to build the render commands in advance to be run in a separate thread.
 - _GameObjects_ with the following components currently implemented (each component is controlled and updated by a specific system):
   - Transform: Containing the object's transformation and position in the scene's hierarchy.
     - _Quaternions!_ 
@@ -125,5 +125,7 @@ This is the first project I have made open source, therefore I am wide open to f
 # Contact
 
 Mail: victorap97@gmail.com
+
 Twitter: https://twitter.com/97torvic
+
 Portfolio: https://avilapa.github.io/portfolio
