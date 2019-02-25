@@ -1,6 +1,6 @@
 
 [![vxr engine logo](https://github.com/avilapa/vxr/blob/media/logo_background.png)](https://avilapa.github.io)
-_version 0.5.0_
+_version 0.5.1_
 
 # What is [vxr](https://github.com/avilapa/vxr)?
 
@@ -27,7 +27,7 @@ This project uses [GENie.lua](https://github.com/bkaradzic/GENie) to create the 
 	
 The solution will be located in _project/vs/VXR-Engine.sln_.
 
-A list of example projects are provided within the solution to showcase the engine's capabilities. To __create a new example__, add a call to the function '__makeProject("yourExampleName");__' at the end of the file _project/genie.lua_ and build.
+A list of example projects are provided within the solution to showcase the engine's capabilities. To __create a new project__, add a call to the function '__makeProject("yourProjectName");__' at the end of the file _project/genie.lua_ and build.
   
 ### Parameters
 
