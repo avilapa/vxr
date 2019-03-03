@@ -24,6 +24,18 @@
 
 #define PI 3.14159265358979323846264338327950288
 
+#define MULTIPLE_SCATTERING     	    1
+
+#define MAT_HAS_EMISSIVE				1
+#define MAT_HAS_NORMAL_MAP              1
+
+#define MAT_HAS_CLEAR_COAT              1
+#define MAT_HAS_CLEAR_COAT_NORMAL_MAP   1
+
+#define MAT_HAS_IRIDESCENCE             1
+
+#define MAT_HAS_ANISOTROPY              1
+
 //--------------------------------------------------------------------------------
 // Structures
 //--------------------------------------------------------------------------------
@@ -36,21 +48,29 @@ struct MaterialInput
   	float reflectance;
   	float ambientOcclusion;
 	
+#if MAT_HAS_EMISSIVE
   	vec4  emissive;
-	
-  	float clearCoat;
-  	float clearCoatRoughness;
-	
+#endif
+#if MAT_HAS_ANISOTROPY
   	float anisotropy;
   	vec3  anisotropyDirection;
-	
+#endif
+#if MAT_HAS_NORMAL_MAP
   	vec3  normal;
+#endif
+#if MAT_HAS_CLEAR_COAT
+  	float clearCoat;
+  	float clearCoatRoughness;
+#if MAT_HAS_CLEAR_COAT_NORMAL_MAP
   	vec3  clearCoatNormal;
-
+#endif
+#endif
+#if MAT_HAS_IRIDESCENCE
   	float iridescenceMask;
   	float filmThickness;
   	float baseIor;
   	float kExtinction;
+#endif
 };
 
 struct PixelParameters
@@ -63,29 +83,33 @@ struct PixelParameters
 
 	vec2  dfg;
 	vec3  energyCompensation;
-
+#if MAT_HAS_CLEAR_COAT
 	float clearCoat;
 	float clearCoatRoughness;
 	float clearCoatLinearRoughness;
-
+#endif
+#if MAT_HAS_ANISOTROPY
 	vec3  anisotropicT;
 	vec3  anisotropicB;
 	float anisotropy;
-
+#endif
+#if MAT_HAS_IRIDESCENCE
 	float iridescenceMask;
 	float filmThickness;	
   	float baseIor;
   	float kExtinction; 
 	vec3  iridescenceFresnel;
+#endif
 };
 
 struct ShadingParameters
 {
+	mat3  TBN;	// Tangent, Bitangent, Normal
 	vec3  V; 	// Shading View
 	vec3  N; 	// Normal
 	vec3  N_CC; // Normal (Clear Coat)
 	vec3  R; 	// Reflected vector
-	float NoV;
+	float NoV;	// N dot V
 };
 
 struct Light 

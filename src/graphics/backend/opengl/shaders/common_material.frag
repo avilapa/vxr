@@ -40,47 +40,61 @@ MaterialInput initMaterial()
   material.reflectance = 0.5;
   material.ambientOcclusion = 1.0;
 
+#if MAT_HAS_EMISSIVE
   material.emissive = vec4(0.0);
-
-  material.clearCoat = 1.0;
-  material.clearCoatRoughness = 0.0;
-
+#endif
+#if MAT_HAS_ANISOTROPY
   material.anisotropy = 0.0;
   material.anisotropyDirection = vec3(1.0, 0.0, 0.0);
-
+#endif
+#if MAT_HAS_NORMAL_MAP
   material.normal = vec3(0.5, 0.5, 1.0);
-  material.clearCoatNormal = vec3(0.5, 0.5, 1.0);
+#endif
 
+#if MAT_HAS_CLEAR_COAT
+  material.clearCoat = 1.0;
+  material.clearCoatRoughness = 0.0;
+#if MAT_HAS_CLEAR_COAT_NORMAL_MAP
+  material.clearCoatNormal = vec3(0.5, 0.5, 1.0);
+#endif
+#endif
   // Default iridescence values
 
   return material;
-}
-
-vec3 getNormalFromMap(vec3 normal)
-{
-    vec3 tangentNormal = normal * 2.0 - 1.0;
-
-    vec3 Q1  = dFdx(getWorldPosition());
-    vec3 Q2  = dFdy(getWorldPosition());
-    vec2 st1 = dFdx(getUV());
-    vec2 st2 = dFdy(getUV());
-
-    vec3 N   = normalize(getWorldNormal());
-    vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
-    vec3 B  = -normalize(cross(N, T));
-    mat3 TBN = mat3(T, B, N);
-
-    return normalize(TBN * tangentNormal);
 }
 
 ShadingParameters prepareMaterial(const MaterialInput material)
 {
   ShadingParameters shading;
 
+  vec3 N = normalize(getWorldNormal());
+
+#if MAT_HAS_ANISOTROPY || MAT_HAS_NORMAL_MAP || MAT_HAS_CLEAR_COAT_NORMAL_MAP  
+  // Get edge vectors of the pixel triangle.
+  vec3 q1  = dFdx(getWorldPosition());
+  vec3 q2  = dFdy(getWorldPosition());
+  vec2 st1 = dFdx(getUV());
+  vec2 st2 = dFdy(getUV());
+  vec3 T = normalize(q1 * st2.t - q2 * st1.t);
+  vec3 B = -normalize(cross(N, T));
+  
+  shading.TBN = mat3(T, B, N);
+#else
+  shading.TBN[2] = N;
+#endif
   shading.V = normalize(getViewPosition() - getWorldPosition());
-  shading.N = normalize(getWorldNormal() * material.normal);
-  shading.N_CC = normalize(getWorldNormal() * material.clearCoatNormal);
-  //shading.N = getNormalFromMap(material.normal);
+
+#if MAT_HAS_NORMAL_MAP
+  shading.N = normalize(shading.TBN * material.normal);
+#else
+  shading.N = shading.TBN[2];
+#endif
+#if MAT_HAS_CLEAR_COAT && MAT_HAS_CLEAR_COAT_NORMAL_MAP
+  shading.N_CC = normalize(shading.TBN * material.clearCoatNormal);
+#else
+  shading.N_CC = shading.TBN[2];
+#endif
+
   shading.R = reflect(-shading.V, shading.N);
   shading.NoV = abs(dot(shading.N, shading.V)) + 1e-4;
 
@@ -103,7 +117,7 @@ PixelParameters getPixelParameters(const MaterialInput material, const ShadingPa
   pixel.roughness = clamp(material.roughness, MIN_ROUGHNESS, 1.0);
   pixel.linearRoughness = pixel.roughness * pixel.roughness;
 
-#if USE_IRIDESCENCE
+#if MAT_HAS_IRIDESCENCE
   // Remaps the iridescence mask to a perceptually linear mask (1-(1-roughness)^3).
   pixel.iridescenceMask = clamp(1.0 - pow(1.0 - material.iridescenceMask, 3.0), 0.0, 1.0);
   pixel.filmThickness = clamp(material.filmThickness, 0.0, 1.0);
@@ -116,7 +130,7 @@ PixelParameters getPixelParameters(const MaterialInput material, const ShadingPa
   }
 #endif
 
-#if USE_CLEAR_COAT
+#if MAT_HAS_CLEAR_COAT
   pixel.clearCoat = material.clearCoat;
   float clearCoatRoughness = material.clearCoatRoughness;
   // Remapped to 0.0..0.6 matches the fact that clear coat layers are almost always glossy.
@@ -133,7 +147,7 @@ PixelParameters getPixelParameters(const MaterialInput material, const ShadingPa
   // Pre-filtered DFG term used for image-based lighting
   pixel.dfg = prefilteredDFG(pixel.roughness, shading.NoV);
 
-#if USE_MULTIPLE_SCATTERING
+#if MULTIPLE_SCATTERING
   // Energy compensation for multiple scattering in a microfacet model
   // See "Multiple-Scattering Microfacet BSDFs with the Smith Model"
   pixel.energyCompensation = 1.0 + pixel.f0 * (1.0 / pixel.dfg.y - 1.0);
@@ -156,7 +170,7 @@ vec4 evaluateMaterial(const MaterialInput material)
 
   color *= material.baseColor.a;
 
-#if defined(MATERIAL_HAS_EMISSIVE)
+#if MAT_HAS_EMISSIVE
   //highp
   vec4 emissive = material.emissive;
   float attenuation = 1.0; /// *= exposure 

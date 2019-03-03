@@ -210,8 +210,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\examples\dev\dev.exe" />
-    <None Include="..\..\examples\dev\dev.ilk" />
-    <None Include="..\..\examples\dev\dev.pdb" />
     <None Include="..\..\examples\dev\imgui.ini" />
   </ItemGroup>
   <ItemGroup>

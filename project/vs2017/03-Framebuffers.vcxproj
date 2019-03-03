@@ -210,7 +210,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\examples\03-Framebuffers\03-Framebuffers.exe" />
-    <None Include="..\..\examples\03-Framebuffers\03-Framebuffers.pdb" />
     <None Include="..\..\examples\03-Framebuffers\imgui.ini" />
   </ItemGroup>
   <ItemGroup>

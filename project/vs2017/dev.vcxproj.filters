@@ -12,12 +12,6 @@
     <None Include="..\..\examples\dev\dev.exe">
       <Filter>examples\dev</Filter>
     </None>
-    <None Include="..\..\examples\dev\dev.ilk">
-      <Filter>examples\dev</Filter>
-    </None>
-    <None Include="..\..\examples\dev\dev.pdb">
-      <Filter>examples\dev</Filter>
-    </None>
     <None Include="..\..\examples\dev\imgui.ini">
       <Filter>examples\dev</Filter>
     </None>

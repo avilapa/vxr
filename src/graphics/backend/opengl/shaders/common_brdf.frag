@@ -52,12 +52,6 @@
 
 #define BRDF_DIFFUSE                DIFFUSE_LAMBERT
 
-
-#define USE_MULTIPLE_SCATTERING     1
-#define USE_CLEAR_COAT              1
-#define USE_IRIDESCENCE             1
-
-
 // XYZ to CIE 1931 RGB color space (using neutral E illuminant)
 const mat3 XYZ_TO_RGB = mat3(2.3706743, -0.5138850, 0.0052982, -0.9000405, 1.4253036, -0.0146949, -0.4706338, 0.0885814, 1.0093968);
 
@@ -425,12 +419,17 @@ float visibilityAnisotropic()
   return 0.0;
 }
 
+#if MAT_HAS_IRIDESCENCE
 vec3 fresnelIridescence(const PixelParameters pixel, float LoH)
 {
   // iridescenceThickness unit is micrometer for this equation here. Mean 0.5 is 500nm.
   float Dinc = pixel.filmThickness * 3.0;
   float eta_0 = 1.0;
+#if MAT_HAS_CLEAR_COAT
   float eta_1 = mix(1.0, BRDF_CLEAR_COAT_IOR, pixel.clearCoat);
+#else
+  float eta_1 = 1.0;
+#endif
   float eta_2 = mix(2.0, 1.0, pixel.filmThickness);
   float eta_3 = pixel.baseIor;
 
@@ -439,6 +438,7 @@ vec3 fresnelIridescence(const PixelParameters pixel, float LoH)
 
   return F_Airy(cosTheta1, cosTheta2, Dinc, eta_1, eta_2, eta_3, pixel.kExtinction);
 }
+#endif
 
 //--------------------------------------------------------------------------------
 // Diffuse BRDF Implementation
@@ -475,6 +475,7 @@ float diffuse(float linearRoughness, float NoV, float NoL, float LoH)
 // BRDF Lobes
 //--------------------------------------------------------------------------------
 
+#if MAT_HAS_CLEAR_COAT
 float clearCoatLobe(const PixelParameters pixel, const ShadingParameters shading, const vec3 H, float LoH, out float F)
 {
   // We can use precalculated NoH if there's no N_CC map.
@@ -486,18 +487,21 @@ float clearCoatLobe(const PixelParameters pixel, const ShadingParameters shading
 
   return D * V * F;
 }
+#endif
 
+#if MAT_HAS_ANISOTROPY
 vec3 anisotropicLobe()
 {
   return vec3(0.0);
 }
+#endif
 
 vec3 isotropicLobe(const PixelParameters pixel, float NoV, float NoL, float NoH, float LoH, out vec3 out_F)
 {
   float D = distribution(pixel.linearRoughness, NoH);
   float V = visibility(pixel.linearRoughness, NoV, NoL);
 
-#if USE_IRIDESCENCE
+#if MAT_HAS_IRIDESCENCE
   out_F = fresnelIridescence(pixel, LoH);
   vec3 F = mix(fresnel(pixel.f0, LoH), out_F, pixel.iridescenceMask);
 #else
@@ -509,7 +513,11 @@ vec3 isotropicLobe(const PixelParameters pixel, float NoV, float NoL, float NoH,
 
 vec3 specularLobe(const PixelParameters pixel, float NoV, float NoL, float NoH, float LoH, out vec3 out_F)
 {
+#if MAT_HAS_ANISOTROPY
   return isotropicLobe(pixel, NoV, NoL, NoH, LoH, out_F);
+#else
+  return isotropicLobe(pixel, NoV, NoL, NoH, LoH, out_F);
+#endif
 }
 
 vec3 diffuseLobe(const PixelParameters pixel, float NoV, float NoL, float LoH)
@@ -536,7 +544,7 @@ vec3 specularIrradiance(vec3 R, float roughness)
 
 vec3 specularDFG(const PixelParameters pixel)
 {
-#if USE_MULTIPLE_SCATTERING
+#if MULTIPLE_SCATTERING
   // (1 - f0) * dfg.x + f0 * dfg.y
   return mix(pixel.dfg.xxx, pixel.dfg.yyy, pixel.f0);
 #else
@@ -568,13 +576,13 @@ vec3 surfaceShading(const PixelParameters pixel, const ShadingParameters shading
   vec3 Fr = specularLobe(pixel, NoV, NoL, NoH, LoH, F);
   vec3 Fd = diffuseLobe(pixel, NoV, NoL, LoH);
 
-#if USE_IRIDESCENCE
+#if MAT_HAS_IRIDESCENCE
   vec3 iridescenceAttenuation = vec3(1.0) - F * pixel.iridescenceMask;
   Fd *= iridescenceAttenuation;
   //Fr *= iridescenceAttenuation * iridescenceAttenuation;
 #endif
 
-#if USE_CLEAR_COAT
+#if MAT_HAS_CLEAR_COAT
   float F_CC;
   float clearCoat = clearCoatLobe(pixel, shading, H, LoH, F_CC);
   // Energy compensation and absorption; the clear coat Fresnel term is
@@ -602,7 +610,7 @@ vec3 surfaceShadingIBL(const MaterialInput material, const PixelParameters pixel
   float diffuseAO = material.ambientOcclusion;
   float specularAO = specularAO(shading.NoV, diffuseAO, pixel.roughness);
 
-#if USE_IRIDESCENCE
+#if MAT_HAS_IRIDESCENCE
   vec3 F = mix(specularDFG(pixel), pixel.iridescenceFresnel, pixel.iridescenceMask);
 #else
   vec3 F = specularDFG(pixel);
@@ -614,13 +622,13 @@ vec3 surfaceShadingIBL(const MaterialInput material, const PixelParameters pixel
   vec3 Fr = specularIrradiance(shading.R, pixel.roughness) * F;   
   Fr *= specularAO * pixel.energyCompensation;
 
-#if USE_IRIDESCENCE
+#if MAT_HAS_IRIDESCENCE
   vec3 iridescenceAttenuation = vec3(1.0) - pixel.iridescenceFresnel * pixel.iridescenceMask;
   Fd *= iridescenceAttenuation;
   //Fr *= iridescenceAttenuation * iridescenceAttenuation;
 #endif
 
-#if USE_CLEAR_COAT
+#if MAT_HAS_CLEAR_COAT
   float NoV_CC = abs(dot(shading.N_CC, shading.V)) + 1e-4;
   vec3 R_CC = reflect(-shading.V, shading.N_CC);
   

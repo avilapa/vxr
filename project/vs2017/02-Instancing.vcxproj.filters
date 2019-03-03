@@ -12,9 +12,6 @@
     <None Include="..\..\examples\02-Instancing\02-Instancing.exe">
       <Filter>examples\02-Instancing</Filter>
     </None>
-    <None Include="..\..\examples\02-Instancing\02-Instancing.pdb">
-      <Filter>examples\02-Instancing</Filter>
-    </None>
     <None Include="..\..\examples\02-Instancing\imgui.ini">
       <Filter>examples\02-Instancing</Filter>
     </None>

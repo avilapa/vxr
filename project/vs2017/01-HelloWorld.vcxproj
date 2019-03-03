@@ -210,7 +210,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\examples\01-HelloWorld\01-HelloWorld.exe" />
-    <None Include="..\..\examples\01-HelloWorld\01-HelloWorld.pdb" />
     <None Include="..\..\examples\01-HelloWorld\imgui.ini" />
   </ItemGroup>
   <ItemGroup>

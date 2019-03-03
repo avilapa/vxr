@@ -47,7 +47,8 @@ void main()
 
     inputs.reflectance = 0.0;
 
+#if MAT_HAS_CLEAR_COAT
     inputs.clearCoat = (alpha > 0.01) ? 0.0 : 1.0;
-
+#endif
     setFragmentColor(evaluateMaterial(inputs));
 }

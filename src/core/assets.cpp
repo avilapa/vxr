@@ -220,7 +220,7 @@ namespace vxr
 
   static const unsigned char t_white[]  = { 255, 255, 255 };
   static const unsigned char t_black[]  = { 0, 0, 0, };
-  static const unsigned char t_normal[] = { 0, 0, 255, };
+  static const unsigned char t_normal[] = { 128, 128, 255, };
 
   void AssetManager::initializeTextures()
   {

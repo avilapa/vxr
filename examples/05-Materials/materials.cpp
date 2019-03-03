@@ -87,6 +87,7 @@ namespace vxr
     mat_textured->set_albedo(Color::White);
 
     mat_textured->set_albedo(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/albedo.png"));
+    mat_textured->set_normal(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/normal.png"));
     mat_textured->set_metallic(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/metallic.png"));
     mat_textured->set_roughness(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/roughness.png"));
     mat_textured->set_ambient_occlusion(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/ao.png"));

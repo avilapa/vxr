@@ -210,7 +210,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\examples\02-Instancing\02-Instancing.exe" />
-    <None Include="..\..\examples\02-Instancing\02-Instancing.pdb" />
     <None Include="..\..\examples\02-Instancing\imgui.ini" />
   </ItemGroup>
   <ItemGroup>

@@ -50,7 +50,7 @@ vec2 integrateBRDF(float NoV, float roughness)
             float G = (V_SmithGGX_DFG(roughness, NoV, NoL) * VoH) / (NoH * NoV);
             float Fc = pow(1.0 - VoH, 5.0);
 
-        #if USE_MULTIPLE_SCATTERING
+        #if MULTIPLE_SCATTERING
             R.x += G * Fc;
             R.y += G;
         #else
