@@ -48,14 +48,14 @@ MaterialInput initMaterial()
   material.anisotropyDirection = vec3(1.0, 0.0, 0.0);
 #endif
 #if MAT_HAS_NORMAL_MAP
-  material.normal = vec3(0.5, 0.5, 1.0);
+  material.normal = vec3(0.0, 0.0, 1.0);
 #endif
 
 #if MAT_HAS_CLEAR_COAT
   material.clearCoat = 1.0;
   material.clearCoatRoughness = 0.0;
 #if MAT_HAS_CLEAR_COAT_NORMAL_MAP
-  material.clearCoatNormal = vec3(0.5, 0.5, 1.0);
+  material.clearCoatNormal = vec3(0.0, 0.0, 1.0);
 #endif
 #endif
   // Default iridescence values
