@@ -1,6 +1,6 @@
 
 [![vxr engine logo](https://github.com/avilapa/vxr/blob/media/logo_background.png)](https://avilapa.github.io)
-_version 0.5.3_
+_version 0.6.0_
 
 # What is [vxr](https://github.com/avilapa/vxr)?
 
@@ -51,6 +51,8 @@ A list of example projects are provided within the solution to showcase the engi
 ![05-Material](https://github.com/avilapa/vxr/blob/media/05-Material.png)
 #### 06-Procedural
 ![06-Procedural](https://github.com/avilapa/vxr/blob/media/06-Procedural.png)
+#### 07-Physics
+![07-Physics](https://github.com/avilapa/vxr/blob/media/07-Physics.png)
 
 # Features
 
@@ -70,6 +72,8 @@ A list of example projects are provided within the solution to showcase the engi
       - Screen
       - Planet (_only in the PlanetEditor example!_)
       - ___Add your own!___
+  - Rigidbody: Adds rigidbody physics to an object and can be applied forces and velocities.
+  - Collider: Adds a particular shape to the object to detect collisions with other rigidbodies with a collision shape.
   - Light: Turns the object into a source of light.
     - Directional and Punctual lights supported.
   - Image Based Light: Calculates irradiance of the scene to be used by all PBR materials in the engine.
