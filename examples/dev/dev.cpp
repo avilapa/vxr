@@ -164,9 +164,9 @@ namespace vxr
     Engine::ref().submitUIFunction([]() { ui::Editor(); });
   }
 
-  void Main::update()
+  void Main::update(float dt)
   {
-    Application::update();
+    Application::update(dt);
     //light_node_->transform()->set_local_rotation(light_node_->transform()->local_rotation() + vec3(0.31, 1.06, 0.3) * deltaTime());
     //light_node_->transform()->set_local_scale(vec3(1 + sin(Engine::ref().window()->uptime() * 0.1f)));
   }

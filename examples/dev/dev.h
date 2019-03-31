@@ -46,7 +46,7 @@ namespace vxr
 
     virtual void init() override;
     virtual void start() override;
-    virtual void update() override;
+    virtual void update(float dt) override;
     virtual void renderUpdate() override;
     virtual void stop() override;
 

@@ -138,7 +138,7 @@ namespace vxr
       main_ = light;
       if (main_->initialized())
       {
-        //main_->initialization_level_ = 0;
+        ///main_->initialization_level_ = 0;
         updateMaterialIBLTextures();
       }
     }
@@ -149,43 +149,34 @@ namespace vxr
     return main_;
   }
 
-  void System::IBL::init()
+  void System::IBL::onSceneChanged()
   {
+    ComponentSystem::onSceneChanged();
+    set_main(nullptr);
   }
 
-  void System::IBL::update()
+  void System::IBL::start()
   {
-    if (scene_ != Engine::ref().scene())
+    // Find IBL in scene
+    ref_ptr<Skybox> skybox = Engine::ref().scene()->skybox();
+    if (skybox != nullptr)
     {
-      scene_ = Engine::ref().scene();
-      set_main(nullptr);
-      // Scene changed
+      set_main(skybox->getComponent<vxr::IBL>());
     }
-
-    if (!main_ && scene_.get())
+    else
     {
-      // Find IBL in scene
-      ref_ptr<Skybox> skybox = Engine::ref().scene()->skybox();
-      if (skybox != nullptr)
-      {
-        set_main(skybox->getComponent<vxr::IBL>());
-      }
-      else
-      {
-        set_main(nullptr);
-      }
+      set_main(nullptr);
     }
   }
 
   void System::IBL::renderUpdate()
   {
-    if (!main_ || !scene_)
+    if (!main_)
     {
       return;
     }
 
     VXR_TRACE_SCOPE("VXR", "IBL Render Update");
-    
     if (!main_->gameObject()->active() || main_->initialized())
     {
       return;
@@ -220,16 +211,6 @@ namespace vxr
 
     updateMaterialIBLTextures();
     VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [IBL] Maps recomputed correctly.\n");
-  }
-
-  void System::IBL::renderPostUpdate()
-  {
-    if (!main_ || !scene_)
-    {
-      return;
-    }
-
-    VXR_TRACE_SCOPE("VXR", "IBL Render Post Update");
   }
 
   bool System::IBL::buildCubemap()

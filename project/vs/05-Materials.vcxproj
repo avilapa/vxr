@@ -209,8 +209,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\05-Materials\05-Materials.exe" />
-    <None Include="..\..\examples\05-Materials\05-Materials.pdb" />
     <None Include="..\..\examples\05-Materials\imgui.ini" />
   </ItemGroup>
   <ItemGroup>

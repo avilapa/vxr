@@ -128,25 +128,25 @@ namespace vxr
     Application::start();
   }
 
-  void Main::update()
+  void Main::update(float dt)
   {
     // 9. Rotate the meshes in update() instead of renderUpdate() to make the transformations framerate
     // independent by multiplying it by deltaTime().The update() method may be executed several times in
     // a frame to catch up with the render thread.
     float t = Engine::ref().window()->uptime();
     
-    teapot_->transform()->rotateX(30.0f * deltaTime());
-    teapot_->transform()->rotateZ(25.0f * deltaTime());
-    teapot_->transform()->set_world_position(vec3(-2, cos(t) * 100 * deltaTime(), 0));
+    teapot_->transform()->rotateX(30.0f * dt);
+    teapot_->transform()->rotateZ(25.0f * dt);
+    teapot_->transform()->set_world_position(vec3(-2, cos(t) * 100 * dt, 0));
 
-    suzanne_->transform()->rotate(vec3(-15.0f, 10.0f, -5.0f) * deltaTime());
-    suzanne_->transform()->set_world_position(vec3(2, sin(t) * 100 * deltaTime(), 0));
+    suzanne_->transform()->rotate(vec3(-15.0f, 10.0f, -5.0f) * dt);
+    suzanne_->transform()->set_world_position(vec3(2, sin(t) * 100 * dt, 0));
     
-    sphere_->transform()->set_local_scale(vec3(sin(t) * 100 * deltaTime() * 0.5f + 1.0f));
+    sphere_->transform()->set_local_scale(vec3(sin(t) * 100 * dt * 0.5f + 1.0f));
 
-    cam_->transform()->rotateAround(sphere_, vec3(0,10,0) * deltaTime());
+    cam_->transform()->rotateAround(sphere_, vec3(0,10,0) * dt);
 
-    Application::update();
+    Application::update(dt);
   }
 
 } /* end of vxr namespace */

@@ -59,6 +59,7 @@ namespace vxr
     void set_type(TextureType::Enum type);
     void set_build_mipmap(bool build_mipmap);
     void set_data(void* data, uint32 index = 0);
+    void set_data(Color color, uint32 index = 0);
     void set_hdr(bool hdr);
 
     uvec2 size() const;

@@ -54,7 +54,9 @@ namespace vxr
   namespace System { class Custom; }
   namespace System { class Camera; }
   namespace System { class Renderer; }
+  namespace System { class Collider; }
   namespace System { class Transform; }
+  namespace System { class Rigidbody; }
   namespace System { class MeshFilter; }
 
   class Engine : public Object 
@@ -87,7 +89,9 @@ namespace vxr
     ref_ptr<System::Custom> custom();
     ref_ptr<System::Camera> camera();
     ref_ptr<System::Renderer> renderer();
+    ref_ptr<System::Collider> collider();
     ref_ptr<System::Transform> transform();
+    ref_ptr<System::Rigidbody> rigidbody();
     ref_ptr<System::MeshFilter> meshFilter();
 
     vxr::ui::EditorLog Log;
@@ -108,7 +112,9 @@ namespace vxr
     ref_ptr<System::Custom> custom_;
     ref_ptr<System::Camera> camera_;
     ref_ptr<System::Renderer> renderer_;
+    ref_ptr<System::Collider> collider_;
     ref_ptr<System::Transform> transform_;
+    ref_ptr<System::Rigidbody> rigidbody_;
     ref_ptr<System::MeshFilter> mesh_filter_;
 
   private:
@@ -116,11 +122,16 @@ namespace vxr
 
     bool init();
     void start();
-    void update();
+    void preUpdate();
+    void update(float dt);
     void postUpdate();
+    void renderPreUpdate();
     void renderUpdate();
     void renderPostUpdate();
     void stop();
+
+    void startSystems();
+    void stopSystems();
   };
 
   #define VXR_LOG(LEVEL, ...) \

@@ -84,6 +84,7 @@ namespace vxr
     static bool show_statistics = false;
     static bool show_texture_viewer = false;
 
+    ref_ptr<Camera> cam = Engine::ref().camera()->main();
     ImGuiIO& io = ImGui::GetIO();
 
     ImGui::SetNextWindowPos(ImVec2(0, 0));
@@ -131,9 +132,9 @@ namespace vxr
     if (!show_editor)
     {
       ImGui::Image((void*)(intptr_t)Engine::ref().camera()->screen_texture_id(), { io.DisplaySize.x, io.DisplaySize.y }, ImVec2(0, 1), ImVec2(1, 0));
-      Engine::ref().camera()->main()->composer()->set_render_size({ io.DisplaySize.x, io.DisplaySize.y });
-      Engine::ref().camera()->main()->set_aspect(io.DisplaySize.x / io.DisplaySize.y);
-      Engine::ref().camera()->set_render_to_screen(true);
+      cam->composer()->set_render_size({ io.DisplaySize.x, io.DisplaySize.y });
+      cam->set_aspect(io.DisplaySize.x / io.DisplaySize.y);
+      Engine::ref().camera()->set_render_to_screen(false);
 
       ImGui::End();
       ImGui::PopStyleVar();
@@ -161,12 +162,12 @@ namespace vxr
     ImGui::Text("Scene");
     ImGui::Separator();
     ImGui::Spacing();
-    if (Engine::ref().camera()->main() != nullptr)
+    if (cam != nullptr)
     {
       ImVec2 scene_size = ImVec2(io.DisplaySize.x * 0.6f - 16.0f, io.DisplaySize.y * 0.7f - 41.0f);
       ImGui::Image((void*)(intptr_t)Engine::ref().camera()->screen_texture_id(), scene_size, ImVec2(0,1), ImVec2(1,0));
-      Engine::ref().camera()->main()->composer()->set_render_size({ scene_size.x, scene_size.y });
-      Engine::ref().camera()->main()->set_aspect(scene_size.x / (scene_size.y));
+      cam->composer()->set_render_size({ scene_size.x, scene_size.y });
+      cam->set_aspect(scene_size.x / (scene_size.y));
       Engine::ref().camera()->set_render_to_screen(false);
     }
     ImGui::EndChild();

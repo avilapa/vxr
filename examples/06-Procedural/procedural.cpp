@@ -76,7 +76,7 @@ namespace vxr
     Application::start();
   }
 
-  void Main::update()
+  void Main::update(float dt)
   {
     // 7. Interpolate camera position
     float speed = 5.0f;
@@ -84,14 +84,14 @@ namespace vxr
     if (planet_->getComponent<Planet>()->zoom)
     {
       first_zoom = true;
-      cam_->transform()->set_local_position(Math::lerp(cam_->transform()->local_position(), zoom_on, speed * deltaTime()));
-      cam_->transform()->set_local_rotation(Math::lerp(cam_->transform()->local_rotation_angles(), vec3(0.0f), speed * deltaTime()));
+      cam_->transform()->set_local_position(Math::lerp(cam_->transform()->local_position(), zoom_on, speed * dt));
+      cam_->transform()->set_local_rotation(Math::lerp(cam_->transform()->local_rotation_angles(), vec3(0.0f), speed * dt));
     }
     else
     {
       if (first_zoom)
       {
-        cam_->transform()->set_local_position(Math::lerp(cam_->transform()->local_position(), zoom_off, speed * deltaTime()));
+        cam_->transform()->set_local_position(Math::lerp(cam_->transform()->local_position(), zoom_off, speed * dt));
         if (glm::epsilonEqual(cam_->transform()->local_position(), zoom_off, 0.001f) == bvec3(true))
         {
           first_zoom = false;
@@ -99,10 +99,10 @@ namespace vxr
       }
       else
       {
-        cam_->transform()->rotateAround(planet_, vec3(0.1f, 0.2f, -0.2f) * deltaTime());
+        cam_->transform()->rotateAround(planet_, vec3(0.1f, 0.2f, -0.2f) * dt);
       }    
     }
-    Application::update();
+    Application::update(dt);
   }
 
 } /* end of vxr namespace */

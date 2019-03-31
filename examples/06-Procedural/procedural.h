@@ -53,7 +53,7 @@ namespace vxr
     Main();
 
     virtual void start() override;
-    virtual void update() override;
+    virtual void update(float dt) override;
 
   private:
     ref_ptr<GameObject> cam_;

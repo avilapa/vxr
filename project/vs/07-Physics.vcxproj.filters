@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="examples">
+      <UniqueIdentifier>{84D830B1-70A5-8BBC-99BE-796485EAC04A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\07-Physics">
+      <UniqueIdentifier>{77F8AA6E-E359-887C-6CC7-CE2ED827BF3B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="examples\07-Physics\assets">
+      <UniqueIdentifier>{86F5D138-7205-7E09-DBBE-E227C7ED6CA2}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\examples\07-Physics\imgui.ini">
+      <Filter>examples\07-Physics</Filter>
+    </None>
+    <None Include="..\..\examples\07-Physics\assets\circle.bmp">
+      <Filter>examples\07-Physics\assets</Filter>
+    </None>
+    <None Include="..\..\examples\07-Physics\assets\diagonal.bmp">
+      <Filter>examples\07-Physics\assets</Filter>
+    </None>
+    <None Include="..\..\examples\07-Physics\assets\fall.bmp">
+      <Filter>examples\07-Physics\assets</Filter>
+    </None>
+    <None Include="..\..\examples\07-Physics\assets\heightmap.bmp">
+      <Filter>examples\07-Physics\assets</Filter>
+    </None>
+    <None Include="..\..\examples\07-Physics\assets\plane.bmp">
+      <Filter>examples\07-Physics\assets</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\examples\07-Physics\physics.h">
+      <Filter>examples\07-Physics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\examples\07-Physics\physics.cpp">
+      <Filter>examples\07-Physics</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

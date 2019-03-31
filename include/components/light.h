@@ -76,45 +76,29 @@ namespace vxr
     float cone_angle_;
   };
 
-  class Scene;
-
   namespace System 
   {
     class Light : public ComponentSystem
     {
-      VXR_OBJECT(System::Light, ComponentSystem);
+      VXR_COMPONENT_SYSTEM(Light, ComponentSystem);
     public:
       Light();
       virtual ~Light();
 
       void init() override;
-      void update() override;
-      void renderUpdate() override;
-      void renderPostUpdate() override;
+      void renderPreUpdate() override;
 
       uint32 num_lights() const;
-
       gpu::Buffer light_uniforms_buffer() const;
 
     private:
-      std::vector<ref_ptr<vxr::Light>> components_;
-      ref_ptr<Scene> scene_;
-      uint32 num_lights_;
+      uint32 num_lights_ = 0;
 
       struct LightUniforms
       {
         gpu::Buffer buffer;
         Shader::LightData data;
       } light_uniforms_;
-
-    public:
-      template<typename T> ref_ptr<T> createInstance()
-      {
-        ref_ptr<T> c;
-        c.alloc();
-        components_.push_back(c.get());
-        return c.get();
-      }
     };
 
     template<> class Getter<vxr::Light>

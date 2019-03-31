@@ -54,24 +54,10 @@ namespace vxr
   {
     class MeshFilter : public ComponentSystem
     {
-      VXR_OBJECT(System::MeshFilter, ComponentSystem);
+      VXR_COMPONENT_SYSTEM(MeshFilter, ComponentSystem);
     public:
       MeshFilter();
       ~MeshFilter();
-
-      void init() override;
-
-    private:
-      std::vector<ref_ptr<vxr::MeshFilter>> components_;
-
-    public:
-      template<typename T> ref_ptr<T> createInstance()
-      {
-        ref_ptr<T> c;
-        c.alloc();
-        components_.push_back(c.get());
-        return c.get();
-      }
     };
 
     template<> class Getter<vxr::MeshFilter>

@@ -50,16 +50,49 @@ namespace vxr
 
   }
 
+  void System::Custom::init()
+  {
+    for (auto &c : components_)
+    {
+      if (scene_->id() != c->gameObject()->scene_id())
+      {
+        continue;
+      }
+
+      if (c->enabled())
+      {
+        if (!c->initialized_)
+        {
+          c->init();
+          c->initialized_ = true;
+        }
+      }
+    }
+  }
+
   void System::Custom::start()
   {
-    if (scene_ != Engine::ref().scene())
+    for (auto &c : components_)
     {
-      scene_ = Engine::ref().scene();
+      if (scene_->id() != c->gameObject()->scene_id())
+      {
+        continue;
+      }
+
+      if (c->enabled())
+      {
+        if (!c->initialized_)
+        {
+          c->init();
+          c->initialized_ = true;
+        }
+        c->start();
+      }
     }
-    if (!scene_)
-    {
-      return;
-    }
+  }
+
+  void System::Custom::preUpdate()
+  {
     for (auto &c : components_)
     {
       if (scene_->id() != c->gameObject()->scene_id())
@@ -68,26 +101,13 @@ namespace vxr
       }
       if (c->enabled())
       {
-        if (!c->initialized_)
-        {
-          c->start();
-          c->initialized_ = true;
-        }
+        c->preUpdate();
       }
     }
   }
 
-  void System::Custom::update()
+  void System::Custom::update(float dt)
   {
-    if (scene_ != Engine::ref().scene())
-    {
-      scene_ = Engine::ref().scene();
-      // Scene changed
-    }
-    if (!scene_)
-    {
-      return;
-    }
     for (auto &c : components_)
     {
       if (scene_->id() != c->gameObject()->scene_id())
@@ -96,42 +116,43 @@ namespace vxr
       }
       if (c->enabled()) 
       {
-        if (!c->initialized_)
-        {
-          c->start();
-          c->initialized_ = true;
-        }
-
-        c->update();
+        c->update(dt);
       }
     }
   }
 
   void System::Custom::postUpdate()
   {
-    if (!scene_)
-    {
-      return;
-    }
     for (auto &c : components_)
     {
       if (scene_->id() != c->gameObject()->scene_id())
       {
         continue;
       }
-      if (c->enabled()) 
+      if (c->enabled())
       {
         c->postUpdate();
       }
     }
   }
 
+  void System::Custom::renderPreUpdate()
+  {
+    for (auto &c : components_)
+    {
+      if (scene_->id() != c->gameObject()->scene_id())
+      {
+        continue;
+      }
+      if (c->enabled())
+      {
+        c->renderPreUpdate();
+      }
+    }
+  }
+
   void System::Custom::renderUpdate()
   {
-    if (!scene_)
-    {
-      return;
-    }
     for (auto &c : components_)
     {
       if (scene_->id() != c->gameObject()->scene_id())
@@ -147,10 +168,6 @@ namespace vxr
 
   void System::Custom::renderPostUpdate()
   {
-    if (!scene_)
-    {
-      return;
-    }
     for (auto &c : components_)
     {
       if (scene_->id() != c->gameObject()->scene_id())
@@ -166,10 +183,6 @@ namespace vxr
 
   void System::Custom::stop()
   {
-    if (!scene_)
-    {
-      return;
-    }
     for (auto &c : components_)
     {
       if (scene_->id() != c->gameObject()->scene_id())
@@ -178,7 +191,10 @@ namespace vxr
       }
       if (c->enabled())
       {
-        c->stop();
+        if (c->initialized_)
+        {
+          c->stop();
+        }
       }
     }
   }

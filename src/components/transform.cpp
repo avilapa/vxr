@@ -73,6 +73,24 @@ namespace vxr
     markForUpdate();
   }
 
+  void Transform::set_local_position_x(const float& v)
+  {
+    position_.x = v;
+    markForUpdate();
+  }
+
+  void Transform::set_local_position_y(const float& v)
+  {
+    position_.y = v;
+    markForUpdate();
+  }
+
+  void Transform::set_local_position_z(const float& v)
+  {
+    position_.z = v;
+    markForUpdate();
+  }
+
   void Transform::set_local_rotation(const quat& rotation)
   {
     rotation_ = rotation;
@@ -602,36 +620,15 @@ namespace vxr
 
   System::Transform::Transform()
   {
-
   }
 
   System::Transform::~Transform()
   {
-
-  }
-
-  void System::Transform::init()
-  {
-
-  }
-
-  void System::Transform::update()
-  {
-    if (scene_ != Engine::ref().scene())
-    {
-      scene_ = Engine::ref().scene();
-      // Scene changed
-    }
   }
 
   void System::Transform::renderUpdate()
   {
     VXR_TRACE_SCOPE("VXR", "Transform Render Update");
-    if (!scene_)
-    {
-      return;
-    }
-
     for (auto &c : components_)
     {
       if (scene_->id() != c->gameObject()->scene_id())
@@ -653,11 +650,6 @@ namespace vxr
         skybox->updateWorldTransform();
       }
     }
-  }
-
-  void System::Transform::renderPostUpdate()
-  {
-    VXR_TRACE_SCOPE("VXR", "Transform Render Post Update");
   }
 
   ref_ptr<System::Transform> System::Getter<Transform>::get()

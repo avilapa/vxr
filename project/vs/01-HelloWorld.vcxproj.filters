@@ -9,9 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\01-HelloWorld\01-HelloWorld.exe">
-      <Filter>examples\01-HelloWorld</Filter>
-    </None>
     <None Include="..\..\examples\01-HelloWorld\imgui.ini">
       <Filter>examples\01-HelloWorld</Filter>
     </None>

@@ -9,12 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\04-Mesh\04-Mesh.exe">
-      <Filter>examples\04-Mesh</Filter>
-    </None>
-    <None Include="..\..\examples\04-Mesh\04-Mesh.pdb">
-      <Filter>examples\04-Mesh</Filter>
-    </None>
     <None Include="..\..\examples\04-Mesh\imgui.ini">
       <Filter>examples\04-Mesh</Filter>
     </None>

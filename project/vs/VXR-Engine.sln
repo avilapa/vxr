@@ -38,6 +38,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "06-Procedural", "06-Procedu
 		{652C880B-D135-887C-5AB1-9E7CC6B9937C} = {652C880B-D135-887C-5AB1-9E7CC6B9937C}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "07-Physics", "07-Physics.vcxproj", "{5CB6918F-486E-D3DC-B175-AC389D4C6ECD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{652C880B-D135-887C-5AB1-9E7CC6B9937C} = {652C880B-D135-887C-5AB1-9E7CC6B9937C}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -110,6 +115,14 @@ Global
 		{49D9635E-B599-DF94-7ED4-2812EA532471}.Release|Win32.Build.0 = Release|Win32
 		{49D9635E-B599-DF94-7ED4-2812EA532471}.Release|x64.ActiveCfg = Release|x64
 		{49D9635E-B599-DF94-7ED4-2812EA532471}.Release|x64.Build.0 = Release|x64
+		{5CB6918F-486E-D3DC-B175-AC389D4C6ECD}.Debug|Win32.ActiveCfg = Debug|Win32
+		{5CB6918F-486E-D3DC-B175-AC389D4C6ECD}.Debug|Win32.Build.0 = Debug|Win32
+		{5CB6918F-486E-D3DC-B175-AC389D4C6ECD}.Debug|x64.ActiveCfg = Debug|x64
+		{5CB6918F-486E-D3DC-B175-AC389D4C6ECD}.Debug|x64.Build.0 = Debug|x64
+		{5CB6918F-486E-D3DC-B175-AC389D4C6ECD}.Release|Win32.ActiveCfg = Release|Win32
+		{5CB6918F-486E-D3DC-B175-AC389D4C6ECD}.Release|Win32.Build.0 = Release|Win32
+		{5CB6918F-486E-D3DC-B175-AC389D4C6ECD}.Release|x64.ActiveCfg = Release|x64
+		{5CB6918F-486E-D3DC-B175-AC389D4C6ECD}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

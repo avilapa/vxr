@@ -82,28 +82,40 @@ namespace vxr
     thread_data_.initialized = true;
     thread_data_.cv_l.notify_one();
 
+    VXR_TRACE_BEGIN("VXR", "Frame");
+    VXR_TRACE_BEGIN("VXR", "WAITING (Render)");
+
     while (!(is_exiting_ = window_->is_exiting()))
     {
       VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Render Waiting).\n");
       std::unique_lock<std::mutex> lock(thread_data_.mx_r);
-      thread_data_.cv_r.wait(lock, [this] { return render_frame_.commands_.empty(); });
-
-      VXR_TRACE_BEGIN("VXR", "Frame");
-      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Render Start).\n");
-      window_->events();
+      thread_data_.cv_r.wait(lock, [this] { return render_frame_.commands_.empty() /*&& !thread_data_.next_frame.commands_.empty()*/; });
 
       if (!thread_data_.next_frame.commands_.empty())
       {
+        VXR_TRACE_END("VXR", "WAITING (Render)");
+        VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Render Start).\n");
+        window_->events();
         render_frame_.commands_.swap(thread_data_.next_frame.commands_);
+
+        thread_data_.cv_l.notify_one();
+        VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Render Ready).\n");
+
+        render_frame_.update();
+        window_->swap();
+        VXR_TRACE_END("VXR", "Frame");
+        VXR_TRACE_BEGIN("VXR", "Frame");
+        VXR_TRACE_BEGIN("VXR", "WAITING (Render)");
       }
-
-      thread_data_.cv_l.notify_one();
-      VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Render Ready).\n");
-
-      render_frame_.update();
-      window_->swap();
-      VXR_TRACE_END("VXR", "Frame");
+      else
+      {
+        thread_data_.cv_l.notify_one();
+        VXR_LOG(VXR_DEBUG_LEVEL_DEBUG, "[DEBUG]: [GPU] GPU Synchronization (Render Ready).\n");
+      }
     }
+
+    VXR_TRACE_END("VXR", "WAITING (Render)");
+    VXR_TRACE_END("VXR", "Frame");
 
     window_->stop();
     thread_data_.cv_l.notify_one();

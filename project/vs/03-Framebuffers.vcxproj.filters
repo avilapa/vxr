@@ -9,9 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\03-Framebuffers\03-Framebuffers.exe">
-      <Filter>examples\03-Framebuffers</Filter>
-    </None>
     <None Include="..\..\examples\03-Framebuffers\imgui.ini">
       <Filter>examples\03-Framebuffers</Filter>
     </None>

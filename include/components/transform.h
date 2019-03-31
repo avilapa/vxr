@@ -48,6 +48,9 @@ namespace vxr
     virtual void onGUI() override;
 
     void set_local_position(const vec3& position);
+    void set_local_position_x(const float& v);
+    void set_local_position_y(const float& v);
+    void set_local_position_z(const float& v);
     void set_local_rotation(const quat& rotation);
     void set_local_rotation(const vec3& rotation);
     void set_local_scale(const float& scale);
@@ -134,38 +137,20 @@ namespace vxr
 
     mutable mat4 world_transform_;
 
-    // Euler Angles is used internally just to display quaternions in UI properly
+    // Euler Angles is used internally just to display quaternions in UI properly.
     vec3 euler_angles_;
 	};
-
-  class Scene;
 
   namespace System 
   {
     class Transform : public ComponentSystem
     {
-      VXR_OBJECT(System::Transform, ComponentSystem);
+      VXR_COMPONENT_SYSTEM(Transform, ComponentSystem);
     public:
       Transform();
       ~Transform();
 
-      void init() override;
-      void update() override;
       void renderUpdate() override;
-      void renderPostUpdate() override;
-
-    private:
-      std::vector<ref_ptr<vxr::Transform>> components_;
-      ref_ptr<Scene> scene_;
-
-    public:
-      template<typename T> ref_ptr<T> createInstance()
-      {
-        ref_ptr<T> c;
-        c.alloc();
-        components_.push_back(c.get());
-        return c.get();
-      }
     };
 
     template<> class Getter<vxr::Transform>

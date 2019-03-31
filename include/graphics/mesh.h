@@ -51,8 +51,8 @@ namespace vxr
      private:\
       type name = __VA_ARGS__;\
      public:\
-      void set_##fname(const type &data) { name = data; dirty_ = true; }\
-      type fname() const { return name; }
+      void set_##fname(const type& data) { name = data; dirty_ = true; }\
+      const type& fname() const { return name; }
 
     PROPERTY(std::vector<vec3>,   vertices_, vertices, {});
     PROPERTY(std::vector<vec3>,   normals_,  normals,  {});
@@ -104,9 +104,7 @@ namespace vxr
   {
     class Cube : public Mesh
     {
-
       VXR_OBJECT(Cube, Mesh);
-
     public:
       Cube();
       virtual ~Cube();
@@ -114,9 +112,7 @@ namespace vxr
 
     class Quad : public Mesh
     {
-
       VXR_OBJECT(Quad, Mesh);
-
     public:
       Quad();
       virtual ~Quad();

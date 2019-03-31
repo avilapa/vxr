@@ -316,21 +316,33 @@ namespace vxr
       switch (t.first->info.type)
       {
       case TextureType::T1D:
-        GLCHECK(glTexSubImage1D(GL_TEXTURE_1D, 0, d.offset_x, d.width, back_end.format, back_end.type, d.data));
-          break;
+        if (d.data != nullptr)
+        {
+          GLCHECK(glTexSubImage1D(GL_TEXTURE_1D, 0, d.offset_x, d.width, back_end.format, back_end.type, d.data));
+        }
+        break;
       case TextureType::T2D:
-        GLCHECK(glTexSubImage2D(GL_TEXTURE_2D, 0, d.offset_x, d.offset_y, d.width, d.height, back_end.format, back_end.type, d.data));
-          break;
+        if (d.data != nullptr)
+        {
+          GLCHECK(glTexSubImage2D(GL_TEXTURE_2D, 0, d.offset_x, d.offset_y, d.width, d.height, back_end.format, back_end.type, d.data));
+        }
+        break;
       case TextureType::T3D:
-        GLCHECK(glTexSubImage3D(GL_TEXTURE_3D, 0, d.offset_x, d.offset_y, d.offset_z, d.width, d.height, d.depth, back_end.format, back_end.type, d.data));
-          break;
+        if (d.data != nullptr)
+        {
+          GLCHECK(glTexSubImage3D(GL_TEXTURE_3D, 0, d.offset_x, d.offset_y, d.offset_z, d.width, d.height, d.depth, back_end.format, back_end.type, d.data));
+        }
+        break;
       case TextureType::CubeMap:
         void* data[6] = { (void*)d.data, (void*)d.data_1, (void*)d.data_2, (void*)d.data_3, (void*)d.data_4, (void*)d.data_5 };
         for (uint16 i = 0; i < 6; ++i)
         {
-          GLCHECK(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, d.offset_x, d.offset_y, d.width, d.height, back_end.format, back_end.type, data[i]));
+          if (data[i] != nullptr)
+          {
+            GLCHECK(glTexSubImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, d.offset_x, d.offset_y, d.width, d.height, back_end.format, back_end.type, data[i]));
+          }
         }
-          break;
+        break;
       }
       if (d.build_mipmap)
       {

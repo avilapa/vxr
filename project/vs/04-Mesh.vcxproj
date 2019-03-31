@@ -209,8 +209,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\04-Mesh\04-Mesh.exe" />
-    <None Include="..\..\examples\04-Mesh\04-Mesh.pdb" />
     <None Include="..\..\examples\04-Mesh\imgui.ini" />
   </ItemGroup>
   <ItemGroup>

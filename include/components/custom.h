@@ -47,9 +47,12 @@ namespace vxr
     Custom();
 		virtual ~Custom();
 
+    virtual void init() {}
     virtual void start() {}
-    virtual void update() {}
+    virtual void preUpdate() {}
+    virtual void update(float dt) {}
     virtual void postUpdate() {}
+    virtual void renderPreUpdate() {}
     virtual void renderUpdate() {}
     virtual void renderPostUpdate() {}
     virtual void stop() {}
@@ -58,6 +61,7 @@ namespace vxr
 
     virtual void onEnable() {}
     virtual void onDisable() {}
+    virtual void onSceneChanged() {}
 
     void set_enabled(const bool enabled) { enabled_ = enabled; }
     bool enabled() const { return enabled_; }
@@ -73,32 +77,23 @@ namespace vxr
   {
     class Custom : public ComponentSystem
     {
-      VXR_OBJECT(System::Custom, ComponentSystem);
+      VXR_COMPONENT_SYSTEM(Custom, ComponentSystem);
     public:
       Custom();
       virtual ~Custom();
 
+      void init() override;
       void start() override;
-      void update() override;
+      void preUpdate() override;
+      void update(float dt) override;
       void postUpdate() override;
+      void renderPreUpdate() override;
       void renderUpdate() override;
       void renderPostUpdate() override;
       void stop() override;
 
     private:
-      std::vector<ref_ptr<vxr::Custom>> components_;
       std::vector<uint32> new_components_;
-      ref_ptr<Scene> scene_;
-
-    public:
-      template<typename T> ref_ptr<T> createInstance()
-      {
-        ref_ptr<T> c;
-        c.alloc();
-        new_components_.push_back(components_.size());
-        components_.push_back(c.get());
-        return c.get();
-      }
     };
 
     template<> class Getter<vxr::Custom>

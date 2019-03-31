@@ -24,6 +24,7 @@
 
 #include "../../include/core/component.h"
 #include "../../include/core/gameobject.h"
+#include "../../include/core/scene.h"
 
 namespace vxr 
 {
@@ -63,6 +64,11 @@ namespace vxr
   System::ComponentSystem::~ComponentSystem()
   {
 
+  }
+
+  void System::ComponentSystem::onSceneChanged()
+  {
+    scene_ = Engine::ref().scene();
   }
 
 }

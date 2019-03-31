@@ -53,14 +53,24 @@ namespace vxr
     Engine::ref().start();
   }
 
-  void Application::update() 
+  void Application::preUpdate()
   {
-    Engine::ref().update();
+    Engine::ref().preUpdate();
+  }
+
+  void Application::update(float dt) 
+  {
+    Engine::ref().update(dt);
   }
 
   void Application::postUpdate()
   {
     Engine::ref().postUpdate();
+  }
+
+  void Application::renderPreUpdate()
+  {
+    Engine::ref().renderPreUpdate();
   }
 
   void Application::renderUpdate()
@@ -128,6 +138,7 @@ namespace vxr
       num_updates = 0;
       accumulator += deltaTime;
       VXR_TRACE_BEGIN("VXR", "Loop Update");
+      preUpdate();
       while (accumulator > framerate_.time_step)
       {
         if (num_updates >= framerate_.max_steps)
@@ -136,15 +147,16 @@ namespace vxr
           break;
         }
         VXR_TRACE_BEGIN("VXR", "App Update");
-        update();
-        postUpdate();
+        update(this->deltaTime());
         VXR_TRACE_END("VXR", "App Update");
         accumulator -= framerate_.time_step;
         num_updates++;
       }
+      postUpdate();
       VXR_TRACE_END("VXR", "Loop Update");
       
       VXR_TRACE_BEGIN("VXR", "Render Update");
+      renderPreUpdate();
       renderUpdate();
       renderPostUpdate();
       VXR_TRACE_END("VXR", "Render Update");

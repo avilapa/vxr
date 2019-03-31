@@ -9,12 +9,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\05-Materials\05-Materials.exe">
-      <Filter>examples\05-Materials</Filter>
-    </None>
-    <None Include="..\..\examples\05-Materials\05-Materials.pdb">
-      <Filter>examples\05-Materials</Filter>
-    </None>
     <None Include="..\..\examples\05-Materials\imgui.ini">
       <Filter>examples\05-Materials</Filter>
     </None>

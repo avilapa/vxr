@@ -181,7 +181,7 @@ namespace vxr
     Engine::ref().submitDisplayList(std::move(frame));
   }
 
-  void Main::update()
+  void Main::update(float dt)
   {
     // 15. Update instances position. This operations are performed in the update() instead of the renderUpdate() for them to take into account deltaTime() and be framerate independent.
     static float v = 0;
@@ -190,13 +190,13 @@ namespace vxr
       instance_positions_[i] =
       {
         (i / 500)*1.5f,
-        750.0f*(float)(sin(i*3.1415 / 10 + v) * deltaTime()),
+        750.0f*(float)(sin(i*3.1415 / 10 + v) * dt),
         (float)(i % 500)*1.5f
       };
     }
     v += 0.01f;
 
-    Application::update();
+    Application::update(dt);
   }
 
   void Main::renderUpdate()

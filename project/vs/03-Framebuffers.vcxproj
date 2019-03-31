@@ -19,8 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{49D9635E-B599-DF94-7ED4-2812EA532471}</ProjectGuid>
-    <RootNamespace>06-Procedural</RootNamespace>
+    <ProjectGuid>{CD86FAA4-3912-6869-4223-EB5DAE2DC469}</ProjectGuid>
+    <RootNamespace>03-Framebuffers</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.10240.0</WindowsTargetPlatformMinVersion>
     <Keyword>Win32Proj</Keyword>
@@ -63,30 +63,30 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>..\..\examples\06-Procedural\</OutDir>
-    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Debug\06-Procedural\</IntDir>
-    <TargetName>06-Procedural</TargetName>
+    <OutDir>..\..\examples\03-Framebuffers\</OutDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Debug\03-Framebuffers\</IntDir>
+    <TargetName>03-Framebuffers</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\..\examples\06-Procedural\</OutDir>
-    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Debug\06-Procedural\</IntDir>
-    <TargetName>06-Procedural</TargetName>
+    <OutDir>..\..\examples\03-Framebuffers\</OutDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Debug\03-Framebuffers\</IntDir>
+    <TargetName>03-Framebuffers</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>..\..\examples\06-Procedural\</OutDir>
-    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Release\06-Procedural\</IntDir>
-    <TargetName>06-Procedural</TargetName>
+    <OutDir>..\..\examples\03-Framebuffers\</OutDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x32\Release\03-Framebuffers\</IntDir>
+    <TargetName>03-Framebuffers</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\..\examples\06-Procedural\</OutDir>
-    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Release\06-Procedural\</IntDir>
-    <TargetName>06-Procedural</TargetName>
+    <OutDir>..\..\examples\03-Framebuffers\</OutDir>
+    <IntDir>d:\GoogleDrive\Programming\Current Projects\VXR\vxr-engine\project\vs\obj\x64\Release\03-Framebuffers\</IntDir>
+    <TargetName>03-Framebuffers</TargetName>
     <TargetExt>.exe</TargetExt>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
@@ -94,7 +94,6 @@
     <ClCompile>
       <AdditionalOptions>/wd4100 /wd4127 /wd4244  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\examples\06-Procedural\noisefilters;..\..\examples\06-Procedural\planet;..\..\examples\06-Procedural\planet\material;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>VXR_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -107,14 +106,13 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>VXR_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\examples\06-Procedural\noisefilters;..\..\examples\06-Procedural\planet;..\..\examples\06-Procedural\planet\material;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDataBaseFileName>$(OutDir)06-Procedural.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)03-Framebuffers.pdb</ProgramDataBaseFileName>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)06-Procedural.exe</OutputFile>
+      <OutputFile>$(OutDir)03-Framebuffers.exe</OutputFile>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
@@ -123,7 +121,6 @@
     <ClCompile>
       <AdditionalOptions>/wd4100 /wd4127 /wd4244  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\..\examples\06-Procedural\noisefilters;..\..\examples\06-Procedural\planet;..\..\examples\06-Procedural\planet\material;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>VXR_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -136,14 +133,13 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>VXR_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\examples\06-Procedural\noisefilters;..\..\examples\06-Procedural\planet;..\..\examples\06-Procedural\planet\material;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDataBaseFileName>$(OutDir)06-Procedural.pdb</ProgramDataBaseFileName>
+      <ProgramDataBaseFileName>$(OutDir)03-Framebuffers.pdb</ProgramDataBaseFileName>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)06-Procedural.exe</OutputFile>
+      <OutputFile>$(OutDir)03-Framebuffers.exe</OutputFile>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
@@ -152,7 +148,6 @@
     <ClCompile>
       <AdditionalOptions>/wd4100 /wd4127 /wd4244  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>..\..\examples\06-Procedural\noisefilters;..\..\examples\06-Procedural\planet;..\..\examples\06-Procedural\planet\material;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>VXR_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -165,7 +160,6 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>VXR_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\examples\06-Procedural\noisefilters;..\..\examples\06-Procedural\planet;..\..\examples\06-Procedural\planet\material;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -173,7 +167,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)06-Procedural.exe</OutputFile>
+      <OutputFile>$(OutDir)03-Framebuffers.exe</OutputFile>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
@@ -182,7 +176,6 @@
     <ClCompile>
       <AdditionalOptions>/wd4100 /wd4127 /wd4244  %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Full</Optimization>
-      <AdditionalIncludeDirectories>..\..\examples\06-Procedural\noisefilters;..\..\examples\06-Procedural\planet;..\..\examples\06-Procedural\planet\material;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>VXR_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <StringPooling>true</StringPooling>
@@ -195,7 +188,6 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>VXR_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\..\examples\06-Procedural\noisefilters;..\..\examples\06-Procedural\planet;..\..\examples\06-Procedural\planet\material;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -203,57 +195,21 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalDependencies>opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(OutDir)06-Procedural.exe</OutputFile>
+      <OutputFile>$(OutDir)03-Framebuffers.exe</OutputFile>
       <EntryPointSymbol>mainCRTStartup</EntryPointSymbol>
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\examples\06-Procedural\procedural.h" />
-    <ClInclude Include="..\..\examples\06-Procedural\noisefilters\noise_filter.h" />
-    <ClInclude Include="..\..\examples\06-Procedural\noisefilters\ridgid.h" />
-    <ClInclude Include="..\..\examples\06-Procedural\noisefilters\simple.h" />
-    <ClInclude Include="..\..\examples\06-Procedural\planet\color_settings.h" />
-    <ClInclude Include="..\..\examples\06-Procedural\planet\planet.h" />
-    <ClInclude Include="..\..\examples\06-Procedural\planet\shape_settings.h" />
-    <ClInclude Include="..\..\examples\06-Procedural\planet\terrain_face.h" />
-    <ClInclude Include="..\..\examples\06-Procedural\planet\material\material.h" />
+    <ClInclude Include="..\..\examples\03-Framebuffers\framebuffers.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\examples\06-Procedural\procedural.cpp">
-      <ObjectFileName>$(IntDir)examples\06-Procedural\</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\examples\06-Procedural\noisefilters\noise_filter.cpp">
-      <ObjectFileName>$(IntDir)examples\06-Procedural\noisefilters\</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\examples\06-Procedural\noisefilters\ridgid.cpp">
-      <ObjectFileName>$(IntDir)examples\06-Procedural\noisefilters\</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\examples\06-Procedural\noisefilters\simple.cpp">
-      <ObjectFileName>$(IntDir)examples\06-Procedural\noisefilters\</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\examples\06-Procedural\planet\color_settings.cpp">
-      <ObjectFileName>$(IntDir)examples\06-Procedural\planet\</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\examples\06-Procedural\planet\planet.cpp">
-      <ObjectFileName>$(IntDir)examples\06-Procedural\planet\</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\examples\06-Procedural\planet\shape_settings.cpp">
-      <ObjectFileName>$(IntDir)examples\06-Procedural\planet\</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\examples\06-Procedural\planet\terrain_face.cpp">
-      <ObjectFileName>$(IntDir)examples\06-Procedural\planet\</ObjectFileName>
-    </ClCompile>
-    <ClCompile Include="..\..\examples\06-Procedural\planet\material\material.cpp">
-      <ObjectFileName>$(IntDir)examples\06-Procedural\planet\material\</ObjectFileName>
+    <ClCompile Include="..\..\examples\03-Framebuffers\framebuffers.cpp">
+      <ObjectFileName>$(IntDir)examples\03-Framebuffers\</ObjectFileName>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\examples\06-Procedural\06-Procedural.exe" />
-    <None Include="..\..\examples\06-Procedural\06-Procedural.pdb" />
-    <None Include="..\..\examples\06-Procedural\imgui.ini" />
-    <None Include="..\..\examples\06-Procedural\planet\material\planet.frag" />
-    <None Include="..\..\examples\06-Procedural\planet\material\planet.vert" />
+    <None Include="..\..\examples\03-Framebuffers\imgui.ini" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="VXR.vcxproj">

@@ -210,7 +210,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\examples\dev\dev.exe" />
+    <None Include="..\..\examples\dev\dev.ilk" />
+    <None Include="..\..\examples\dev\dev.pdb" />
     <None Include="..\..\examples\dev\imgui.ini" />
+    <None Include="..\..\examples\dev\trace.json" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="VXR.vcxproj">

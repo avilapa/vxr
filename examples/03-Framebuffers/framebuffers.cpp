@@ -237,13 +237,13 @@ namespace vxr
     Application::start();
   }
 
-  void Main::update()
+  void Main::update(float dt)
   {
     // 6. Update the contrast settings with the deltaTime().
 	  static double v = 0.0;
 	  v += 0.003;
-    u_state_contrast_.brightness = sin(u_state_contrast_.brightness * 50.0f * deltaTime() + v) + 2.0f * 0.2f;
-    u_state_contrast_.contrast = sin(u_state_contrast_.contrast * 21.0f * deltaTime() + v) + 1.5f;
+    u_state_contrast_.brightness = sin(u_state_contrast_.brightness * 50.0f * dt + v) + 2.0f * 0.2f;
+    u_state_contrast_.contrast = sin(u_state_contrast_.contrast * 21.0f * dt + v) + 1.5f;
 	  
     // 7. Update the cubes model matrix by applying rotation.
     for (uint32 x = 0; x < kNUM_CUBES_ROW; ++x)
@@ -253,14 +253,14 @@ namespace vxr
         uint32 i = x * kNUM_CUBES_ROW + y;
 
         mat4 model = u_state_stream_[i].model;
-        mat4 rot_x = glm::rotate((x + 1) * 0.21f * deltaTime(), glm::vec3(1.0f, 0.0f, 0.0f));
-        mat4 rot_y = glm::rotate((y + 1) * 0.37f * deltaTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+        mat4 rot_x = glm::rotate((x + 1) * 0.21f * dt, glm::vec3(1.0f, 0.0f, 0.0f));
+        mat4 rot_y = glm::rotate((y + 1) * 0.37f * dt, glm::vec3(0.0f, 1.0f, 0.0f));
 
         u_state_stream_[i].model = model * rot_x * rot_y;
       }
     }
 
-    Application::update();
+    Application::update(dt);
   }
 
   void Main::renderUpdate()

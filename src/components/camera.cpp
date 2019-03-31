@@ -170,7 +170,6 @@ namespace vxr
   }
 
   System::Camera::Camera() :
-    scene_(nullptr),
     main_(nullptr),
     render_to_screen_(true)
   {
@@ -178,13 +177,13 @@ namespace vxr
 
   System::Camera::~Camera()
   {
-
   }
 
   void System::Camera::set_main(ref_ptr<vxr::Camera> camera)
   {
     if (!camera || !scene_)
     {
+      main_ = nullptr;
       return;
     }
 
@@ -210,30 +209,23 @@ namespace vxr
     common_uniforms_.buffer = Engine::ref().gpu()->createBuffer({ BufferType::Uniform,  sizeof(common_uniforms_.data), Usage::Static, "Common" });
   }
 
-  void System::Camera::update()
+  void System::Camera::onSceneChanged()
   {
-    if (scene_ != Engine::ref().scene())
-    {
-      scene_ = Engine::ref().scene();
-      main_ = nullptr;
-      set_main(scene_->default_camera());
-      // Scene changed
-    }
+    ComponentSystem::onSceneChanged();
+    set_main(nullptr);
+  }
 
-    if (!main_ && scene_.get())
+  void System::Camera::start()
+  {
+    set_main(scene_->default_camera());
+    if (!main_)
     {
-      // Find camera in scene
       set_main(scene_->findCameraInScene());
     }
   }
 
-  void System::Camera::renderUpdate()
+  void System::Camera::renderPreUpdate()
   {
-    if (!scene_)
-    {
-      return;
-    }
-
     if (!main_)
     {
       // Dummy commands to keep the engine running.
@@ -244,9 +236,16 @@ namespace vxr
       VXR_LOG(VXR_DEBUG_LEVEL_ERROR, "[ERROR]: [CAMERA] No camera instantiated in the scene.\n");
       return;
     }
+  }
+
+  void System::Camera::renderUpdate()
+  {
+    if (!main_)
+    {
+      return;
+    }
 
     VXR_TRACE_SCOPE("VXR", "Camera Render Update");
-
     main_->composer()->setupFirstPass();
 
     DisplayList frame;
@@ -281,7 +280,7 @@ namespace vxr
 
   void System::Camera::renderPostUpdate()
   {
-    if (!main_ || !scene_)
+    if (!main_)
     {
       return;
     }

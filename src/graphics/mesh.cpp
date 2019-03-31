@@ -27,8 +27,12 @@
 #include "../../include/engine/engine.h"
 #include "../../include/engine/gpu.h"
 
+#ifndef VOXELIZER_IMPLEMENTATION
 #define VOXELIZER_IMPLEMENTATION
+#endif
 #include "../../deps/mesh/voxelizer/voxelizer.h"
+
+#include "../../deps/stb/stb_image.h"
 
 namespace vxr
 {

@@ -109,14 +109,13 @@ namespace vxr
     mat4 view_;
 	};
 
-  class Scene;
   namespace mat { class MaterialInstance; }
 
   namespace System 
   {
     class Camera : public ComponentSystem
     {
-      VXR_OBJECT(System::Camera, ComponentSystem);
+      VXR_COMPONENT_SYSTEM(Camera, ComponentSystem);
     public:
       Camera();
       ~Camera();
@@ -125,9 +124,12 @@ namespace vxr
       ref_ptr<vxr::Camera> main() const;
 
       void init() override;
-      void update() override;
+      void start() override;
+      void renderPreUpdate() override;
       void renderUpdate() override;
       void renderPostUpdate() override;
+
+      void onSceneChanged() override;
 
       void set_render_to_screen(bool enabled);
       bool render_to_screen() const;
@@ -136,9 +138,6 @@ namespace vxr
       gpu::Buffer common_uniforms_buffer() const;
 
     private:
-      std::vector<ref_ptr<vxr::Camera>> components_;
-
-      ref_ptr<Scene> scene_;
       ref_ptr<vxr::Camera> main_;
       
       bool render_to_screen_;
@@ -148,15 +147,6 @@ namespace vxr
         gpu::Buffer buffer;
         Shader::CommonData data;
       } common_uniforms_;
-
-    public:
-      template<typename T> ref_ptr<T> createInstance()
-      {
-        ref_ptr<T> c;
-        c.alloc();
-        components_.push_back(c.get());
-        return c.get();
-      }
     };
 
     template<> class Getter<vxr::Camera>

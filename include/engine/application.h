@@ -47,8 +47,10 @@ namespace vxr
 
     virtual void init();
     virtual void start();
-    virtual void update();
+    virtual void preUpdate();
+    virtual void update(float dt);
     virtual void postUpdate();
+    virtual void renderPreUpdate();
     virtual void renderUpdate();
     virtual void renderPostUpdate();
     virtual void stop();
@@ -68,8 +70,8 @@ namespace vxr
     
     struct Framerate 
     {
-      double time_step = 1.0 / 120.0;
-      uint32 max_steps = 15;
+      double time_step = (1.0 / 60.0);
+      uint32 max_steps = 10;
       uint32 fps = 0;
     } framerate_;
   };

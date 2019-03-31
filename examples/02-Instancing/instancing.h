@@ -44,7 +44,7 @@ namespace vxr
 
   public:
     virtual void start() override;
-    virtual void update() override;
+    virtual void update(float dt) override;
     virtual void renderUpdate() override;
     virtual void stop() override;
 

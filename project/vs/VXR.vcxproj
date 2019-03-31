@@ -198,11 +198,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\..\include\components\camera.h" />
+    <ClInclude Include="..\..\include\components\collider.h" />
     <ClInclude Include="..\..\include\components\custom.h" />
     <ClInclude Include="..\..\include\components\ibl.h" />
     <ClInclude Include="..\..\include\components\light.h" />
     <ClInclude Include="..\..\include\components\mesh_filter.h" />
     <ClInclude Include="..\..\include\components\renderer.h" />
+    <ClInclude Include="..\..\include\components\rigidbody.h" />
     <ClInclude Include="..\..\include\components\transform.h" />
     <ClInclude Include="..\..\include\core\assets.h" />
     <ClInclude Include="..\..\include\core\component.h" />
@@ -221,6 +223,7 @@
     <ClInclude Include="..\..\include\graphics\dl_command.h" />
     <ClInclude Include="..\..\include\graphics\gpu_instances.h" />
     <ClInclude Include="..\..\include\graphics\gpu_resources.h" />
+    <ClInclude Include="..\..\include\graphics\height_map.h" />
     <ClInclude Include="..\..\include\graphics\mesh.h" />
     <ClInclude Include="..\..\include\graphics\render_context.h" />
     <ClInclude Include="..\..\include\graphics\texture.h" />
@@ -243,6 +246,10 @@
     <ClInclude Include="..\..\include\memory\ref_ptr.h" />
     <ClInclude Include="..\..\include\memory\scoped_array.h" />
     <ClInclude Include="..\..\include\memory\scoped_ptr.h" />
+    <ClInclude Include="..\..\include\physics\collider_height_map.h" />
+    <ClInclude Include="..\..\include\physics\collider_shape.h" />
+    <ClInclude Include="..\..\include\physics\collider_sphere.h" />
+    <ClInclude Include="..\..\include\physics\hit.h" />
     <ClInclude Include="..\..\include\utils\color.h" />
     <ClInclude Include="..\..\include\utils\gradient.h" />
     <ClInclude Include="..\..\include\utils\math.h" />
@@ -427,6 +434,9 @@
     <ClCompile Include="..\..\src\components\camera.cpp">
       <ObjectFileName>$(IntDir)src\components\</ObjectFileName>
     </ClCompile>
+    <ClCompile Include="..\..\src\components\collider.cpp">
+      <ObjectFileName>$(IntDir)src\components\</ObjectFileName>
+    </ClCompile>
     <ClCompile Include="..\..\src\components\custom.cpp">
       <ObjectFileName>$(IntDir)src\components\</ObjectFileName>
     </ClCompile>
@@ -440,6 +450,9 @@
       <ObjectFileName>$(IntDir)src\components\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\components\renderer.cpp">
+      <ObjectFileName>$(IntDir)src\components\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\components\rigidbody.cpp">
       <ObjectFileName>$(IntDir)src\components\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\components\transform.cpp">
@@ -482,6 +495,9 @@
       <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\gpu_resources.cpp">
+      <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\height_map.cpp">
       <ObjectFileName>$(IntDir)src\graphics\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\mesh.cpp">
@@ -552,6 +568,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\ui\ui.cpp">
       <ObjectFileName>$(IntDir)src\graphics\ui\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\physics\collider_height_map.cpp">
+      <ObjectFileName>$(IntDir)src\physics\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\physics\collider_shape.cpp">
+      <ObjectFileName>$(IntDir)src\physics\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\physics\collider_sphere.cpp">
+      <ObjectFileName>$(IntDir)src\physics\</ObjectFileName>
+    </ClCompile>
+    <ClCompile Include="..\..\src\physics\hit.cpp">
+      <ObjectFileName>$(IntDir)src\physics\</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\..\src\utils\color.cpp">
       <ObjectFileName>$(IntDir)src\utils\</ObjectFileName>

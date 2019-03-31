@@ -71,30 +71,48 @@ namespace vxr
     }
 	};
 
+  class Scene;
+
   namespace System 
   {
     class ComponentSystem : public Object
     {
-
       VXR_OBJECT(ComponentSystem, Object);
-
     public:
       ComponentSystem();
       virtual ~ComponentSystem();
 
       virtual void init() {};
       virtual void start() {};
-      virtual void update() {};
+      virtual void preUpdate() {};
+      virtual void update(float dt) {};
       virtual void postUpdate() {};
+      virtual void renderPreUpdate() {};
       virtual void renderUpdate() {};
       virtual void renderPostUpdate() {};
       virtual void stop() {};
+
+      virtual void onSceneChanged();
+
+    protected:
+      ref_ptr<Scene> scene_;
     };
 
     template<class T> class Getter
     {
-
     };
   }
+
+#define VXR_COMPONENT_SYSTEM(type_name, base_type_name)       \
+  VXR_OBJECT(System::##type_name, System::##base_type_name);  \
+  template<typename T> ref_ptr<T> createInstance()            \
+  {                                                           \
+    ref_ptr<T> c;                                             \
+    c.alloc();                                                \
+    components_.push_back(c.get());                           \
+    return c.get();                                           \
+  }                                                           \
+ private:                                                     \
+  std::vector<ref_ptr<vxr::##type_name>> components_;
 
 } /* end of vxr namespace */

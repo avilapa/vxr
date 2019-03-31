@@ -28,6 +28,9 @@
     <Filter Include="include\memory">
       <UniqueIdentifier>{DE34C8E4-CA02-BCEA-B396-2C119F03984F}</UniqueIdentifier>
     </Filter>
+    <Filter Include="include\physics">
+      <UniqueIdentifier>{A82F986C-14BB-0531-1DCC-882589D66131}</UniqueIdentifier>
+    </Filter>
     <Filter Include="include\utils">
       <UniqueIdentifier>{16A8490F-8268-C545-4BA3-0EC3B7220A22}</UniqueIdentifier>
     </Filter>
@@ -63,6 +66,9 @@
     </Filter>
     <Filter Include="src\graphics\ui">
       <UniqueIdentifier>{F45FD7D4-60EB-4499-69FC-C78DD506A199}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\physics">
+      <UniqueIdentifier>{4C8F6D3D-B844-E632-4139-E009ADEDDC36}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\utils">
       <UniqueIdentifier>{BACE3A1F-2639-EF95-6F77-A03BDB20CDEA}</UniqueIdentifier>
@@ -488,6 +494,9 @@
     <ClInclude Include="..\..\include\components\camera.h">
       <Filter>include\components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\include\components\collider.h">
+      <Filter>include\components</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\components\custom.h">
       <Filter>include\components</Filter>
     </ClInclude>
@@ -501,6 +510,9 @@
       <Filter>include\components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\components\renderer.h">
+      <Filter>include\components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\components\rigidbody.h">
       <Filter>include\components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\components\transform.h">
@@ -555,6 +567,9 @@
       <Filter>include\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\graphics\gpu_resources.h">
+      <Filter>include\graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\graphics\height_map.h">
       <Filter>include\graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\graphics\mesh.h">
@@ -622,6 +637,18 @@
     </ClInclude>
     <ClInclude Include="..\..\include\memory\scoped_ptr.h">
       <Filter>include\memory</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\physics\collider_height_map.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\physics\collider_shape.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\physics\collider_sphere.h">
+      <Filter>include\physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\physics\hit.h">
+      <Filter>include\physics</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\utils\color.h">
       <Filter>include\utils</Filter>
@@ -1165,6 +1192,9 @@
     <ClCompile Include="..\..\src\components\camera.cpp">
       <Filter>src\components</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\components\collider.cpp">
+      <Filter>src\components</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\components\custom.cpp">
       <Filter>src\components</Filter>
     </ClCompile>
@@ -1178,6 +1208,9 @@
       <Filter>src\components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\components\renderer.cpp">
+      <Filter>src\components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\components\rigidbody.cpp">
       <Filter>src\components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\components\transform.cpp">
@@ -1220,6 +1253,9 @@
       <Filter>src\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\gpu_resources.cpp">
+      <Filter>src\graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\graphics\height_map.cpp">
       <Filter>src\graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\mesh.cpp">
@@ -1290,6 +1326,18 @@
     </ClCompile>
     <ClCompile Include="..\..\src\graphics\ui\ui.cpp">
       <Filter>src\graphics\ui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\physics\collider_height_map.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\physics\collider_shape.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\physics\collider_sphere.cpp">
+      <Filter>src\physics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\physics\hit.cpp">
+      <Filter>src\physics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\utils\color.cpp">
       <Filter>src\utils</Filter>

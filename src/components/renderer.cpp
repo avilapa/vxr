@@ -61,28 +61,9 @@ namespace vxr
   {
   }
 
-  void System::Renderer::init()
-  {
-    
-  }
-
-  void System::Renderer::update()
-  {
-    if (scene_ != Engine::ref().scene())
-    {
-      scene_ = Engine::ref().scene();
-      // Scene changed
-    }
-  }
-
   void System::Renderer::renderUpdate()
   {
     VXR_TRACE_SCOPE("VXR", "Renderer Render Update");
-    if (!scene_)
-    {
-      return;
-    }
-
     transparent_.clear();
 
     DisplayList frame;
@@ -107,11 +88,6 @@ namespace vxr
   void System::Renderer::renderPostUpdate()
   {
     VXR_TRACE_SCOPE("VXR", "Renderer Render Post Update");
-    if (!scene_)
-    {
-      return;
-    }
-
     ref_ptr<vxr::Camera> camera = Engine::ref().camera()->main();
     if (!camera)
     {
@@ -124,7 +100,7 @@ namespace vxr
     }
 
     DisplayList frame;
-    for (auto &c : transparent_)
+    for (auto &c : transparent_) /// Need to sort the transparent objects.
     {
       // Send render commands.
       render(c, &frame);

@@ -164,6 +164,27 @@ namespace vxr
     data_[index] = data;
   }
 
+  void Texture::set_data(Color color, uint32 index)
+  {
+    if (data_[index] != nullptr)
+    {
+      free(data_[index]);
+      data_[index] = nullptr;
+    }
+
+    /// TODO: Assumes uchar type.
+    data_[index] = (void*)malloc(3 * sizeof(unsigned char));
+
+    static const unsigned char background_color[] =
+    {
+      (unsigned char)(color.r * 255.0f),
+      (unsigned char)(color.g * 255.0f),
+      (unsigned char)(color.b * 255.0f),
+    };
+
+    data_[index] = (void*)background_color;
+  }
+
   void Texture::set_hdr(bool hdr)
   {
     hdr_ = hdr;

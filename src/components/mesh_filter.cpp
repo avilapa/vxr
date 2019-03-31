@@ -59,11 +59,6 @@ namespace vxr
 
   }
 
-  void System::MeshFilter::init()
-  {
-
-  }
-
   ref_ptr<System::MeshFilter> System::Getter<MeshFilter>::get()
   {
     return Engine::ref().meshFilter();

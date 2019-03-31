@@ -68,7 +68,7 @@ namespace vxr
     ImGui::Combo(uiText("##Type").c_str(), (int*)&type_, "Punctual\0Directional\0\0");
     ImGui::Spacing();
     ImGui::Text("Ambient      "); ImGui::SameLine();
-    ImGui::DragFloat(uiText("##Ambient").c_str(), &ambient_, 0.01f, -FLT_MAX, FLT_MAX);
+    ImGui::DragFloat(uiText("##Ambient").c_str(), &ambient_, 0.01f, -FLT_MAX, FLT_MAX);///
     ImGui::Text("Intensity    "); ImGui::SameLine();
     ImGui::DragFloat(uiText("##Intensity").c_str(), &intensity_, 0.01f, -FLT_MAX, FLT_MAX);
     ImGui::Spacing();
@@ -115,12 +115,10 @@ namespace vxr
 
   System::Light::Light()
   {
-    num_lights_ = 0;
   }
 
   System::Light::~Light()
   {
-
   }
 
   void System::Light::init()
@@ -131,23 +129,9 @@ namespace vxr
       "Lights" });
   }
 
-  void System::Light::update()
+  void System::Light::renderPreUpdate()
   {
-    if (scene_ != Engine::ref().scene())
-    {
-      scene_ = Engine::ref().scene();
-      // Scene changed
-    }
-  }
-
-  void System::Light::renderUpdate()
-  {
-    VXR_TRACE_SCOPE("VXR", "Light Render Update");
-    if (!scene_)
-    {
-      return;
-    }
-
+    VXR_TRACE_SCOPE("VXR", "Light Render Pre Update");
     num_lights_ = 0;
     for (auto &c : components_)
     {
@@ -160,6 +144,7 @@ namespace vxr
       if (num_lights_ < kMaxLightSources)
       {
         c->contributes_ = true;
+        /// Will need transformations for shadows
         /*if (c->hasChanged())
         {
           c->computeTransformations();
@@ -180,20 +165,6 @@ namespace vxr
       .set_data(&light_uniforms_.data)
       .set_size(sizeof(light_uniforms_.data));
     Engine::ref().submitDisplayList(std::move(frame));
-  }
-
-  void System::Light::renderPostUpdate()
-  {
-    VXR_TRACE_SCOPE("VXR", "Light Render Post Update");
-    if (!scene_)
-    {
-      return;
-    }
-
-    /*for (auto &c : components_)
-    {
-      //c->dirty_ = false;
-    }*/
   }
 
   uint32 System::Light::num_lights() const

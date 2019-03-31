@@ -50,20 +50,17 @@ namespace vxr
     ref_ptr<mat::MaterialInstance> material;
 	};
 
-  class Scene;
   class DisplayList;
 
   namespace System 
   {
     class Renderer : public ComponentSystem
     {
-      VXR_OBJECT(System::Renderer, ComponentSystem);
+      VXR_COMPONENT_SYSTEM(Renderer, ComponentSystem);
     public:
       Renderer();
       ~Renderer();
 
-      void init() override;
-      void update() override;
       void renderUpdate() override;
       void renderPostUpdate() override;
 
@@ -75,18 +72,7 @@ namespace vxr
       void renderSkybox();
 
     private:
-      std::vector<ref_ptr<vxr::Renderer>> components_;
       std::vector<ref_ptr<vxr::Renderer>> transparent_;
-      ref_ptr<Scene> scene_;
-
-    public:
-      template<typename T> ref_ptr<T> createInstance()
-      {
-        ref_ptr<T> c;
-        c.alloc();
-        components_.push_back(c.get());
-        return c.get();
-      }
     };
 
     template<> class Getter<vxr::Renderer>

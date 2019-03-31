@@ -73,13 +73,11 @@ namespace vxr
     ref_ptr<mat::BuildCubemap::Instance> build_cubemap_;
 	};
 
-  class Scene;
-
   namespace System 
   {
     class IBL : public ComponentSystem
     {
-      VXR_OBJECT(System::IBL, ComponentSystem);
+      VXR_COMPONENT_SYSTEM(IBL, ComponentSystem);
     public:
       IBL();
       ~IBL();
@@ -87,10 +85,10 @@ namespace vxr
       void set_main(ref_ptr<vxr::IBL> light);
       ref_ptr<vxr::IBL> main() const;
 
-      void init() override;
-      void update() override;
+      void start() override;
       void renderUpdate() override;
-      void renderPostUpdate() override;
+
+      void onSceneChanged() override;
 
       void subscribeMaterialForIBLTextures(const string& material_name);
 
@@ -104,19 +102,8 @@ namespace vxr
       void cleanMaterialIBLTextures();
 
     private:
-      std::vector<ref_ptr<vxr::IBL>> components_;
       std::vector<string> pbr_materials_;
-      ref_ptr<Scene> scene_;
       ref_ptr<vxr::IBL> main_;
-
-    public:
-      template<typename T> ref_ptr<T> createInstance()
-      {
-        ref_ptr<T> c;
-        c.alloc();
-        components_.push_back(c.get());
-        return c.get();
-      }
     };
 
     template<> class Getter<vxr::IBL>
