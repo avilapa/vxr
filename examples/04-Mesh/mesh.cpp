@@ -50,6 +50,7 @@ namespace vxr
     skybox.alloc()->set_name("Default Skybox");
     ref_ptr<Texture> input;
     input = Engine::ref().assetManager()->loadTexture("../../assets/environments/goldenhour", "tga");
+    input->set_wrapping(SamplerWrapping::Clamp);
     skybox->set_texture(input);
     scene_->set_skybox(skybox);
 
@@ -82,7 +83,7 @@ namespace vxr
     // 5. Load the Sphere mesh and setup a reflective red plastic material.
     sphere_.alloc()->set_name("Sphere");
     sphere_->transform()->set_local_position(vec3(0.0f, 0.0f, 0.0f));
-    sphere_->transform()->set_local_scale(vec3(1.4f));
+    sphere_->transform()->set_local_scale(vec3(0.05f));
 
     ref_ptr<mat::Std::Instance> sphere_mat;
     sphere_mat.alloc();
@@ -141,8 +142,6 @@ namespace vxr
 
     suzanne_->transform()->rotate(vec3(-15.0f, 10.0f, -5.0f) * dt);
     suzanne_->transform()->set_world_position(vec3(2, sin(t) * 100 * dt, 0));
-    
-    sphere_->transform()->set_local_scale(vec3(sin(t) * 100 * dt * 0.5f + 1.0f));
 
     cam_->transform()->rotateAround(sphere_, vec3(0,10,0) * dt);
 

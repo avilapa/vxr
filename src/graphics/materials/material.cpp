@@ -44,9 +44,14 @@ namespace vxr
       {
         gpu_.info.shader.frag = Shader::Load("unlit.frag");
       }
-      gpu_.info.attribs[0] = { "attr_position", VertexFormat::Float3 };
-      gpu_.info.attribs[1] = { "attr_normal",   VertexFormat::Float3 };
-      gpu_.info.attribs[2] = { "attr_uv",       VertexFormat::Float2 };
+
+      uint32 index = 0;
+#if VXR_MESH_PRECOMPUTE_TANGENTS
+      gpu_.info.attribs[index++] = { "attr_tangent",  VertexFormat::Float4 };
+#endif
+      gpu_.info.attribs[index++] = { "attr_position", VertexFormat::Float3 };
+      gpu_.info.attribs[index++] = { "attr_normal",   VertexFormat::Float3 };
+      gpu_.info.attribs[index++] = { "attr_uv",       VertexFormat::Float2 };
 
       common_textures_ = 0;
     }

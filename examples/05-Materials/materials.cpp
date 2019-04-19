@@ -35,7 +35,7 @@ namespace vxr
     // 1. Initialize GPU and Window parameters.
     Params p;
     p.gpu = { 100, 100, 100, 100 };
-    p.window = { { 1280, 720 } };
+    p.window = { { 1280, 720} };
     Engine::ref().set_preinit_params(p);
   }
 
@@ -56,6 +56,13 @@ namespace vxr
     Application::start();
   }
 
+  void Main::update(float dt)
+  {
+    preview_model_[2]->transform()->rotate(vec3(10.0f * dt, 0, 8.0f * dt));
+
+    Application::update(dt);
+  }
+
   void Main::createSceneMaterialEditor()
   {
     // 2.1. Load a texture for the skybox of the first scene.
@@ -74,44 +81,62 @@ namespace vxr
     scene_material_editor_->addObject(cam);
 
     // 2.3. Setup initial material values for the models and assign the textures if any.
-    ref_ptr<mat::Std::Instance> mat, mat_textured;
-    mat.alloc();
-    mat->set_metallic(1.0f);
-    mat->set_roughness(0.4f);
+    ref_ptr<mat::Std::Instance> mat_sphere, mat_iridescence, mat_aniso;
+    mat_sphere.alloc();
+    mat_sphere->set_metallic(1.0f);
+    mat_sphere->set_roughness(0.4f);
     Color random = Color::Random(); random.a = 1.0;
-    mat->set_albedo(random);
+    mat_sphere->set_albedo(random);
 
-    mat_textured.alloc();
-    mat_textured->set_metallic(1.0f);
-    mat_textured->set_roughness(1.0f);
-    mat_textured->set_albedo(Color::White);
+    mat_iridescence.alloc();
+    mat_iridescence->set_metallic(1.0f);
+    mat_iridescence->set_roughness(1.0f);
+    mat_iridescence->set_clear_coat(0.0f);
+    mat_iridescence->set_albedo(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/metal/albedo.png"));
+    mat_iridescence->set_normal(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/metal/normal.png"));
+    mat_iridescence->set_metallic(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/metal/metallic.png"));
+    mat_iridescence->set_roughness(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/metal/roughness.png"));
+    mat_iridescence->set_ambient_occlusion(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/ao.png"));
+    mat_iridescence->set_iridescence_thickness(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/masks/edge_blur.png"));
+    mat_iridescence->set_iridescence(1.0f);
+    mat_iridescence->set_iridescence_thickness(0.76f);
 
-    mat_textured->set_albedo(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/albedo.png"));
-    mat_textured->set_normal(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/normal.png"));
-    mat_textured->set_metallic(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/metallic.png"));
-    mat_textured->set_roughness(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/roughness.png"));
-    mat_textured->set_ambient_occlusion(Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/ao.png"));
-    mat_textured->set_iridescence_thickness(Engine::ref().assetManager()->loadTexture("../../assets/textures/noise/noise_swirl.jpg"));
+    mat_aniso.alloc();
+    mat_aniso->set_albedo(Color::Gold);
+    mat_aniso->set_roughness(0.3f);
+    mat_aniso->set_anisotropy(0.8f);
+    mat_aniso->set_anisotropy_rotation(Engine::ref().assetManager()->loadTexture("../../assets/textures/anisotropy/aniso0.png"));
+    mat_aniso->set_clear_coat(0.0f);
 
     // 2.4. Create the actual game objects and assign mesh and materials.
     preview_model_[0].alloc()->set_name("Preview Model 1");
     preview_model_[0]->addComponent<MeshFilter>()->mesh = Engine::ref().assetManager()->loadMesh("../../assets/models/sphere/sphere.obj");
-    preview_model_[0]->addComponent<Renderer>()->material = mat.get();
+    preview_model_[0]->addComponent<Renderer>()->material = mat_sphere.get();
 
     preview_model_[0]->transform()->set_local_position(vec3(0.3f, 0, 0));
     preview_model_[0]->transform()->set_local_rotation(vec3(0, 30.f, 0));
-    preview_model_[0]->transform()->set_local_scale(vec3(1.0));
+    preview_model_[0]->transform()->set_local_scale(vec3(0.06f));
     scene_material_editor_->addObject(preview_model_[0]);
 
     preview_model_[1].alloc()->set_name("Preview Model 2");
     preview_model_[1]->set_active(false);
     preview_model_[1]->addComponent<MeshFilter>()->mesh = Engine::ref().assetManager()->loadMesh("../../assets/models/substance_sphere/substance_sphere.obj");
-    preview_model_[1]->addComponent<Renderer>()->material = mat_textured.get();
+    preview_model_[1]->addComponent<Renderer>()->material = mat_iridescence.get();
 
     preview_model_[1]->transform()->set_local_position(vec3(0.3f, 0, 0));
     preview_model_[1]->transform()->set_local_rotation(vec3(0, 30.f, 0));
     preview_model_[1]->transform()->set_local_scale(vec3(0.5));
     scene_material_editor_->addObject(preview_model_[1]);
+
+    preview_model_[2].alloc()->set_name("Preview Model 3");
+    preview_model_[2]->set_active(false);
+    preview_model_[2]->addComponent<MeshFilter>()->mesh = Engine::ref().assetManager()->loadMesh("../../assets/models/rounded_cube/rounded_cube.obj"); //Engine::ref().assetManager()->default_quad();
+    preview_model_[2]->addComponent<Renderer>()->material = mat_aniso.get();
+
+    preview_model_[2]->transform()->set_local_position(vec3(0.3f, 0, 0));
+    preview_model_[2]->transform()->set_local_rotation(vec3(0, 30.f, 0));
+    preview_model_[2]->transform()->set_local_scale(vec3(0.35f));
+    scene_material_editor_->addObject(preview_model_[2]);
 
     // 2.5. Add a white directional light to the scene.
     ref_ptr<GameObject> dir_light;
@@ -119,6 +144,13 @@ namespace vxr
     dir_light->addComponent<Light>()->set_type(Light::Type::Directional);
     dir_light->transform()->set_local_rotation(vec3(90.0f, 60.0f, 90.0f));
     scene_material_editor_->addObject(dir_light);
+
+    ref_ptr<GameObject> punctual_light;
+    punctual_light.alloc()->set_name("Punctual Light");
+    punctual_light->addComponent<Light>()->set_type(Light::Type::Punctual);
+    punctual_light->getComponent<Light>()->set_color(Color::Random());
+    punctual_light->transform()->set_local_position(vec3(1.0f, 0.0f, 1.0f));
+    scene_material_editor_->addObject(punctual_light);
   }
 
   void Main::createSceneWhiteFurnaceTest()
@@ -185,7 +217,7 @@ namespace vxr
 
         obj->transform()->set_local_position(vec3(((float)j - 4.5f), ((float)i - 0.5f), 0));
         obj->transform()->set_local_rotation(vec3(0, 0.5f, 0));
-        obj->transform()->set_local_scale(vec3(0.9f));
+        obj->transform()->set_local_scale(vec3(0.045f));
         scene_white_furnace_->addObject(obj);
       }
     }

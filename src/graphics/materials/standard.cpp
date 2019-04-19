@@ -49,7 +49,7 @@ namespace vxr
 
       //set_blend_params(true, vec4(0), BlendFactor::SrcAlpha, BlendFactor::OneMinusSrcAlpha, BlendOp::Add, BlendFactor::SrcAlpha, BlendFactor::OneMinusSrcAlpha, BlendOp::Add);
       
-      set_num_textures(11);
+      set_num_textures(12);
       set_uniforms_enabled(true);
       set_uniforms_name("Standard");
 
@@ -70,13 +70,14 @@ namespace vxr
       set_texture(6, Engine::ref().assetManager()->default_texture_white()); // Ambient Occlusion
       set_texture(7, Engine::ref().assetManager()->default_texture_normal()); // Normal
       set_texture(8, Engine::ref().assetManager()->default_texture_normal()); // Clear Coat Normal
-      set_texture(9, Engine::ref().assetManager()->default_texture_white()); // Emissive
-      set_texture(10, Engine::ref().assetManager()->default_texture_white()); // Iridiscence Thickness
-
+      set_texture(9, Engine::ref().assetManager()->default_texture_black()); // Anisotropy Direction
+      set_texture(10, Engine::ref().assetManager()->default_texture_white()); // Emissive
+      set_texture(11, Engine::ref().assetManager()->default_texture_white()); // Iridiscence Thickness
+          
       uniforms_.standard.albedo = vec4(1);
       uniforms_.standard.emissive = vec4(0);
       uniforms_.standard.metallic_roughness_reflectance_ao = vec4(1.0f, 1.0f, 0.5f, 1.0f);
-      uniforms_.standard.clear_coat_clear_coat_roughness = vec4(1.0f, 0.0f, 0, 0);
+      uniforms_.standard.clear_coat_value_roughness_anisotropy_value_rotation = vec4(1.0f, 0.0f, 0.0f, 0.0f);
       uniforms_.standard.iridescence_mask_thickness_ior_k = vec4(0.0f, 0.5f, 1.33f, 0.33f);
     }
 
@@ -95,6 +96,10 @@ namespace vxr
         ImGui::SliderFloat(uiText("Reflectance##Base").c_str(), &uniforms_.standard.metallic_roughness_reflectance_ao.z, 0.0f, 1.0f);
         ImGui::SliderFloat(uiText("Ambient Occlusion##Base").c_str(), &uniforms_.standard.metallic_roughness_reflectance_ao.w, 0.0f, 1.0f);
         ImGui::Spacing();
+        ImGui::Text("Anisotropy:");
+        ImGui::SliderFloat(uiText("Anisotropy##Base").c_str(), &uniforms_.standard.clear_coat_value_roughness_anisotropy_value_rotation.z, -1.0f, 1.0f);
+        ImGui::SliderFloat(uiText("Rotation (rad)##Base").c_str(), (float*)&uniforms_.standard.clear_coat_value_roughness_anisotropy_value_rotation.w, 0.0f, 3.14159265358979323846264338327950288f);
+        ImGui::Spacing();
         ImGui::Text("Thin Film Layer:");
         ImGui::SliderFloat(uiText("Iridescence##ThinFilm").c_str(), &uniforms_.standard.iridescence_mask_thickness_ior_k.x, 0.0f, 1.0f);
         ImGui::SliderFloat(uiText("Thickness##ThinFilm").c_str(), &uniforms_.standard.iridescence_mask_thickness_ior_k.y, 0.0f, 1.0f);
@@ -102,8 +107,8 @@ namespace vxr
         ImGui::SliderFloat(uiText("Extinction k##ThinFilm").c_str(), &uniforms_.standard.iridescence_mask_thickness_ior_k.w, 0.0, 5.0f);
         ImGui::Spacing();
         ImGui::Text("External Layer (Coating):");
-        ImGui::SliderFloat(uiText("Clear Coat##Coating").c_str(), &uniforms_.standard.clear_coat_clear_coat_roughness.x, 0.0f, 1.0f);
-        ImGui::SliderFloat(uiText("Roughness##Coating").c_str(), &uniforms_.standard.clear_coat_clear_coat_roughness.y, 0.0f, 1.0f);
+        ImGui::SliderFloat(uiText("Clear Coat##Coating").c_str(), &uniforms_.standard.clear_coat_value_roughness_anisotropy_value_rotation.x, 0.0f, 1.0f);
+        ImGui::SliderFloat(uiText("Roughness##Coating").c_str(), &uniforms_.standard.clear_coat_value_roughness_anisotropy_value_rotation.y, 0.0f, 1.0f);
         ImGui::Spacing();
         break;
       case 1:
@@ -175,7 +180,7 @@ namespace vxr
 
     void Std::Instance::set_iridescence_thickness(ref_ptr<Texture> texture)
     {
-      set_texture(10, texture);
+      set_texture(11, texture);
     }
 
     void Std::Instance::set_iridescence_base_ior(float value)
@@ -190,17 +195,32 @@ namespace vxr
 
     void Std::Instance::set_clear_coat(float value)
     {
-      uniforms_.standard.clear_coat_clear_coat_roughness.x = value;
+      uniforms_.standard.clear_coat_value_roughness_anisotropy_value_rotation.x = value;
     }
 
     void Std::Instance::set_clear_coat_roughness(float value)
     {
-      uniforms_.standard.clear_coat_clear_coat_roughness.y = value;
+      uniforms_.standard.clear_coat_value_roughness_anisotropy_value_rotation.y = value;
     }
 
     void Std::Instance::set_clear_coat_normal(ref_ptr<Texture> texture)
     {
       set_texture(8, texture);
+    }
+
+    void Std::Instance::set_anisotropy(float value)
+    {
+      uniforms_.standard.clear_coat_value_roughness_anisotropy_value_rotation.z = value;
+    }
+
+    void Std::Instance::set_anisotropy_rotation(float radians)
+    {
+      uniforms_.standard.clear_coat_value_roughness_anisotropy_value_rotation.w = radians;
+    }
+
+    void Std::Instance::set_anisotropy_rotation(ref_ptr<Texture> texture)
+    {
+      set_texture(9, texture);
     }
 
   }

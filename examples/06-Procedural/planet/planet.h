@@ -55,7 +55,7 @@ namespace vxr {
     };
     FaceRenderMask::Enum faceRenderMask;
 
-    int resolution = 30;
+    int resolution = 75;
     bool wireframe = false;
 
     std::vector<ref_ptr<MeshFilter>> meshFilters;
@@ -71,7 +71,7 @@ namespace vxr {
     {
       FaceRenderMask::Enum faceRenderMask;
       bool wireframe = false;
-      int resolution = 30;
+      int resolution = 75;
     } uiSettings;
   };
 

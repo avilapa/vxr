@@ -74,7 +74,7 @@ namespace vxr
         vec4 albedo;
         vec4 emissive;
         vec4 metallic_roughness_reflectance_ao;
-        vec4 clear_coat_clear_coat_roughness;
+        vec4 clear_coat_value_roughness_anisotropy_value_rotation;
         vec4 iridescence_mask_thickness_ior_k;
       } standard;
       struct CubemapConvolution

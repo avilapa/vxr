@@ -137,7 +137,7 @@ namespace vxr
     ref_ptr<GameObject> sphere;
     sphere.alloc()->set_name("Sphere");
     sphere->transform()->set_local_position(position);
-    sphere->transform()->set_local_scale(vec3(scale));
+    sphere->transform()->set_local_scale(vec3(scale * 0.05f));
 
     ref_ptr<mat::Std::Instance> std_sphere_mat;
     std_sphere_mat.alloc()->set_albedo(color);

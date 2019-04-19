@@ -26,6 +26,9 @@
 // Attributes
 //--------------------------------------------------------------------------------
 
+#if MESH_HAS_PRECOMPUTED_TANGENTS
+in vec4 attr_tangent;
+#endif
 in vec3 attr_position;
 in vec3 attr_normal;
 in vec2 attr_uv;
@@ -45,11 +48,22 @@ vec2 getUV()
 	return attr_uv;
 }
 
+#if MESH_HAS_PRECOMPUTED_TANGENTS
+vec4 getTangent()
+{
+	return attr_tangent;
+}
+#endif
+
 out vec3 in_world_position;
 out vec3 in_world_normal;
 out vec3 in_position;
 out vec3 in_normal;
 out vec2 in_uv;
+#if MESH_HAS_PRECOMPUTED_TANGENTS
+out vec3 in_tangent;
+out vec3 in_bitangent;
+#endif
 
 //--------------------------------------------------------------------------------
 // Uniforms
@@ -116,31 +130,6 @@ vec4 getClipPosition()
 	return u_proj * u_view * u_model * vec4(attr_position, 1.0);
 }
 
-
-
-void setupOutput()
-{
-	in_world_position = vec3(u_model * vec4(attr_position, 1.0));
-  	in_world_normal = mat3(u_model) * attr_normal;/// transpose inverse 
-  	in_position = attr_position;
-  	in_normal = attr_normal; 
-  	in_uv = attr_uv;
-}
-
-void setupWorldSpaceOutput()
-{
-	in_world_position = vec3(u_model * vec4(attr_position, 1.0));
-  	in_world_normal = mat3(u_model) * attr_normal; /// transpose inverse
-  	in_uv = attr_uv;
-}
-
-void setupScreenSpaceOutput()
-{
-	in_position = attr_position;
-  	in_normal = attr_normal; 
-  	in_uv = attr_uv;
-}
-
 void setupWorldPositionOutput()
 {
 	in_world_position = vec3(u_model * vec4(attr_position, 1.0));;
@@ -189,4 +178,36 @@ void setupUVOutput()
 void setupUVOutput(vec2 uv_output)
 {
 	in_uv = uv_output;
+}
+
+// Must be done after world normal output is setup.
+void setupTangentBitangentOutput()
+{
+#if MESH_HAS_PRECOMPUTED_TANGENTS
+  	in_tangent = mat3(transpose(inverse(u_model))) * attr_tangent.xyz;
+  	in_bitangent = cross(in_world_normal, in_tangent) * sign(attr_tangent.w);
+#endif
+}
+
+void setupWorldSpaceOutput()
+{
+	setupWorldPositionOutput();
+	setupWorldNormalOutput();
+	setupTangentBitangentOutput();
+  	setupUVOutput();
+}
+
+void setupScreenSpaceOutput()
+{
+	setupPositionOutput();
+  	setupNormalOutput();
+  	setupUVOutput();
+}
+
+void setupOutput()
+{
+	setupWorldPositionOutput();
+  	setupWorldNormalOutput();
+  	setupTangentBitangentOutput();
+  	setupScreenSpaceOutput();
 }

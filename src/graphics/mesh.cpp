@@ -74,30 +74,44 @@ namespace vxr
 
     if (indices_.size() == 0)
     {
-      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Missing indices of mesh object with name %s\n", name().c_str());
+      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [MESH] Missing indices of mesh object with name %s\n", name().c_str());
       return false;
     }
 
     if (normals_.size() < vertices_.size())
     {
-      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Automatically recomputed normals of mesh object with name %s\n", name().c_str());
       recomputeNormals();
+      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [MESH] Recomputed normals of mesh object with name %s\n", name().c_str());
     }
 
     if (uv_.size() < vertices_.size())
     {
-      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: Automatically recomputed texture coordinates of mesh object with name %s\n", name().c_str());
       uv_.clear();
       for (uint32 i = 0; i < vertices_.size(); ++i)
       {
         uv_.push_back(vec2());
       }
+      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [MESH] Recomputed texture coordinates of mesh object with name %s\n", name().c_str());
     }
+
+#if VXR_MESH_PRECOMPUTE_TANGENTS
+    if (tangents_.size() < vertices_.size())
+    {
+      recomputeTangents();
+      VXR_LOG(VXR_DEBUG_LEVEL_INFO, "[INFO]: [MESH] Recomputed tangents of mesh object with name %s\n", name().c_str());
+    }
+#endif
 
 	  gpu_.vertex.data.clear();
     gpu_.index.data.clear();
     for (uint32 i = 0; i < vertices_.size(); ++i)
     {
+#if VXR_MESH_PRECOMPUTE_TANGENTS
+      gpu_.vertex.data.push_back(tangents_[i].x);
+      gpu_.vertex.data.push_back(tangents_[i].y);
+      gpu_.vertex.data.push_back(tangents_[i].z);
+      gpu_.vertex.data.push_back(tangents_[i].w);
+#endif
       gpu_.vertex.data.push_back(vertices_[i].x);
       gpu_.vertex.data.push_back(vertices_[i].y);
       gpu_.vertex.data.push_back(vertices_[i].z);
@@ -201,7 +215,7 @@ namespace vxr
     {
       /// TODO: Fix voxel normals.
       normals_.push_back(vec3(result->normals[result->normalindices[v]].x, result->normals[result->normalindices[v+1]].y, result->normals[result->normalindices[v+2]].z));
-      indices_.push_back(result->indices[v]);
+      indices_.push_back(result->indices[v+0]);
       indices_.push_back(result->indices[v+1]);
       indices_.push_back(result->indices[v+2]);
     }
@@ -222,7 +236,7 @@ namespace vxr
   {
     normals_.clear();
 
-    for (uint32 i = 0; i < vertices_.size(); i++)
+    for (uint32 i = 0; i < vertices_.size(); ++i)
     {
       normals_.push_back(vec3());
     }
@@ -237,6 +251,52 @@ namespace vxr
       normals_[indices_[i + 0]] = n;
       normals_[indices_[i + 1]] = n;
       normals_[indices_[i + 2]] = n;
+    }
+  }
+
+  void Mesh::recomputeTangents()
+  {
+    tangents_.clear();
+
+    for (uint32 i = 0; i < vertices_.size(); ++i)
+    {
+      tangents_.push_back(vec4(0.0f));
+    }
+
+    std::vector<vec3> tan1(vertices_.size(), vec3(0.0f));
+    std::vector<vec3> tan2(vertices_.size(), vec3(0.0f));
+
+    for (uint32 i = 0; i < indices_.size(); i += 3) 
+    {
+      uint32 i0 = indices_[i + 0];
+      uint32 i1 = indices_[i + 1];
+      uint32 i2 = indices_[i + 2];
+
+      vec3 edge1 = vertices_[i1] - vertices_[i0];
+      vec3 edge2 = vertices_[i2] - vertices_[i0];
+      vec2 uv1 = uv_[i1] - uv_[i0];
+      vec2 uv2 = uv_[i2] - uv_[i0];
+
+      float r = 1.0f / (uv1.x * uv2.y - uv1.y * uv2.x);
+      vec3 t = ((edge1 * uv2.y) - (edge2 * uv1.y)) * r;
+      vec3 b = ((edge1 * uv2.x) - (edge2 * uv1.x)) * r;
+
+      tan1[i0] += t;
+      tan1[i1] += t;
+      tan1[i2] += t;
+
+      tan2[i0] += b;
+      tan2[i1] += b;
+      tan2[i2] += b;
+    }
+
+    for (uint32 i = 0; i < vertices_.size(); ++i) 
+    {
+      vec3 n = normals_[i];
+      vec3 t = glm::normalize(tan1[i] - (n * glm::dot(n, tan1[i])));
+      vec3 c = glm::cross(n, tan1[i]);
+
+      tangents_[i] = vec4(t.x, t.y, t.z, (glm::dot(c, tan2[i]) < 0) ? -1.0f : 1.0f);
     }
   }
 
@@ -328,6 +388,7 @@ namespace vxr
     set_vertices(cube_pos);
     recomputeNormals();
     set_uv(cube_uv);
+    recomputeTangents();
   }
 
   mesh::Cube::~Cube()
@@ -361,6 +422,7 @@ namespace vxr
     set_vertices(quad_pos);
     recomputeNormals();
     set_uv(quad_uv);
+    recomputeTangents();
   }
 
   mesh::Quad::~Quad()

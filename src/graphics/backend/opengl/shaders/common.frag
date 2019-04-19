@@ -26,15 +26,28 @@
 
 #define MULTIPLE_SCATTERING     	    1
 
+//--------------------------------------------------------------------------------
+// Precomputed defines
+//--------------------------------------------------------------------------------
+//
+// MAX_LIGHT_SOURCES					kMaxLightSources (default: 30)
+// MESH_HAS_PRECOMPUTED_TANGENTS		VXR_MESH_PRECOMPUTE_TANGENTS (default: 1)
+//
+// --------------------------------------------------------------------------------
+
 #define MAT_HAS_EMISSIVE				1
 #define MAT_HAS_NORMAL_MAP              1
-
 #define MAT_HAS_CLEAR_COAT              1
 #define MAT_HAS_CLEAR_COAT_NORMAL_MAP   1
-
 #define MAT_HAS_IRIDESCENCE             1
-
 #define MAT_HAS_ANISOTROPY              1
+
+
+#define COMPUTE_TBN_FAST				0
+#define COMPUTE_TBN_MESH				1
+#define COMPUTE_TBN_INVSQRT				2
+
+#define MAT_COMPUTE_TBN_MODE			COMPUTE_TBN_MESH
 
 //--------------------------------------------------------------------------------
 // Structures
@@ -130,6 +143,8 @@ in vec3 in_world_normal;
 in vec3 in_position;
 in vec3 in_normal;
 in vec2 in_uv;
+in vec3 in_tangent;
+in vec3 in_bitangent;
 
 vec3 getWorldPosition()
 {

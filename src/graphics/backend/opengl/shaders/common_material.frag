@@ -26,11 +26,6 @@
 // MaterialInput
 //--------------------------------------------------------------------------------
 
-// min roughness such that (MIN_ROUGHNESS^4) > 0 in fp16 (i.e. 2^(-14/4), slightly rounded up)
-#define MIN_ROUGHNESS              0.045
-#define MIN_LINEAR_ROUGHNESS       0.002025
-#define MAX_CLEAR_COAT_ROUGHNESS   0.6
-
 MaterialInput initMaterial()
 {
   MaterialInput material;
@@ -39,7 +34,6 @@ MaterialInput initMaterial()
   material.metallic = 0.0;
   material.reflectance = 0.5;
   material.ambientOcclusion = 1.0;
-
 #if MAT_HAS_EMISSIVE
   material.emissive = vec4(0.0);
 #endif
@@ -50,7 +44,6 @@ MaterialInput initMaterial()
 #if MAT_HAS_NORMAL_MAP
   material.normal = vec3(0.0, 0.0, 1.0);
 #endif
-
 #if MAT_HAS_CLEAR_COAT
   material.clearCoat = 1.0;
   material.clearCoatRoughness = 0.0;
@@ -58,43 +51,68 @@ MaterialInput initMaterial()
   material.clearCoatNormal = vec3(0.0, 0.0, 1.0);
 #endif
 #endif
-  // Default iridescence values
-
+#if MAT_HAS_IRIDESCENCE
+  material.iridescenceMask = 0.0;
+  material.filmThickness = 1.0;
+  material.baseIor = 1.33;
+  material.kExtinction = 0.33;
+#endif
   return material;
 }
 
 ShadingParameters prepareMaterial(const MaterialInput material)
 {
   ShadingParameters shading;
-
+  shading.V = normalize(getViewPosition() - getWorldPosition());
   vec3 N = normalize(getWorldNormal());
-
-#if MAT_HAS_ANISOTROPY || MAT_HAS_NORMAL_MAP || MAT_HAS_CLEAR_COAT_NORMAL_MAP  
+#if MAT_HAS_ANISOTROPY || MAT_HAS_NORMAL_MAP || MAT_HAS_CLEAR_COAT_NORMAL_MAP
+#if MESH_HAS_PRECOMPUTED_TANGENTS
+  vec3 T = normalize(in_tangent);
+  vec3 B = normalize(in_bitangent);
+#else
   // Get edge vectors of the pixel triangle.
-  vec3 q1  = dFdx(getWorldPosition());
-  vec3 q2  = dFdy(getWorldPosition());
-  vec2 st1 = dFdx(getUV());
-  vec2 st2 = dFdy(getUV());
-  vec3 T = normalize(q1 * st2.t - q2 * st1.t);
-  vec3 B = -normalize(cross(N, T));
-  
+  vec3 edge1  = dFdx(getWorldPosition());
+  vec3 edge2  = dFdy(getWorldPosition());
+  vec2 uv1 = dFdx(getUV());
+  vec2 uv2 = dFdy(getUV());
+#if   MAT_COMPUTE_TBN_MODE == COMPUTE_TBN_FAST
+  vec3 T = normalize(edge1 * uv2.y - edge2 * uv1.y);
+  vec3 B = normalize(cross(N, T));
+#elif MAT_COMPUTE_TBN_MODE == COMPUTE_TBN_MESH
+  float r = 1.0f / (uv1.x * uv2.y - uv1.y * uv2.x);
+  vec3 T = normalize((edge1 * uv2.y - edge2 * uv1.y) * r);
+//vec3 B = normalize((edge1 * uv2.x - edge2 * uv1.x) * r);
+  vec3 B = normalize(cross(N, T));
+#elif MAT_COMPUTE_TBN_MODE == COMPUTE_TBN_INVSQRT
+  vec3 dp2perp = cross(edge2, N);
+  vec3 dp1perp = cross(N, edge1);
+  vec3 T = dp2perp * uv1.x + dp1perp * uv2.x;
+  vec3 B = dp2perp * uv1.y + dp1perp * uv2.y;
+  // Construct a scale-invariant frame 
+  float invmax = inversesqrt(max(dot(T,T), dot(B,B)));
+  T *= invmax;
+  B *= invmax;
+#endif
+  // Gram Schmidt process
+  T = normalize(T - N * dot(N, T));
+  B = normalize(B - N * dot(N, B));
+#endif
   shading.TBN = mat3(T, B, N);
 #else
   shading.TBN[2] = N;
 #endif
-  shading.V = normalize(getViewPosition() - getWorldPosition());
 
 #if MAT_HAS_NORMAL_MAP
   shading.N = normalize(shading.TBN * material.normal);
 #else
   shading.N = shading.TBN[2];
 #endif
+
 #if MAT_HAS_CLEAR_COAT && MAT_HAS_CLEAR_COAT_NORMAL_MAP
   shading.N_CC = normalize(shading.TBN * material.clearCoatNormal);
 #else
   shading.N_CC = shading.TBN[2];
 #endif
-
   shading.R = reflect(-shading.V, shading.N);
   shading.NoV = abs(dot(shading.N, shading.V)) + 1e-4;
 
@@ -106,6 +124,10 @@ PixelParameters getPixelParameters(const MaterialInput material, const ShadingPa
   PixelParameters pixel;
 
   vec4 baseColor = material.baseColor;
+  /*if (baseColor.a <= 0.0)
+  {
+    discard;
+  }*/
   float metallic = clamp(material.metallic, 0.0, 1.0);
   float reflectance = clamp(material.reflectance, 0.0, 1.0);
 
@@ -114,11 +136,10 @@ PixelParameters getPixelParameters(const MaterialInput material, const ShadingPa
   pixel.f0 = 0.16 * reflectance * reflectance * (1.0 - metallic) + baseColor.rgb * metallic;
 
   // Remaps the roughness to a perceptually linear roughness (roughness^2).
-  pixel.roughness = clamp(material.roughness, MIN_ROUGHNESS, 1.0);
-  pixel.linearRoughness = pixel.roughness * pixel.roughness;
+  float roughness = clamp(material.roughness, MIN_ROUGHNESS, 1.0);
 
 #if MAT_HAS_IRIDESCENCE
-  // Remaps the iridescence mask to a perceptually linear mask (1-(1-roughness)^3).
+  // Remaps the iridescence mask to a perceptually linear mask (1-(1-iridescence)^3).
   pixel.iridescenceMask = clamp(1.0 - pow(1.0 - material.iridescenceMask, 3.0), 0.0, 1.0);
   pixel.filmThickness = clamp(material.filmThickness, 0.0, 1.0);
   pixel.baseIor = material.baseIor;
@@ -140,8 +161,21 @@ PixelParameters getPixelParameters(const MaterialInput material, const ShadingPa
   // The base layer's f0 is computed assuming an interface from air to an IOR
   // of 1.5, but the clear coat layer forms an interface from IOR 1.5 to IOR
   // 1.5. We recompute f0 by first computing its IOR, then reconverting to f0
-  // by using the correct interface
+  // by using the correct interface.
   pixel.f0 = mix(pixel.f0, f0ClearCoatToSurface(pixel.f0), pixel.clearCoat);
+  // The base layer must be at least as rough as the clear coat layer to take 
+  // into account possible diffusion by the top layer.
+  roughness = mix(roughness, max(roughness, pixel.clearCoatRoughness), pixel.clearCoat);
+#endif
+
+  pixel.roughness = roughness;
+  pixel.linearRoughness = roughness * roughness;
+
+#if MAT_HAS_ANISOTROPY
+  vec3 direction = material.anisotropyDirection;
+  pixel.anisotropy = clamp(material.anisotropy, -1.0, 1.0);
+  pixel.anisotropicT = normalize(shading.TBN * direction);
+  pixel.anisotropicB = normalize(cross(shading.TBN[2], pixel.anisotropicT));
 #endif
 
   // Pre-filtered DFG term used for image-based lighting
@@ -171,12 +205,10 @@ vec4 evaluateMaterial(const MaterialInput material)
   color *= material.baseColor.a;
 
 #if MAT_HAS_EMISSIVE
-  //highp
   vec4 emissive = material.emissive;
   float attenuation = 1.0; /// *= exposure 
   color.rgb += emissive.rgb * attenuation;
 #endif
   return vec4(applyGammaCorrection(color), material.baseColor.a); /// diffuse alpha
 }
-
-// Cutout = alpha that makes transparent, =/= transparency
+// cutout = alpha that makes transparent, =/= transparency

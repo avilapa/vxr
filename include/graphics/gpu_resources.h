@@ -85,8 +85,8 @@ namespace vxr
         uint16 width = 1;
         uint16 height = 1;
         uint16 depth = 1;
-        SamplerFiltering::Enum minification_filter = SamplerFiltering::Nearest;
-        SamplerFiltering::Enum magnification_filter = SamplerFiltering::Nearest;
+        SamplerFiltering::Enum minification_filter = SamplerFiltering::Linear;
+        SamplerFiltering::Enum magnification_filter = SamplerFiltering::Linear;
         SamplerWrapping::Enum wrapping[3] = { SamplerWrapping::Repeat, SamplerWrapping::Repeat, SamplerWrapping::Repeat };
         TexelsFormat::Enum format = TexelsFormat::None;
         Usage::Enum usage = Usage::Static;

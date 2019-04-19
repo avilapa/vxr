@@ -23,34 +23,45 @@
 // -------------------------------------------------------------------------------
 
 // Normal distribution functions
-#define SPECULAR_D_GGX_UPYDK        0
-#define SPECULAR_D_GGX              1
+#define SPECULAR_D_GGX_UPYDK            0
+#define SPECULAR_D_GGX                  1
+#define SPECULAR_D_GGX_ANISOTROPIC      2
+#define SPECULAR_D_GGX_ANISOTROPIC_HDRP 2
 
 // Visibility functions
-#define SPECULAR_V_SMITH_GGX_UPYDK  0
-#define SPECULAR_V_SMITH_GGX        1
-#define SPECULAR_V_SMITH_GGX_FAST   2
-#define SPECULAR_V_KELEMEN          3
+#define SPECULAR_V_SMITH_GGX_UPYDK      0
+#define SPECULAR_V_SMITH_GGX            1
+#define SPECULAR_V_SMITH_GGX_FAST       2
+#define SPECULAR_V_KELEMEN              3
+#define SPECULAR_V_GGX_ANISOTROPIC      4
 
 // Fresnel functions
-#define SPECULAR_F_SCHLICK          0
+#define SPECULAR_F_SCHLICK              0
 
 
-#define BRDF_SPECULAR_D             SPECULAR_D_GGX
-#define BRDF_SPECULAR_V             SPECULAR_V_SMITH_GGX_UPYDK
-#define BRDF_SPECULAR_F             SPECULAR_F_SCHLICK
+#define BRDF_SPECULAR_D                 SPECULAR_D_GGX
+#define BRDF_SPECULAR_V                 SPECULAR_V_SMITH_GGX_UPYDK
+#define BRDF_SPECULAR_F                 SPECULAR_F_SCHLICK
 
-#define BRDF_CLEAR_COAT_D           SPECULAR_D_GGX
-#define BRDF_CLEAR_COAT_V           SPECULAR_V_KELEMEN
-#define BRDF_CLEAR_COAT_F           SPECULAR_F_SCHLICK
-#define BRDF_CLEAR_COAT_IOR         1.5 
-#define BRDF_CLEAR_COAT_F0          0.04 // iorToF0(BRDF_CLEAR_COAT_IOR)
+#define BRDF_CLEAR_COAT_D               SPECULAR_D_GGX
+#define BRDF_CLEAR_COAT_V               SPECULAR_V_KELEMEN
+#define BRDF_CLEAR_COAT_F               SPECULAR_F_SCHLICK
+#define BRDF_CLEAR_COAT_IOR             1.5 
+#define BRDF_CLEAR_COAT_F0              0.04 // iorToF0(BRDF_CLEAR_COAT_IOR)
 
-#define DIFFUSE_LAMBERT             0
-#define DIFFUSE_BURLEY              1
+#define BRDF_ANISOTROPIC_D              SPECULAR_D_GGX_ANISOTROPIC
+#define BRDF_ANISOTROPIC_V              SPECULAR_V_GGX_ANISOTROPIC
+
+#define DIFFUSE_LAMBERT                 0
+#define DIFFUSE_BURLEY                  1
 
 
-#define BRDF_DIFFUSE                DIFFUSE_LAMBERT
+#define BRDF_DIFFUSE                    DIFFUSE_LAMBERT
+
+// min roughness such that (MIN_ROUGHNESS^4) > 0 in fp16 (i.e. 2^(-14/4), slightly rounded up)
+#define MIN_ROUGHNESS                   0.045
+#define MIN_LINEAR_ROUGHNESS            0.002025
+#define MAX_CLEAR_COAT_ROUGHNESS        0.6
 
 // XYZ to CIE 1931 RGB color space (using neutral E illuminant)
 const mat3 XYZ_TO_RGB = mat3(2.3706743, -0.5138850, 0.0052982, -0.9000405, 1.4253036, -0.0146949, -0.4706338, 0.0885814, 1.0093968);
@@ -149,11 +160,27 @@ float D_GGX(float linearRoughness, float NoH)
 {
   // Walter et al. 2007, "Microfacet Models for Refraction through Rough Surfaces"
   float NoH2 = NoH * NoH;
-
   float a = NoH * linearRoughness;
   float k = linearRoughness / ((1.0 - NoH2) + a * a);
   float d = k * k * (1.0 / PI);
   return clamp(d, 0.0, 1.0);
+}
+
+float D_GGX_Anisotropic(float at, float ab, float ToH, float BoH, float NoH) 
+{
+  // Burley 2012, "Physically-Based Shading at Disney"
+  float a2 = at * ab;
+  highp vec3 d = vec3(ab * ToH, at * BoH, a2 * NoH);
+  highp float d2 = dot(d, d);
+  float b2 = a2 / d2;
+  return a2 * b2 * b2 * (1.0 / PI);
+}
+
+float D_GGX_Anisotropic_HDRP(float at, float ab, float ToH, float BoH, float NoH) 
+{
+  // HDRP
+  float f = ToH * ToH / (at * at) + BoH * BoH / (ab * ab) + NoH * NoH;
+  return 1.0 / (at * ab * f * f);
 }
 
 vec3 D_GGX_HemisphereImportanceSample(float roughness, vec2 U, vec3 N)
@@ -222,6 +249,16 @@ float V_Kelemen(float LoH)
 {
     // Kelemen 2001, "A Microfacet Based Coupled Specular-Matte BRDF Model with Importance Sampling"
     return clamp(0.25 / (LoH * LoH), 0.0, 1.0);
+}
+
+float V_SmithGGXCorrelated_Anisotropic(float at, float ab, float ToV, float BoV, float ToL, float BoL, float NoV, float NoL) 
+{
+    // Heitz 2014, "Understanding the Masking-Shadowing Function in Microfacet-Based BRDFs"
+    // TODO: lambdaV can be pre-computed for all the lights, it should be moved out of this function
+    float lambdaV = NoL * length(vec3(at * ToV, ab * BoV, NoV));
+    float lambdaL = NoV * length(vec3(at * ToL, ab * BoL, NoL));
+    float v = 0.5 / (lambdaV + lambdaL);
+    return clamp(v, 0.0, 1.0);
 }
 
 float V_GeometrySchlickGGX_DFG(float roughness, float NoV)
@@ -409,14 +446,22 @@ float fresnelClearCoat(float LoH)
 #endif
 }
 
-float distributionAnisotropic()
+float distributionAnisotropic(float at, float ab, float ToH, float BoH, float NoH)
 {
-  return 0.0;
+#if   BRDF_ANISOTROPIC_D == SPECULAR_D_GGX_ANISOTROPIC
+    return D_GGX_Anisotropic(at, ab, ToH, BoH, NoH);
+#elif BRDF_ANISOTROPIC_D == SPECULAR_D_GGX_ANISOTROPIC_HDRP
+    return D_GGX_Anisotropic_HDRP(at, ab, ToH, BoH, NoH);
+#endif
 }
 
-float visibilityAnisotropic()
+float visibilityAnisotropic(float linearRoughness, float at, float ab, float ToV, float BoV, float ToL, float BoL, float NoV, float NoL)
 {
-  return 0.0;
+#if   BRDF_ANISOTROPIC_V == SPECULAR_V_SMITH_GGX
+    return V_SmithGGXCorrelated(linearRoughness, NoV, NoL);
+#elif BRDF_ANISOTROPIC_V == SPECULAR_V_GGX_ANISOTROPIC
+    return V_SmithGGXCorrelated_Anisotropic(at, ab, ToV, BoV, ToL, BoL, NoV, NoL);
+#endif
 }
 
 #if MAT_HAS_IRIDESCENCE
@@ -490,9 +535,37 @@ float clearCoatLobe(const PixelParameters pixel, const ShadingParameters shading
 #endif
 
 #if MAT_HAS_ANISOTROPY
-vec3 anisotropicLobe()
+vec3 anisotropicLobe(const PixelParameters pixel, const ShadingParameters shading, const Light light, const vec3 h, float NoV, float NoL, float NoH, float LoH, out vec3 out_F)
 {
-  return vec3(0.0);
+  vec3 l = light.L;
+  vec3 t = pixel.anisotropicT;
+  vec3 b = pixel.anisotropicB;
+  vec3 v = shading.V;
+
+  float ToV = dot(t, v);
+  float BoV = dot(b, v);
+  float ToL = dot(t, l);
+  float BoL = dot(b, l);
+  float ToH = dot(t, h);
+  float BoH = dot(b, h);
+
+  // Anisotropic parameters: at and ab are the roughness along the tangent and bitangent
+  // to simplify materials, we derive them from a single roughness parameter
+  // Kulla 2017, "Revisiting Physically Based Shading at Imageworks"
+  float at = max(pixel.linearRoughness * (1.0 + pixel.anisotropy), MIN_LINEAR_ROUGHNESS);
+  float ab = max(pixel.linearRoughness * (1.0 - pixel.anisotropy), MIN_LINEAR_ROUGHNESS);
+
+  // specular anisotropic BRDF
+  float D = distributionAnisotropic(at, ab, ToH, BoH, NoH);
+  float V = visibilityAnisotropic(pixel.linearRoughness, at, ab, ToV, BoV, ToL, BoL, NoV, NoL);
+#if MAT_HAS_IRIDESCENCE
+  out_F = fresnelIridescence(pixel, LoH);
+  vec3 F = mix(fresnel(pixel.f0, LoH), out_F, pixel.iridescenceMask);
+#else
+  out_F = vec3(1.0);
+  vec3 F = fresnel(pixel.f0, LoH); /// clamp(dot(H, V), 0.0, 1.0)
+#endif
+  return D * V * F;
 }
 #endif
 
@@ -500,7 +573,6 @@ vec3 isotropicLobe(const PixelParameters pixel, float NoV, float NoL, float NoH,
 {
   float D = distribution(pixel.linearRoughness, NoH);
   float V = visibility(pixel.linearRoughness, NoV, NoL);
-
 #if MAT_HAS_IRIDESCENCE
   out_F = fresnelIridescence(pixel, LoH);
   vec3 F = mix(fresnel(pixel.f0, LoH), out_F, pixel.iridescenceMask);
@@ -511,10 +583,10 @@ vec3 isotropicLobe(const PixelParameters pixel, float NoV, float NoL, float NoH,
   return D * V * F;
 }
 
-vec3 specularLobe(const PixelParameters pixel, float NoV, float NoL, float NoH, float LoH, out vec3 out_F)
+vec3 specularLobe(const PixelParameters pixel, const ShadingParameters shading, const Light light, const vec3 h, float NoV, float NoL, float NoH, float LoH, out vec3 out_F)
 {
 #if MAT_HAS_ANISOTROPY
-  return isotropicLobe(pixel, NoV, NoL, NoH, LoH, out_F);
+  return anisotropicLobe(pixel, shading, light, h, NoV, NoL, NoH, LoH, out_F);
 #else
   return isotropicLobe(pixel, NoV, NoL, NoH, LoH, out_F);
 #endif
@@ -573,7 +645,7 @@ vec3 surfaceShading(const PixelParameters pixel, const ShadingParameters shading
   float LoH = max(dot(light.L, H), 0.0);
 
   vec3 F;
-  vec3 Fr = specularLobe(pixel, NoV, NoL, NoH, LoH, F);
+  vec3 Fr = specularLobe(pixel, shading, light, H, NoV, NoL, NoH, LoH, F);
   vec3 Fd = diffuseLobe(pixel, NoV, NoL, LoH);
 
 #if MAT_HAS_IRIDESCENCE
@@ -605,6 +677,20 @@ vec3 surfaceShading(const PixelParameters pixel, const ShadingParameters shading
 #endif
 }
 
+vec3 getReflectedVector(const PixelParameters pixel, const ShadingParameters shading)
+{
+#if MAT_HAS_ANISOTROPY
+  vec3  anisotropyDirection = pixel.anisotropy >= 0.0 ? pixel.anisotropicB : pixel.anisotropicT;
+  vec3  anisotropicTangent  = cross(anisotropyDirection, shading.V);
+  vec3  anisotropicNormal   = cross(anisotropicTangent, anisotropyDirection);
+  float bendFactor          = abs(pixel.anisotropy) * clamp(5.0 * pixel.roughness, 0.0, 1.0);
+  vec3  bentNormal          = normalize(mix(shading.N, anisotropicNormal, bendFactor));
+  return reflect(-shading.V, bentNormal);
+#else
+  return shading.R;
+#endif
+}
+
 vec3 surfaceShadingIBL(const MaterialInput material, const PixelParameters pixel, const ShadingParameters shading)
 {
   float diffuseAO = material.ambientOcclusion;
@@ -619,7 +705,7 @@ vec3 surfaceShadingIBL(const MaterialInput material, const PixelParameters pixel
   vec3 Fd = pixel.diffuseColor * diffuseIrradiance(shading.N);
   Fd *= diffuseAO;
 
-  vec3 Fr = specularIrradiance(shading.R, pixel.roughness) * F;   
+  vec3 Fr = specularIrradiance(getReflectedVector(pixel, shading), pixel.roughness) * F;   
   Fr *= specularAO * pixel.energyCompensation;
 
 #if MAT_HAS_IRIDESCENCE

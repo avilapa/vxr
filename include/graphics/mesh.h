@@ -57,12 +57,14 @@ namespace vxr
     PROPERTY(std::vector<vec3>,   vertices_, vertices, {});
     PROPERTY(std::vector<vec3>,   normals_,  normals,  {});
     PROPERTY(std::vector<vec2>,   uv_,       uv,       {});
+    PROPERTY(std::vector<vec4>,   tangents_, tangents, {});
     PROPERTY(std::vector<uint32>, indices_,  indices,  {});
 
 #undef PROPERTY
 
     void voxelize(vec3 voxel_size, double precision);
     void recomputeNormals();
+    void recomputeTangents();
 
     void set_usage(Usage::Enum usage);
 

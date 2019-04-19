@@ -35,6 +35,7 @@
 * \author Victor Avila (avilapa.github.io)
 *
 * \brief This example showcases the use of rigidbody physics and collision detection in the engine.
+*        NOTE: This example should be compiled in a single thread. (--no-threading)
 */
 namespace vxr 
 {

@@ -80,6 +80,7 @@ namespace vxr
       string shader_preprocessor = 
         "#version "                   + std::to_string(kGLShaderVersion) + "\n"
         "#define MAX_LIGHT_SOURCES "  + std::to_string(kMaxLightSources) + "\n"
+        "#define MESH_HAS_PRECOMPUTED_TANGENTS " + std::to_string(VXR_MESH_PRECOMPUTE_TANGENTS) + "\n"
         ;
 
       common_vert[0] = shader_preprocessor;

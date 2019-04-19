@@ -74,6 +74,7 @@ namespace vxr
     case TextureType::T2D:
       build_cubemap_->set_input_texture(0, texture);
       build_cubemap_->set_hdr(texture->hdr());
+      build_cubemap_->output_texture()->set_wrapping(SamplerWrapping::Clamp);
       cubemap_texture_ = build_cubemap_->output_texture();
       initialization_level_ = 0;
       break;

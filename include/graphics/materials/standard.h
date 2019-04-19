@@ -81,6 +81,10 @@ namespace vxr
         void set_clear_coat(float value);
         void set_clear_coat_roughness(float value);
         void set_clear_coat_normal(ref_ptr<Texture> texture);
+
+        void set_anisotropy(float value);
+        void set_anisotropy_rotation(float radians);
+        void set_anisotropy_rotation(ref_ptr<Texture> texture);
       };
     };
 

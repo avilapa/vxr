@@ -52,6 +52,7 @@ namespace vxr
     Main();
 
     void start() override;
+    void update(float dt) override;
 
   private:
     void createSceneMaterialEditor();
@@ -64,7 +65,7 @@ namespace vxr
     ref_ptr<Scene> scene_material_editor_;
     ref_ptr<Scene> scene_white_furnace_;
 
-    const static uint32 NUM_PREVIEWS = 2;
+    const static uint32 NUM_PREVIEWS = 3;
     ref_ptr<GameObject> preview_model_[NUM_PREVIEWS];
   };
 

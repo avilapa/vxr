@@ -81,9 +81,9 @@ namespace vxr
 
     scene_->addObject(objects_floor_);*/
 
-    ref_ptr<Texture> ma = Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/albedo.png");
-    ref_ptr<Texture> mm = Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/metallic.png");
-    ref_ptr<Texture> mr = Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/roughness.png");
+    ref_ptr<Texture> ma = Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/machinery/albedo.png");
+    ref_ptr<Texture> mm = Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/machinery/metallic.png");
+    ref_ptr<Texture> mr = Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/machinery/roughness.png");
     ref_ptr<Texture> mo = Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/ao.png");
     //ref_ptr<Texture> mn = Engine::ref().assetManager()->loadTexture("../../assets/models/substance_sphere/normal_2k.png");
 
@@ -147,7 +147,7 @@ namespace vxr
       light_[i]->transform()->set_parent(light_node_->transform());
       light_[i]->addComponent<Renderer>()->material = light_mat.get();
       light_[i]->addComponent<MeshFilter>()->mesh = light_mesh;
-      light_[i]->transform()->set_local_scale(vec3(0.12f));
+      light_[i]->transform()->set_local_scale(vec3(0.006f));
       vec3 rand_pos = vec3(rand() % 100 / 100.0f, rand() % 100 / 100.0f, rand() % 100 / 100.0f) * 2.0f - 1.0f;
       rand_pos = glm::normalize(rand_pos - light_node_->transform()->local_position()) + 0.5f;
       light_[i]->transform()->set_local_position(rand_pos);

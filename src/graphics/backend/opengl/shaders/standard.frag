@@ -27,7 +27,7 @@ layout(std140) uniform Standard
   	vec4 albedo;
     vec4 emissive;
     vec4 metallic_roughness_reflectance_ao;
-    vec4 clear_coat_clear_coat_roughness;
+    vec4 clear_coat_value_roughness_anisotropy_value_rotation;
     vec4 iridescence_mask_thickness_ior_k;
 };
 
@@ -39,7 +39,7 @@ void main()
     inputs.baseColor.xyz *= albedo.xyz;
     inputs.baseColor.w = albedo.w;
 #if MAT_HAS_EMISSIVE
-    inputs.emissive.xyz = sRGBtoLinear(texture(u_tex2d9, getUV()).xyz);
+    inputs.emissive.xyz = sRGBtoLinear(texture(u_tex2d10, getUV()).xyz);
     inputs.emissive.xyz *= emissive.xyz;
 #endif
     inputs.metallic = texture(u_tex2d4, getUV()).x;
@@ -58,15 +58,20 @@ void main()
 #endif
 
 #if MAT_HAS_CLEAR_COAT
-    inputs.clearCoat = clear_coat_clear_coat_roughness.x;
-    inputs.clearCoatRoughness = clear_coat_clear_coat_roughness.y;
+    inputs.clearCoat = clear_coat_value_roughness_anisotropy_value_rotation.x;
+    inputs.clearCoatRoughness = clear_coat_value_roughness_anisotropy_value_rotation.y;
 #if MAT_HAS_CLEAR_COAT_NORMAL_MAP
     inputs.clearCoatNormal = texture(u_tex2d8, getUV()).xyz * 2.0 - 1.0;
 #endif
 #endif
+#if MAT_HAS_ANISOTROPY
+    vec3 anisotropyMap = texture(u_tex2d9, getUV()).xyz;
+    inputs.anisotropy = clear_coat_value_roughness_anisotropy_value_rotation.z;
+    inputs.anisotropyDirection = vec3(cos(clear_coat_value_roughness_anisotropy_value_rotation.w + anisotropyMap.x), sin(clear_coat_value_roughness_anisotropy_value_rotation.w + anisotropyMap.y), 0.0);
+#endif
 #if MAT_HAS_IRIDESCENCE
-    inputs.iridescenceMask = iridescence_mask_thickness_ior_k.x;
-    inputs.filmThickness = iridescence_mask_thickness_ior_k.y * texture(u_tex2d10, getUV()).r;
+    inputs.iridescenceMask = iridescence_mask_thickness_ior_k.x * texture(u_tex2d11, getUV()).r;
+    inputs.filmThickness = iridescence_mask_thickness_ior_k.y * texture(u_tex2d11, getUV()).r;
     inputs.baseIor = iridescence_mask_thickness_ior_k.z;
     inputs.kExtinction = iridescence_mask_thickness_ior_k.w;
 #endif
