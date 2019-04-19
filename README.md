@@ -65,7 +65,7 @@ A list of example projects are provided within the solution to showcase the engi
   - Renderer: Reference to the Material Instance the object will be rendered with.
     - Current Materials:
       - Standard Lit (PBR)
-        - Microfacet BRDF + Thin Film Iridescence + Clear Coat
+        - Microfacet BRDF + Thin Film Iridescence + Clear Coat + Anisotropy
       - Unlit
       - Wireframe
       - Skybox
