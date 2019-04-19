@@ -1,6 +1,6 @@
 
 [![vxr engine logo](https://github.com/avilapa/vxr/blob/media/logo_background.png)](https://avilapa.github.io)
-_version 0.6.0_
+_version 0.7.0_
 
 # What is [vxr](https://github.com/avilapa/vxr)?
 
